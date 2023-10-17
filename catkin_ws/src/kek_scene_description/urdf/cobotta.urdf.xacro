@@ -1,0 +1,33 @@
+<robot name="stdcb"  xmlns:xacro="http://ros.org/wiki/xacro">
+  
+    <xacro:macro name="cobotta_macro" params="joint parent child joint_type origin_xyz axis upper lower file_path">
+        <joint name="${joint}" type="${joint_type}">
+            <origin rpy="0 0 0" xyz="${origin_xyz}" />
+            <xacro:if value="${joint_type=='revolute'}">
+                <axis xyz="${axis}" />
+                <limit lower="${lower}" upper="${upper}" effort="0" velocity="0"/>
+            </xacro:if>
+            <parent link="${parent}"/>
+            <child  link="${child}"/>
+        </joint>
+
+        <link name="${child}">
+            <visual>
+                <geometry>
+                    <mesh filename="${file_path}" />
+                </geometry>
+            </visual>
+        </link>
+    </xacro:macro>  
+    
+    <!-- main -->
+    <link name="world" />
+    <xacro:cobotta_macro joint="joint_w" parent="world" child="base_link" joint_type="fixed" origin_xyz="0 0 0" axis="0 0 0" upper="0" lower="0" file_path="package://denso_descr/stdcb_description/base_link.stl"/>
+    <xacro:cobotta_macro joint="joint_1" parent="base_link" child="J1" joint_type="revolute" origin_xyz="0 0 0" axis="0 0 1" lower="-2.61799387799149" upper="2.61799387799149" file_path="package://denso_descr/stdcb_description/J1.stl"/>
+    <xacro:cobotta_macro joint="joint_2" parent="J1" child="J2" joint_type="revolute" origin_xyz="0 0 0.18" axis="0 1 0" lower="-1.0471975511966" upper="1.74532925199433" file_path="package://denso_descr/stdcb_description/J2.stl"/>
+    <xacro:cobotta_macro joint="joint_3" parent="J2" child="J3" joint_type="revolute" origin_xyz="0 0 0.165" axis="0 1 0" lower="0.314159265358979" upper="2.44346095279206" file_path="package://denso_descr/stdcb_description/J3.stl"/>
+    <xacro:cobotta_macro joint="joint_4" parent="J3" child="J4" joint_type="revolute" origin_xyz="-0.012 0.02 -0.345" axis="0 0 1" lower="-2.96705972839036" upper="2.96705972839036" file_path="package://denso_descr/stdcb_description/J4.stl"/>
+    <xacro:cobotta_macro joint="joint_5" parent="J4" child="J5" joint_type="revolute" origin_xyz="0 -0.02 0.52225" axis="0 1 0" lower="-1.65806278939461" upper="2.35619449019234" file_path="package://denso_descr/stdcb_description/J5.stl"/>
+    <xacro:cobotta_macro joint="joint_6" parent="J5" child="J6" joint_type="revolute" origin_xyz="0 -0.0445 0.042" axis="0 0 1" lower="-2.96705972839036" upper="2.96705972839036" file_path="package://denso_descr/stdcb_description/J6.stl"/>
+    <xacro:cobotta_macro joint="joint_pestle" parent="J6" child="pestle" joint_type="fixed" origin_xyz="0 0 0" axis="0 0 0" upper="0" lower="0" file_path="package://kek_scene_description/mesh/jig_pestle_170.stl"/>
+</robot>

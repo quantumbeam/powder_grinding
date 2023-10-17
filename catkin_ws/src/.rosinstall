@@ -1,0 +1,8 @@
+# IT IS UNLIKELY YOU WANT TO EDIT THIS FILE BY HAND,
+# UNLESS FOR REMOVING ENTRIES.
+# IF YOU WANT TO CHANGE THE ROS ENVIRONMENT VARIABLES
+# USE THE rosinstall TOOL INSTEAD.
+# IF YOU CHANGE IT, USE rosinstall FOR THE CHANGES TO TAKE EFFECT
+
+- git: {local-name: Universal_Robots_ROS_Driver, uri: 'https://github.com/UniversalRobots/Universal_Robots_ROS_Driver.git',
+    version: master}

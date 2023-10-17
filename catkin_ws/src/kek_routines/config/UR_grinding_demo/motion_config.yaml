@@ -1,0 +1,74 @@
+experimental_time : 90
+
+# grinding params
+
+pestle_radius : 10
+minimum_grinding_radius: 5
+fixed_grinding: True
+arm_moving_at_vision: True
+fixed_vision_threshold: True
+vision_threshold: 25
+
+grinding_pos_begining : 
+  - -8
+  - 0
+grinding_pos_end :
+  - -8
+  - 0.0001
+grinding_center_pos:
+  - 0
+  - 0
+grinding_number_of_rotation : 30
+grinding_sec_per_rotation : 0.5
+grinding_angle_param : 0.3
+grinding_rz_begining : 37.5
+grinding_rz_end : 37.5
+grinding_vel_scale : 1
+grinding_acc_scale : 1
+grinding_number_of_waypoints_per_circle : 10
+grinding_yaw_angle : rad(pi)
+
+# circular gathering params 
+circular_gathering_pos_begining : 
+  - -30
+  - 0
+circular_gathering_pos_end :
+  - -18
+  - 0.0001
+circular_gathering_number_of_rotation : 8
+circular_gathering_angle_param : 0
+circular_gathering_rz_begining : 31.3
+circular_gathering_rz_end : 31.3
+circular_gathering_vel_scale : 0.1
+circular_gathering_acc_scale : 0.1
+circular_gathering_number_of_waypoints_per_circle : 20
+circular_gathering_yaw_angle : rad(pi)
+
+# scooping params 
+# scooping_pos_begining : 
+#   - -20
+#   - 0
+# scooping_pos_end :
+#   - 20
+#   - 0
+# scooping_rz_begining : 32.3
+# scooping_rz_end : 32.3
+
+scooping_pos_begining : 
+  - -20
+  - 0
+scooping_pos_end :
+  - 25
+  - 0
+scooping_rz_begining : 31.3
+scooping_rz_end : 31.3
+scooping_angle_param : 1
+scooping_vel_scale : 0.001
+scooping_acc_scale : 0.001
+scooping_number_of_waypoints : 20
+scooping_yaw_angle : rad(pi)
+
+
+
+# sound param
+sound_RMS_threshold : 0.03
