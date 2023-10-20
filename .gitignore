@@ -1,4 +1,6 @@
 
+**/core
+
 __pycache__/
 
 catkin_ws/.catkin_tools/

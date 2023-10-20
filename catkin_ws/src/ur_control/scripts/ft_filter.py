@@ -31,7 +31,6 @@ import rospy
 
 import numpy as np
 from ur_control.constants import get_arm_joint_names
-from ur_pykdl import ur_kinematics
 from ur_control import spalg, utils, filters, conversions
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
