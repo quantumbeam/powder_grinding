@@ -47,18 +47,12 @@ from ur_control.constants import (
 
 from std_srvs.srv import Empty, SetBool, Trigger
 
-try:
-    from ur_ikfast import ur_kinematics as ur_ikfast
-except ImportError:
-    print("Import ur_ikfast not available, IKFAST would not be supported without it")
-
 from ur_control.controllers_connection import ControllersConnection
 from ur_control.controllers import (
     JointTrajectoryController,
     FTsensor,
     GripperController,
 )
-from ur_pykdl import ur_kinematics
 from trac_ik_python.trac_ik import IK as TRACK_IK_SOLVER
 
 cprint = utils.TextColors()
@@ -172,29 +166,9 @@ class Arm(object):
             )
 
     def _init_ik_solver(self, base_link, ee_link):
-        # Instantiate KDL kinematics solver to compute forward kinematics
-        if rospy.has_param("robot_description"):
-            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link)
-        else:
-            self.kdl = ur_kinematics(
-                base_link=base_link,
-                ee_link=ee_link,
-                robot=self._robot_urdf,
-                prefix=self.joint_names_prefix,
-                rospackage=self._robot_urdf_package,
-            )
-
         # Instantiate Inverse kinematics solver
-        if self.ik_solver == IKFAST:
-            # IKfast libraries
-            try:
-                self.arm_ikfast = ur_ikfast.URKinematics(self._robot_urdf)
-            except Exception:
-                raise ValueError(
-                    "IK solver set to IKFAST but no ikfast found for: %s. "
-                    % self._robot_urdf
-                )
-        elif self.ik_solver == TRAC_IK:
+
+        if self.ik_solver == TRAC_IK:
             try:
                 if not rospy.has_param("robot_description"):
                     self.trac_ik = TRACK_IK_SOLVER(
