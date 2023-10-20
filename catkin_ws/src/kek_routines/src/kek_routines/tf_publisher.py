@@ -4,8 +4,6 @@ import tf2_ros
 import geometry_msgs.msg
 from geometry_msgs.msg import Pose, Quaternion
 
-import pandas as pd
-
 
 class TFPublisher:
     def __init__(self) -> None:
