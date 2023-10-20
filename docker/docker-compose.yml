@@ -3,10 +3,11 @@ version: "2.4"
 ################################################################################
 
 services:
-  onolab:
-    hostname: onolab
+  onolab_ros:
+    hostname: onolab_ros
     runtime: ${DOCKER_RUNTIME}
     privileged: true
+    image: onolab_ros_noetic
     environment:
       # Pass host user information.
       - HOST_USER=${USER}
@@ -15,9 +16,8 @@ services:
       # Display X Server GUI.
       - DISPLAY
       - QT_X11_NO_MITSHM=1
-    image: onolab/ros-noetic
     build:
-      context: ../
+      context: .
       dockerfile: ./Dockerfile
     volumes:
       # Map ROS workspace folders.
@@ -26,7 +26,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       # Grant access to usb ports
       - /dev/:/dev/
-    network_mode: host
+    network_mode: "host"
     extra_hosts:
       - "onolab:127.0.0.1" # Seems that this might be needed for ROS networking
       - "onolab:192.168.56.5" # The host PC
