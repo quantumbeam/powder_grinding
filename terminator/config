@@ -1,0 +1,427 @@
+[global_config]
+[keybindings]
+[profiles]
+  [[default]]
+    background_color = "#300a24"
+    background_darkness = 0.9
+    background_type = transparent
+    cursor_color = "#ffffff"
+    font = Ubuntu Mono 12
+    foreground_color = "#ffffff"
+    scrollback_lines = 5000
+    use_system_font = False
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      profile = default
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+  [[ocla-split]]
+    [[[child0]]]
+      fullscreen = False
+      last_active_window = True
+      maximised = True
+      order = 0
+      parent = ""
+      title = OCLA
+      type = Window
+    [[[child1]]]
+      order = 0
+      parent = child0
+      position = 958
+      ratio = 0.500261096606
+      type = HPaned
+    [[[child11]]]
+      order = 1
+      parent = child1
+      position = 510
+      ratio = 0.5
+      type = VPaned
+    [[[child12]]]
+      order = 0
+      parent = child11
+      position = 478
+      ratio = 0.500523560209
+      type = HPaned
+    [[[child15]]]
+      order = 1
+      parent = child11
+      position = 478
+      ratio = 0.500523560209
+      type = HPaned
+    [[[child16]]]
+      order = 0
+      parent = child15
+      position = 254
+      ratio = 0.5
+      type = VPaned
+    [[[child19]]]
+      order = 1
+      parent = child15
+      position = 254
+      ratio = 0.5
+      type = VPaned
+    [[[child2]]]
+      order = 0
+      parent = child1
+      position = 510
+      ratio = 0.5
+      type = VPaned
+    [[[child4]]]
+      order = 1
+      parent = child2
+      position = 477
+      ratio = 0.500524658972
+      type = HPaned
+    [[[child5]]]
+      order = 0
+      parent = child4
+      position = 254
+      ratio = 0.5
+      type = VPaned
+    [[[child8]]]
+      order = 1
+      parent = child4
+      position = 254
+      ratio = 0.5
+      type = VPaned
+    [[[terminal10]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 1
+      parent = child8
+      profile = default
+      type = Terminal
+    [[[terminal13]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 0
+      parent = child12
+      profile = default
+      type = Terminal
+    [[[terminal14]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 1
+      parent = child12
+      profile = default
+      type = Terminal
+    [[[terminal17]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 0
+      parent = child16
+      profile = default
+      type = Terminal
+    [[[terminal18]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 1
+      parent = child16
+      profile = default
+      type = Terminal
+    [[[terminal20]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 0
+      parent = child19
+      profile = default
+      type = Terminal
+    [[[terminal21]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 1
+      parent = child19
+      profile = default
+      type = Terminal
+    [[[terminal3]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 0
+      parent = child2
+      profile = default
+      type = Terminal
+    [[[terminal6]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 0
+      parent = child5
+      profile = default
+      type = Terminal
+    [[[terminal7]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 1
+      parent = child5
+      profile = default
+      type = Terminal
+    [[[terminal9]]]
+      command = source ~/.bashrc && sh ./RUN-DOCKER-CONTAINER.sh
+      order = 0
+      parent = child8
+      profile = default
+      type = Terminal
+  [[ocla-autostart]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 72:27
+      maximised = True
+      fullscreen = False
+      size = 1848, 1016
+      title = OCLA
+      last_active_window = True
+    [[[child1]]]
+      type = HPaned
+      parent = child0
+      order = 0
+      position = 922
+    [[[child2]]]
+      type = VPaned
+      parent = child1
+      order = 0
+      position = 506
+    [[[child4]]]
+      type = HPaned
+      parent = child2
+      order = 1
+      position = 459
+    [[[child5]]]
+      type = VPaned
+      parent = child4
+      order = 0
+      position = 252
+    [[[child8]]]
+      type = VPaned
+      parent = child4
+      order = 1
+      position = 252
+    [[[child11]]]
+      type = VPaned
+      parent = child1
+      order = 1
+      position = 506
+    [[[child12]]]
+      type = HPaned
+      parent = child11
+      order = 0
+      position = 460
+    [[[child15]]]
+      type = HPaned
+      parent = child11
+      order = 1
+      position = 460
+    [[[child16]]]
+      type = VPaned
+      parent = child15
+      order = 0
+      position = 352
+      ratio = 0.6984126984126984
+    [[[child19]]]
+      type = VPaned
+      parent = child15
+      order = 1
+      position = 351
+      ratio = 0.6964285714285714
+    [[[terminal3]]]
+      type = Terminal
+      parent = child2
+      order = 0
+      profile = default
+      title = moveit/rviz
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} moma_moveit_config moma_moveit_planning_execution.launch
+    [[[terminal6]]]
+      type = Terminal
+      parent = child5
+      order = 0
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal7]]]
+      type = Terminal
+      parent = child5
+      order = 1
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal9]]]
+      type = Terminal
+      parent = child8
+      order = 0
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal10]]]
+      type = Terminal
+      parent = child8
+      order = 1
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal13]]]
+      type = Terminal
+      parent = child12
+      order = 0
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal14]]]
+      type = Terminal
+      parent = child12
+      order = 1
+      profile = default
+      title = robot
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ocla_scene_description moma_bringup.launch
+    [[[terminal17]]]
+      type = Terminal
+      parent = child16
+      order = 0
+      profile = default
+      title = ocla_vision
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ocla_vision ocla_vision.launch
+    [[[terminal18]]]
+      type = Terminal
+      parent = child16
+      order = 1
+      profile = default
+      title = ocla_
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ocla_vision show_tv_rviz.launch
+    [[[terminal20]]]
+      type = Terminal
+      parent = child19
+      order = 0
+      profile = default
+      title = cameras
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ocla_scene_description camera_bringup.launch
+    [[[terminal21]]]
+      type = Terminal
+      parent = child19
+      order = 1
+      profile = default
+      title = roscore (NEEDS TO RUN FIRST)
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} --run-immediately roscore
+  [[grinding-autostart]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 72:27
+      maximised = True
+      fullscreen = False
+      size = 1848, 1016
+      title = OCLA
+      last_active_window = True
+    [[[child1]]]
+      type = HPaned
+      parent = child0
+      order = 0
+      position = 922
+    [[[child2]]]
+      type = VPaned
+      parent = child1
+      order = 0
+      position = 506
+    [[[child4]]]
+      type = HPaned
+      parent = child2
+      order = 1
+      position = 459
+    [[[child5]]]
+      type = VPaned
+      parent = child4
+      order = 0
+      position = 252
+    [[[child8]]]
+      type = VPaned
+      parent = child4
+      order = 1
+      position = 252
+    [[[child11]]]
+      type = VPaned
+      parent = child1
+      order = 1
+      position = 506
+    [[[child12]]]
+      type = HPaned
+      parent = child11
+      order = 0
+      position = 460
+    [[[child15]]]
+      type = HPaned
+      parent = child11
+      order = 1
+      position = 460
+    [[[child16]]]
+      type = VPaned
+      parent = child15
+      order = 0
+      position = 352
+      ratio = 0.6984126984126984
+    [[[child19]]]
+      type = VPaned
+      parent = child15
+      order = 1
+      position = 351
+      ratio = 0.6964285714285714
+    [[[terminal3]]]
+      type = Terminal
+      parent = child2
+      order = 0
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal6]]]
+      type = Terminal
+      parent = child5
+      order = 0
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal7]]]
+      type = Terminal
+      parent = child5
+      order = 1
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal9]]]
+      type = Terminal
+      parent = child8
+      order = 0
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal10]]]
+      type = Terminal
+      parent = child8
+      order = 1
+      profile = default
+      command = sh ./RUN-DOCKER-CONTAINER.sh
+    [[[terminal13]]]
+      type = Terminal
+      parent = child12
+      order = 0
+      profile = default
+      title = rqt
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} rqt
+    [[[terminal14]]]
+      type = Terminal
+      parent = child12
+      order = 1
+      profile = default
+      title = UR_driver
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ur_control ur5e_moveit.launch
+    [[[terminal17]]]
+      type = Terminal
+      parent = child16
+      order = 0
+      profile = default
+      title = UR_moveit
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} kek_moveit_config ur5e_moveit_planning_execution.launch
+    [[[terminal18]]]
+      type = Terminal
+      parent = child16
+      order = 1
+      profile = default
+      title = UR_RViz
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} kek_moveit_config moveit_rviz.launch
+    [[[terminal20]]]
+      type = Terminal
+      parent = child19
+      order = 0
+      profile = default
+      title = camera_driver
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} kek_vision diagonal_vision.launch
+    [[[terminal21]]]
+      type = Terminal
+      parent = child19
+      order = 1
+      profile = default
+      title = roscore (NEEDS TO RUN FIRST)
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} --run-immediately roscore
+[plugins]

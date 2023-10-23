@@ -22,4 +22,18 @@ xhost +local:
 
 
 # Enter the Docker container with a Bash shell
-docker exec -i -t ${CONTAINER} bash
+# case "$3" and "$2" are used to run a command from teerminator config.
+case "$3" in
+  ( "" )
+  case "$2" in
+    ( "" )
+    docker exec -it ${CONTAINER} bash -c "cd /home/ubuntu/onolab ; bash"
+  esac
+  ;;
+  ( *".launch")
+  docker exec -it ${CONTAINER} bash -c "cd /home/ubuntu/onolab && ./terminator/run-roslaunch-repeatedly.sh $2 $3"
+  ;;
+  ( * )
+  docker exec -it ${CONTAINER} bash -c "cd /home/ubuntu/onolab && ./terminator/run-command-repeatedly.sh $2 $3"
+  ;;
+esac
