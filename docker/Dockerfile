@@ -10,9 +10,10 @@ RUN apt-get update && apt-get install -y \
     vim \
     wget \
     tmux \
-    terminator && \
+    terminator \
     iputils-ping net-tools \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install ROS packages
 RUN apt-get update && apt-get install -y \
@@ -28,9 +29,10 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-gmapping ros-noetic-navigation ros-noetic-interactive-markers \
     ros-noetic-dynamixel-sdk \
     ros-noetic-turtlebot3-msgs \
-    ros-noetic-turtlebot3 && \
+    ros-noetic-turtlebot3 \
     nano \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create ROS workspace
 RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
@@ -40,7 +42,4 @@ RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
 RUN mkdir -p /home/ubuntu/onolab/catkin_ws/src
 RUN cd /home/ubuntu/onolab/catkin_ws && /bin/bash -c "source /opt/ros/noetic/setup.sh; catkin build"
 
-
-# RUN cd /home/ubuntu/onolab/catkin_ws/src && git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
-# RUN cd /home/ubuntu/onolab/catkin_ws && /bin/bash -c "source /opt/ros/noetic/setup.bash; catkin build"
 
