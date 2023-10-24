@@ -23,17 +23,28 @@ xhost +local:
 
 # Enter the Docker container with a Bash shell
 # case "$3" and "$2" are used to run a command from teerminator config.
+
+# Command Explanation
+# Docker exec option
+# -i, --interactive=false    Keep STDIN open even if not attached
+# -t, --tty=false            Allocate a pseudo-TTY
+# -w, --workdir=""           Working directory inside the container
+
+# Bash options
+# -i        If the -i option is provided, the shell operates in interactive mode, reading ~/.bashrc upon launch.
+# -c        When the -c option is provided, commands are read from a string.
+# A shell launched with the -c option is not an interactive shell, and hence it does not read ~/.bashrc.
 case "$3" in
   ( "" )
   case "$2" in
     ( "" )
-    docker exec -it ${CONTAINER} bash -c "cd /home/ubuntu/onolab ; bash"
+    docker exec -it -w /home/ubuntu/onolab ${CONTAINER} bash -i
   esac
   ;;
   ( *".launch")
-  docker exec -it ${CONTAINER} bash -c "cd /home/ubuntu/onolab && ./terminator/run-roslaunch-repeatedly.sh $2 $3"
+  docker exec -it -w /home/ubuntu/onolab ${CONTAINER} bash -i -c "./terminator/run-roslaunch-repeatedly.sh $2 $3"
   ;;
   ( * )
-  docker exec -it ${CONTAINER} bash -c "cd /home/ubuntu/onolab && ./terminator/run-command-repeatedly.sh $2 $3"
+  docker exec -it -w /home/ubuntu/onolab ${CONTAINER} bash -i -c "./terminator/run-command-repeatedly.sh $2 $3"
   ;;
 esac
