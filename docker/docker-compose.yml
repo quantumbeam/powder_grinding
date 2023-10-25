@@ -31,6 +31,7 @@ services:
       - "onolab:127.0.0.1" # Seems that this might be needed for ROS networking
       - "onolab:192.168.56.5" # The host PC
       - "ur5e_ono:192.168.56.42" # UR5e
+      - "cobotta:192.168.56.11" # cobotta
       - "sound_sensor:192.168.56.100" #
     expose:
       - "50000" # sound sensor
