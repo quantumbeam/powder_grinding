@@ -20,4 +20,8 @@ if [ ! -z "${EXISTING_DOCKER_CONTAINER_ID}" ]; then
 fi
 
 # Build docker image
-docker-compose -p ${DOCKER_PROJECT} -f docker-compose.yml build --no-cache
+docker compose -p ${DOCKER_PROJECT} -f docker-compose.yml build
+
+# Initialize environments in the container
+echo "You should run RUN-DOCKER-CONTAINER.sh at home directory and INITIAL_SETUP_ROS_ENVIROMENTS.sh in docker container at first."
+echo "After that, you can run ROS commands and use packages in docker container."

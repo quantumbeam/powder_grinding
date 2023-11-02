@@ -8,13 +8,13 @@ PROJECT=$1
 if [ -z "${PROJECT}" ]; then
   PROJECT=${USER}
 fi
-CONTAINER="${PROJECT}_onolab_ros_1"
+CONTAINER="${PROJECT}-onolab-ros-1"
 echo "$0: PROJECT=${PROJECT}"
 echo "$0: CONTAINER=${CONTAINER}"
 
 # Run the Docker container in the background.
 # Any changes made to './docker/docker-compose.yml' will recreate and overwrite the container.
-docker-compose -p ${PROJECT} -f ./docker/docker-compose.yml up -d 
+docker compose -p ${PROJECT} -f ./docker/docker-compose.yml up -d 
 
 
 # Display GUI through X Server by granting full access to any external client.
@@ -38,13 +38,13 @@ case "$3" in
   ( "" )
   case "$2" in
     ( "" )
-    docker exec -it -w /home/ubuntu/onolab ${CONTAINER} bash -i
+    docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i
   esac
   ;;
   ( *".launch")
-  docker exec -it -w /home/ubuntu/onolab ${CONTAINER} bash -i -c "./terminator/run-roslaunch-repeatedly.sh $2 $3"
+  docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i -c "./terminator/run-roslaunch-repeatedly.sh $2 $3"
   ;;
   ( * )
-  docker exec -it -w /home/ubuntu/onolab ${CONTAINER} bash -i -c "./terminator/run-command-repeatedly.sh $2 $3"
+  docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i -c "./terminator/run-command-repeatedly.sh $2 $3"
   ;;
 esac

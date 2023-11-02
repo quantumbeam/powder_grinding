@@ -3,7 +3,7 @@ version: "2.4"
 ################################################################################
 
 services:
-  onolab_ros:
+  onolab-ros:
     hostname: onolab_ros
     runtime: ${DOCKER_RUNTIME}
     privileged: true
@@ -39,5 +39,6 @@ services:
       - "50002" # external control of UR
       - "50003" # recerve commnad from UR
       - "50004" # script_command_port of UR
+      - "5007" # cobotta
     tty: true
     shm_size: 1g
