@@ -42,9 +42,9 @@ case "$3" in
   esac
   ;;
   ( *".launch")
-  docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i -c "./terminator/run-roslaunch-repeatedly.sh $2 $3"
+  docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i -c "../terminator/run-roslaunch-repeatedly.sh $2 $3"
   ;;
   ( * )
-  docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i -c "./terminator/run-command-repeatedly.sh $2 $3"
+  docker exec -it -w /home/ubuntu/onolab/catkin_ws ${CONTAINER} bash -i -c "../terminator/run-command-repeatedly.sh $2 $3"
   ;;
 esac
