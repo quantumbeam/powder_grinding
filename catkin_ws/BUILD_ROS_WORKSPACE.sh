@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ### Ros Workspace ###
 # Set up the workspace
 sudo apt update

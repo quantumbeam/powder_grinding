@@ -1,5 +1,5 @@
-### Ros Workspace ###
-# Set up the workspace
+#!/bin/bash
+
 sudo apt update
 sudo apt upgrade -y
 
@@ -7,4 +7,4 @@ sudo pip install --upgrade pip
 
 pip3 install -r src/requirements.txt
 
-sh BUILD_ROS_WORKSPACE.sh
+. BUILD_ROS_WORKSPACE.sh
