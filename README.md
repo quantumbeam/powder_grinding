@@ -2,17 +2,29 @@
 ## Overview
 Update: 2023/10/24
 
-## Environment
-- Ubuntu 20.04
+# Supported robot
+- UR5e
+- Cobotta
+
+# Enviroment information
+## Host PC
+- Ubuntu: 20.04
   - ROS Noetic
-- Python 3.8.5
 - Docker 24.0.6
-  - > 24.0.0 is required
-- Docker-compose 2.21.0
+  - > 24.0.0 is required to use script "RUN-DOCKER-CONTAINER.sh"
+  - Docker-compose is not required, used compose subcommand in docker.
+## Robot
+**Cobotta**
+  - Software version: 2.16.12
+  - MCU version: 
+**UR5e**
+  - Software version: 5.11.6
 
-# Enviroment preparation
+## Host PC Environment
 
-## Preparation on local PC
+# Preparations
+
+## Required software
 - Install terminator
 ```sudo apt install terminator```
 - Install Docker
