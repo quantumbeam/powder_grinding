@@ -18,24 +18,65 @@
   <arg name="bcap_slave_mode" default="514" />
 
   <!-- load the robot_description parameter before launching ROS-I nodes -->
-  <include file="$(find denso_robot_moveit_config)/launch/planning_context.launch" >
-    <arg name="load_robot_description" value="true" />
-    <arg name="robot_name" value="$(arg robot_name)" />
-  </include>
+  <!-- The name of the parameter under which the URDF is loaded -->
+  <arg name="robot_description" default="robot_description" />
+
+  <!-- Load universal robot description format (URDF) -->
+  <param name="$(arg robot_description)"
+    textfile="$(find grinding_descriptions)/urdf/$(arg robot_name)/$(arg robot_name).urdf" />
+
+  <!-- The semantic description that corresponds to the URDF -->
+  <param name="$(arg robot_description)_semantic"
+    textfile="$(find grinding_descriptions)/config/$(arg robot_name)/$(arg robot_name).srdf" />
+
+  <!-- Load updated joint limits (override information from URDF) -->
+  <group ns="$(arg robot_description)_planning">
+    <rosparam command="load"
+      file="$(find grinding_descriptions)/config/$(arg robot_name)/joint_limits.yaml" />
+  </group>
+
+  <!-- Load default settings for kinematics; these settings are overridden by settings in a node's
+  namespace -->
+  <group ns="$(arg robot_description)_kinematics">
+    <rosparam command="load" file="$(find denso_robot_moveit_config)/config/kinematics.yaml" />
+  </group>
+
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="false"/>
+    <param name="use_gui" value="false" />
     <param name="publish_frequency" type="double" value="125.0" />
-    <rosparam param="source_list" subst_value = "true">[/$(arg robot_name)/joint_states]</rosparam>
+    <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states]</rosparam>
   </node>
 
   <!-- run the "real robot" interface nodes -->
   <!--   - this typically includes: robot_state, motion_interface, and joint_trajectory_action nodes -->
   <!--   - replace these calls with appropriate robot-specific calls or launch files -->
   <group if="$(arg sim)">
-    <include file="$(find denso_robot_gazebo)/launch/denso_robot_gazebo.launch">
-      <arg name="robot_name" value="$(arg robot_name)" />
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find denso_robot_gazebo)/worlds/denso_robot.world" />
     </include>
+
+    <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+    <include ns="/$(arg robot_name)"
+      file="$(find grinding_descriptions)/urdf/$(arg robot_name)/$(arg robot_name).launch.xml" />
+
+    <arg name="gui" default="true" />
+    <param name="use_gui" value="$(arg gui)" />
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
+      args="-param robot_description -urdf -model $(arg robot_name)" />
+
+    <rosparam
+      file="$(find grinding_descriptions)/urdf/$(arg robot_name)/denso_robot_control.yaml"
+      command="load" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+      output="screen"
+      ns="/$(arg robot_name)" args="joint_state_controller arm_controller" />
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher"
+      type="robot_state_publisher" respawn="false" output="screen">
+      <remap from="/joint_states" to="/$(arg robot_name)/joint_states" />
+    </node>
   </group>
 
   <group unless="$(arg sim)">
@@ -55,7 +96,7 @@
   </include>
 
   <include file="$(find denso_robot_moveit_config)/launch/moveit_rviz.launch">
-    <arg name="config" value="true"/>
+    <arg name="config" value="true" />
   </include>
 
   <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
