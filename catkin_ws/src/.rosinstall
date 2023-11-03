@@ -6,7 +6,7 @@
 
 - git: {local-name: third_party/Universal_Robots_ROS_Driver, uri: 'https://github.com/UniversalRobots/Universal_Robots_ROS_Driver.git',
     version: master}
-- git: {local-name: third_party/DENSO_ROS_Driver, uri: 'https://github.com/DENSORobot/denso_robot_ros.git',
+- git: {local-name: third_party/DENSO_ROS, uri: 'https://github.com/DENSORobot/denso_robot_ros.git',
 version: master}
 - git: {local-name: third_party/leptrino_force_torque, uri: 'https://github.com/hiveground-ros-package/leptrino_force_torque.git',
 version: ROS1}
