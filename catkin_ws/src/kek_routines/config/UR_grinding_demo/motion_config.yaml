@@ -63,8 +63,8 @@ scooping_pos_end :
 scooping_rz_begining : 31.3
 scooping_rz_end : 31.3
 scooping_angle_param : 1
-scooping_vel_scale : 0.001
-scooping_acc_scale : 0.001
+scooping_vel_scale : 0.1
+scooping_acc_scale : 0.1
 scooping_number_of_waypoints : 20
 scooping_yaw_angle : rad(pi)
 
