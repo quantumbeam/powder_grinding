@@ -86,7 +86,7 @@ class VisionSoundGrinding:
         )
 
         filepath = (
-            roslib.packages.get_pkg_dir("kek_routines")
+            roslib.packages.get_pkg_dir("grinding_motion_routines")
             + "/config/"
             + self.now.strftime("%Y%m%d_%H%M%S")
             + "_debug.csv"

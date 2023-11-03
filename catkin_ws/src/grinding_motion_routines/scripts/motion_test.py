@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 import rospy
-from kek_routines import moveit_interface, motion_routines, marker_display, tf_publisher
+from grinding_motion_routines import (
+    moveit_interface,
+    motion_routines,
+    marker_display,
+    tf_publisher,
+)
 import geometry_msgs.msg
 
 

@@ -8,8 +8,8 @@ from ur_control.arm import Arm
 from ur_control import transformations
 import tf.transformations as tf
 
-from kek_routines.motion_routines import MotionGenerator
-from kek_routines.srv import PositionCalibrateVector
+from grinding_motion_routines.motion_routines import MotionGenerator
+from grinding_motion_routines.srv import PositionCalibrateVector
 
 import argparse
 import numpy as np

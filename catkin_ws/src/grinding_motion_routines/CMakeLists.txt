@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(kek_routines)
+project(grinding_motion_routines)
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs

@@ -9,7 +9,7 @@ from inputimeout import inputimeout, TimeoutOccurred
 
 from math import pi, tau, dist, fabs, cos, sin, sqrt
 
-from kek_routines import (
+from grinding_motion_routines import (
     motion_generator,
     moveit_executor,
     JTC_executor,

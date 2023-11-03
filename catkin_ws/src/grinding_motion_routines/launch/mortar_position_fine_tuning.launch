@@ -1,0 +1,22 @@
+<launch>
+    <arg name="planning_scene_config"
+        default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/planning_scene_config_sound_sensor.yaml" />
+    <arg name="motion_config"
+        default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/motion_config.yaml" />
+    <arg name="move_config"
+        default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/move_config.yaml" />
+    <arg name="calibration_config"
+        default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/calibration_config.yaml" />
+
+    <node name="wrench_subscriber" pkg="grinding_motion_routines"
+        type="subscribe_wrench.py"
+        output="screen"></node>
+    <node name="mortar_position_fine_tuning" pkg="grinding_motion_routines"
+        type="mortar_position_fine_tuning_by_force.py"
+        output="screen">
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+        <rosparam command="load" file="$(arg motion_config)" />
+        <rosparam command="load" file="$(arg move_config)" />
+        <rosparam command="load" file="$(arg calibration_config)" />
+    </node>
+</launch>

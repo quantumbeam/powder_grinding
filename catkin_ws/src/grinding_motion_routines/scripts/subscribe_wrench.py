@@ -4,7 +4,10 @@ import rospy
 import tf
 import numpy as np
 from geometry_msgs.msg import WrenchStamped, Point
-from kek_routines.srv import PositionCalibrateVector, PositionCalibrateVectorResponse
+from grinding_motion_routines.srv import (
+    PositionCalibrateVector,
+    PositionCalibrateVectorResponse,
+)
 
 # Global variables
 is_recording = False

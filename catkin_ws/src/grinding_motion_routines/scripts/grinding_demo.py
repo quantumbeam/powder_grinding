@@ -27,7 +27,12 @@ except:  # For Python 2 compatibility
 import roslib.packages
 
 
-from kek_routines import moveit_interface, motion_routines, marker_display, tf_publisher
+from grinding_motion_routines import (
+    moveit_interface,
+    motion_routines,
+    marker_display,
+    tf_publisher,
+)
 from kek_vision.srv import PowderPos
 
 

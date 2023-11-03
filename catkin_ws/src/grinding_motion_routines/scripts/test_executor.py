@@ -3,9 +3,9 @@
 # ROS-related imports
 import rospy
 
-from kek_routines.motion_generator import MotionGenerator
-from kek_routines.JCT_executor import JointTrajectoryControllerExecutor
-from kek_routines.moveit_executor import MoveitExecutor
+from grinding_motion_routines.motion_generator import MotionGenerator
+from grinding_motion_routines.JCT_executor import JointTrajectoryControllerExecutor
+from grinding_motion_routines.moveit_executor import MoveitExecutor
 
 from numpy import pi
 

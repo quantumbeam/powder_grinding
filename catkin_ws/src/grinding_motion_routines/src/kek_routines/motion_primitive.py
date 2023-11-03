@@ -3,8 +3,8 @@
 import rospy
 import tf.transformations as tf
 from scipy.spatial.transform import Rotation
-from kek_routines.moveit_executor import MoveitExecutor
-from kek_routines.JTC_executor import JointTrajectoryControllerExecutor
+from grinding_motion_routines.moveit_executor import MoveitExecutor
+from grinding_motion_routines.JTC_executor import JointTrajectoryControllerExecutor
 
 import numpy as np
 from numpy import pi

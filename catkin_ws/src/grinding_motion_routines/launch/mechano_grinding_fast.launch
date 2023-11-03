@@ -1,23 +1,23 @@
 <launch>
     <arg name="planning_scene_config"
-        default="$(find kek_routines)/config/UR_grinding_demo/planning_scene_config_sound_sensor.yaml" />
+        default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config_sound_sensor.yaml" />
     <arg name="motion_config"
-        default="$(find kek_routines)/config/UR_grinding_demo/motion_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR_grinding_demo/motion_config.yaml" />
     <arg name="move_config"
-        default="$(find kek_routines)/config/UR_grinding_demo/move_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR_grinding_demo/move_config.yaml" />
 
     <arg name="abs_force" default="false" />
     <arg name="rosbag_record" default="false" />
-    <arg name="rosbag_name" default="$(find kek_routines)/bag/" />
+    <arg name="rosbag_name" default="$(find grinding_motion_routines)/bag/" />
 
-    <node name="mechano_grinding" pkg="kek_routines" type="mechano_grinding_fast.py" output="screen">
+    <node name="mechano_grinding" pkg="grinding_motion_routines" type="mechano_grinding_fast.py" output="screen">
         <rosparam command="load" file="$(arg planning_scene_config)" />
         <rosparam command="load" file="$(arg motion_config)" />
         <rosparam command="load" file="$(arg move_config)" />
     </node>
 
     <group if="$(arg abs_force)">
-        <node name="abs_force_pub" pkg="kek_routines" type="abs_force_publisher.py" output="screen" />
+        <node name="abs_force_pub" pkg="grinding_motion_routines" type="abs_force_publisher.py" output="screen" />
     </group>
 
     <group if="$(arg rosbag_record)">
