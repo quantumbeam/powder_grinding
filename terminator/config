@@ -402,14 +402,14 @@
       order = 0
       profile = default
       title = UR_moveit
-      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} kek_moveit_config ur5e_moveit_planning_execution.launch
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ur5e_moveit_config ur5e_moveit_planning_execution.launch
     [[[terminal18]]]
       type = Terminal
       parent = child16
       order = 1
       profile = default
       title = UR_RViz
-      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} kek_moveit_config moveit_rviz.launch
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ur5e_moveit_config moveit_rviz.launch
     [[[terminal20]]]
       type = Terminal
       parent = child19
