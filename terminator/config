@@ -402,7 +402,7 @@
       order = 0
       profile = default
       title = UR_moveit
-      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ur5e_moveit_config ur5e_moveit_planning_execution.launch
+      command = sh ./RUN-DOCKER-CONTAINER.sh ${USER} ur5e_moveit_config moveit_planning_execution.launch
     [[[terminal18]]]
       type = Terminal
       parent = child16
