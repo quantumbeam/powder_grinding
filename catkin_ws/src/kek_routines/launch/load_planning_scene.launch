@@ -1,6 +1,6 @@
 <launch>
     <arg name="planning_scene_config"
-        default="/root/ocla/catkin_ws/src/kek_routines/config/UR_grinding_demo/planning_scene_config_sound_sensor.yaml" />
+        default="$(find kek_routines)/config/UR_grinding_demo/planning_scene_config_sound_sensor.yaml" />
 
     <node name="loading_planning_scene" pkg="kek_routines" type="load_planning_scene.py"
         output="screen">

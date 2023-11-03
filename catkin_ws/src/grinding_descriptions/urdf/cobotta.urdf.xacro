@@ -29,5 +29,5 @@
     <xacro:cobotta_macro joint="joint_4" parent="J3" child="J4" joint_type="revolute" origin_xyz="-0.012 0.02 -0.345" axis="0 0 1" lower="-2.96705972839036" upper="2.96705972839036" file_path="package://denso_descr/stdcb_description/J4.stl"/>
     <xacro:cobotta_macro joint="joint_5" parent="J4" child="J5" joint_type="revolute" origin_xyz="0 -0.02 0.52225" axis="0 1 0" lower="-1.65806278939461" upper="2.35619449019234" file_path="package://denso_descr/stdcb_description/J5.stl"/>
     <xacro:cobotta_macro joint="joint_6" parent="J5" child="J6" joint_type="revolute" origin_xyz="0 -0.0445 0.042" axis="0 0 1" lower="-2.96705972839036" upper="2.96705972839036" file_path="package://denso_descr/stdcb_description/J6.stl"/>
-    <xacro:cobotta_macro joint="joint_pestle" parent="J6" child="pestle" joint_type="fixed" origin_xyz="0 0 0" axis="0 0 0" upper="0" lower="0" file_path="package://kek_scene_description/mesh/jig_pestle_170.stl"/>
+    <xacro:cobotta_macro joint="joint_pestle" parent="J6" child="pestle" joint_type="fixed" origin_xyz="0 0 0" axis="0 0 0" upper="0" lower="0" file_path="package://grinding_descriptions/mesh/jig_pestle_170.stl"/>
 </robot>

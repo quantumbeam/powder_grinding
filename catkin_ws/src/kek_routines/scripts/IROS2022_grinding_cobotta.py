@@ -505,7 +505,7 @@ def main():
     motion_routines_class.go_to_pose(init_pose, vel_scale=0.5, acc_scale=0.5)
 
     ################### init planning scene ###################
-    work_mesh_dir = roslib.packages.get_pkg_dir("kek_scene_description") + "/mesh/"
+    work_mesh_dir = roslib.packages.get_pkg_dir("grinding_descriptions") + "/mesh/"
     mortar_pose = geometry_msgs.msg.PoseStamped()
     mortar_pose.header.frame_id = motion_routines_class.planning_frame
     mortar_pose.pose.position = MORTAR_POS

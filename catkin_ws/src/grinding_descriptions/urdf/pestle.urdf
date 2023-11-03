@@ -12,7 +12,7 @@
   <link name="pestle_link">
     <visual>
       <geometry>
-        <mesh filename="package://kek_scene_description/mesh/jig_pestle_140.stl"/>
+        <mesh filename="package://grinding_descriptions/mesh/jig_pestle_140.stl"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>

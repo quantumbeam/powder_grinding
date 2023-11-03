@@ -1,5 +1,5 @@
 <launch>
-  <arg name="model" default="$(find kek_scene_description)/urdf/pestle.urdf"/>
+  <arg name="model" default="$(find grinding_descriptions)/urdf/pestle.urdf"/>
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" />
   <arg name="jig" default="false" />
@@ -11,7 +11,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
-  <!-- <node name="mocap_tf_broadcaster" pkg="kek_scene_description" type="breadcast_mocap_pose_to_tf.py" /> -->
+  <!-- <node name="mocap_tf_broadcaster" pkg="grinding_descriptions" type="breadcast_mocap_pose_to_tf.py" /> -->
     <!-- <param name="used_jig" value="$(arg jig)"/> -->
   <!-- </node> -->
 </launch>

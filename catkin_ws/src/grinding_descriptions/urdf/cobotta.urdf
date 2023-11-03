@@ -110,7 +110,7 @@
   <link name="pestle">
     <visual>
       <geometry>
-        <mesh filename="package://kek_scene_description/mesh/jig_pestle_170.stl"/>
+        <mesh filename="package://grinding_descriptions/mesh/jig_pestle_170.stl"/>
       </geometry>
     </visual>
   </link>

@@ -16,7 +16,7 @@ class PlanningScene:
 
     def init_planning_scene(self):
         mortar_mesh_file_path = (
-            roslib.packages.get_pkg_dir("kek_scene_description")
+            roslib.packages.get_pkg_dir("grinding_descriptions")
             + "/mesh/Rviz/mortar_40mm.stl"
         )
         table_pos = rospy.get_param("~table_position")

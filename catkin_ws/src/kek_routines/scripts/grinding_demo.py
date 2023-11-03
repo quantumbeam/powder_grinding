@@ -132,7 +132,7 @@ def execute_circular_gathering(motion_routines_class, eef_link, execute=True):
 
 
 def init_planning_scene(motion_routines_class):
-    work_mesh_dir = roslib.packages.get_pkg_dir("kek_scene_description") + "/mesh/"
+    work_mesh_dir = roslib.packages.get_pkg_dir("grinding_descriptions") + "/mesh/"
     table_pos = rospy.get_param("~table_position")
     table_scale = rospy.get_param("~table_scale")
     mortar_pos = rospy.get_param("~mortar_position")

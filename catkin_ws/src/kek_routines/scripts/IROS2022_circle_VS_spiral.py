@@ -109,7 +109,7 @@ def main():
     cobotta_motion.go_to_pose(init_pose, vel_scale=0.5, acc_scale=0.5)
 
     ################### init planning scene ###################
-    work_mesh_dir = roslib.packages.get_pkg_dir("kek_scene_description") + "/mesh/"
+    work_mesh_dir = roslib.packages.get_pkg_dir("grinding_descriptions") + "/mesh/"
 
     #### add mortar in RViz
     mortar_pose = geometry_msgs.msg.PoseStamped()

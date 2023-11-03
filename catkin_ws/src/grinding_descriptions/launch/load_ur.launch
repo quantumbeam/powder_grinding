@@ -31,7 +31,7 @@
        to load it onto the parameter server.
   -->
   <param name="robot_description"
-    command="$(find xacro)/xacro '$(find kek_scene_description)/urdf/ur.xacro'
+    command="$(find xacro)/xacro '$(find grinding_descriptions)/urdf/ur.xacro'
     joint_limit_params:=$(arg joint_limit_params)
     kinematics_params:=$(arg kinematics_params)
     physical_params:=$(arg physical_params)

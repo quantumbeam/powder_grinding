@@ -25,7 +25,7 @@
           However, users MUST NOT rely on these properties, their contents or
           their names.
 
-          This macro is NOT part of the public API of the kek_scene_description pkg,
+          This macro is NOT part of the public API of the grinding_descriptions pkg,
           and as such should be considered to be for internal use only.
   -->
   <xacro:macro name="read_model_data"

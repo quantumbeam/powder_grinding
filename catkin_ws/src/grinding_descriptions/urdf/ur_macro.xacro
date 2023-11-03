@@ -51,8 +51,8 @@
      - Muhammad Asif Rana
   -->
 
-  <xacro:include filename="$(find kek_scene_description)/urdf/inc/ur_transmissions.xacro" />
-  <xacro:include filename="$(find kek_scene_description)/urdf/inc/ur_common.xacro" />
+  <xacro:include filename="$(find grinding_descriptions)/urdf/inc/ur_transmissions.xacro" />
+  <xacro:include filename="$(find grinding_descriptions)/urdf/inc/ur_common.xacro" />
 
   <xacro:macro name="ur_robot"
     params="
@@ -232,13 +232,13 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://kek_scene_description/mesh/pestle_for_UR5e_without_spatula.stl" />
+          <mesh filename="package://grinding_descriptions/mesh/pestle_for_UR5e_without_spatula.stl" />
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://kek_scene_description/mesh/collision_jig_for_UR5e.stl" />
+          <mesh filename="package://grinding_descriptions/mesh/collision_jig_for_UR5e.stl" />
         </geometry>
       </collision>
     </link>
@@ -255,14 +255,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <!-- <mesh filename="package://kek_scene_description/mesh/jig_spatula.stl"/> -->
-          <mesh filename="package://kek_scene_description/mesh/spatula_short_for_Rviz.stl" />
+          <!-- <mesh filename="package://grinding_descriptions/mesh/jig_spatula.stl"/> -->
+          <mesh filename="package://grinding_descriptions/mesh/spatula_short_for_Rviz.stl" />
         </geometry>
       </visual>
       <!-- <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://kek_scene_description/mesh/jig_spatula.stl"/>
+          <mesh filename="package://grinding_descriptions/mesh/jig_spatula.stl"/>
         </geometry>
       </collision> -->
     </link>

@@ -1,5 +1,5 @@
 <robot name="pestle"  xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:property name="stl_file_path" value="package://kek_scene_description/mesh/jig_pestle_140.stl" />
+  <xacro:property name="stl_file_path" value="package://grinding_descriptions/mesh/jig_pestle_140.stl" />
   
   <link name="base_link"/>
   

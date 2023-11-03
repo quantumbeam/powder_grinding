@@ -17,6 +17,6 @@
 
     Refer to 'inc/ur_macro.xacro' for more information.
   -->
-  <xacro:include filename="$(find kek_scene_description)/urdf/inc/ur5e_macro.xacro" />
+  <xacro:include filename="$(find grinding_descriptions)/urdf/inc/ur5e_macro.xacro" />
   <xacro:ur5e_robot prefix="" />
 </robot>
