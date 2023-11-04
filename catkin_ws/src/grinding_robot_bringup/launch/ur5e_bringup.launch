@@ -55,22 +55,36 @@
 
   <!-- run the real robot or simulator (gazebo) -->
   <group if="$(arg sim)">
-    <include file="$(find ur_gazebo)/launch/ur5e_bringup.launch" />
+    <include file="$(find ur_gazebo)/launch/ur5e_bringup.launch" pass_all_args="true">
+      <arg name="joint_limit_params"
+        default="$(find grinding_descriptions)/config/ur5e/joint_limits.yaml" />
+      <arg name="kinematics_params" default="$(arg kinematics_config)" />
+      <arg name="physical_params"
+        default="$(find grinding_descriptions)/config/ur5e/physical_parameters.yaml" />
+      <arg name="visual_params"
+        default="$(find grinding_descriptions)/config/ur5e/visual_parameters.yaml" />
+      <arg name="controller_config_file" default="$(find ur_gazebo)/config/ur5e_controllers.yaml" />
+      <arg name="controllers"
+        default="joint_state_controller scaled_pos_joint_traj_controller speed_scaling_state_controller force_torque_sensor_controller robot_status_controller" />
+      <arg name="stopped_controllers" default="pos_joint_traj_controller joint_group_vel_controller" />
+
+    </include>
   </group>
   <group unless="$(arg sim)">
     <include file="$(find ur_robot_driver)/launch/ur_common.launch" pass_all_args="true" />
   </group>
 
   <!-- Remap follow_joint_trajectory -->
-  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/eff_joint_traj_controller/follow_joint_trajectory"/>
+  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory"
+    to="/eff_joint_traj_controller/follow_joint_trajectory" />
   <!-- Launch moveit -->
   <include file="$(find ur5e_moveit_config)/launch/move_group.launch">
     <arg name="debug" default="$(arg debug)" />
   </include>
 
   <!-- run rviz -->
-  <include file="$(find ur5e_moveit_config)/launch/moveit_rviz.launch" >
-      <param name="config" value="true"/>
+  <include file="$(find ur5e_moveit_config)/launch/moveit_rviz.launch">
+    <param name="config" value="true" />
   </include>
 
 </launch>
