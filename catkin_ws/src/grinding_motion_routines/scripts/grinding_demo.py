@@ -91,17 +91,17 @@ def compute_scooping_waypoints(motion_generator):
 def exit_process(msg=""):
     if msg != "":
         rospy.loginfo(msg)
-    rospy.loginfo("Exit mechano grinding")
+    rospy.loginfo("Exit grinding demo")
     rospy.signal_shutdown("finish")
     rospy.spin()
     exit()
 
 
-def command_to_execute(cmd):
+def input_command(msg):
+    msg = msg + "\n execute = 'y', canncel = other\n"
+    cmd = input(msg)
     if cmd == "y":
         return True
-    elif cmd == "s":
-        return False
     else:
         return None
 
@@ -184,21 +184,15 @@ def main():
                 )
 
             elif motion_command == "g":
-                key = input(
-                    "Start grinding demo.\n execute = 'y', step by step = 's', canncel = other\n"
-                )
-                if command_to_execute(key) != None:
+                if input_command("Start grinding demo.") != None:
                     moveit.execute_cartesian_path_by_waypoints(
                         compute_grinding_waypoints(motion_gen),
                         ee_link=grinding_ee_link,
-                        vel_scale=0.8,
-                        acc_scale=0.8,
+                        vel_scale=1,
+                        acc_scale=1,
                     )
             elif motion_command == "G":
-                key = input(
-                    "Start circular gathering demo.\n execute = 'y', step by step = 's',  canncel = other\n"
-                )
-                if command_to_execute(key) != None:
+                if input_command("Start gathering demo.") != None:
                     moveit.execute_cartesian_path_by_waypoints(
                         compute_gathering_waypoints(motion_gen),
                         ee_link=gathering_ee_link,
