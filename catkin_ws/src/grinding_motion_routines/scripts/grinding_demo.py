@@ -123,7 +123,7 @@ def main():
     move_group_name = rospy.get_param("~move_group_name")
     grinding_ee_link = rospy.get_param("~grinding_eef_link")
     gathering_ee_link = rospy.get_param("~gathering_eef_link")
-    scooping_ee_link = rospy.get_param("~scooping_eef_link")
+    # scooping_ee_link = rospy.get_param("~scooping_eef_link")
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
     ################### motion primitive ###################
