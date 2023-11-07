@@ -14,8 +14,8 @@ class MotionGenerator:
     def __init__(self, mortar_base_position, moratr_hight, mortar_inner_scale):
         """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_scale [x:,y:,z:], 'float' moratr_hight"""
 
-        self.mortar_center_position = mortar_base_position.copy()
-        self.mortar_center_position["z"] += moratr_hight
+        self.mortar_top_center_position = mortar_base_position.copy()
+        self.mortar_top_center_position["z"] += moratr_hight
 
         self.mortar_inner_scale = mortar_inner_scale
 
@@ -159,7 +159,7 @@ class MotionGenerator:
         return x, y
 
     def update_mortar_position(self, pos):
-        self.mortar_center_position = pos
+        self.mortar_top_center_position = pos
 
     def create_circular_waypoints(
         self,
@@ -242,9 +242,9 @@ class MotionGenerator:
         # shift to work pos
         shifted_position = np.array(
             [
-                position[0] + self.mortar_center_position["x"],
-                position[1] + self.mortar_center_position["y"],
-                position[2] + self.mortar_center_position["z"],
+                position[0] + self.mortar_top_center_position["x"],
+                position[1] + self.mortar_top_center_position["y"],
+                position[2] + self.mortar_top_center_position["z"],
             ]
         )
 
@@ -328,9 +328,9 @@ class MotionGenerator:
         # shift to work pos
         shifted_position = np.array(
             [
-                position[0] + self.mortar_center_position["x"],
-                position[1] + self.mortar_center_position["y"],
-                position[2] + self.mortar_center_position["z"],
+                position[0] + self.mortar_top_center_position["x"],
+                position[1] + self.mortar_top_center_position["y"],
+                position[2] + self.mortar_top_center_position["z"],
             ]
         )
 
@@ -426,9 +426,9 @@ class MotionGenerator:
             # shift to work pos
             shifted_position = np.array(
                 [
-                    position[0] + self.mortar_center_position["x"],
-                    position[1] + self.mortar_center_position["y"],
-                    position[2] + self.mortar_center_position["z"],
+                    position[0] + self.mortar_top_center_position["x"],
+                    position[1] + self.mortar_top_center_position["y"],
+                    position[2] + self.mortar_top_center_position["z"],
                 ]
             )
 
