@@ -13,15 +13,15 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh
-					filename="package://denso_robot_descriptions/cobotta_description/base_link.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl"
+					scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh
-					filename="package://denso_robot_descriptions/cobotta_description/base_link.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl"
+					scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -34,13 +34,13 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J1.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J1.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J1.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J1.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -52,19 +52,18 @@
 	<joint name="joint_1" type="revolute">
 		<parent link="base_link" />
 		<child link="J1" />
-		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
+		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.108000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
-		<limit effort="1" lower="-2.61799387799149" upper="2.61799387799149"
-			velocity="0.383012504350156" />
+		<limit effort="1" lower="-2.617994" upper="2.617994" velocity="0.383012504350156" />
 		<dynamics damping="0" friction="0" />
 	</joint>
 	<transmission name="trans_1">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint_1">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor_1">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
@@ -72,13 +71,13 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J2.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J2.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J2.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J2.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -90,19 +89,18 @@
 	<joint name="joint_2" type="revolute">
 		<parent link="J1" />
 		<child link="J2" />
-		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.180000" />
+		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.072000" />
 		<axis xyz="-0.000000 1.000000 -0.000000" />
-		<limit effort="1" lower="-1.0471975511966" upper="1.74532925199433"
-			velocity="0.37256670877697" />
+		<limit effort="1" lower="-1.047198" upper="1.745329" velocity="0.37256670877697" />
 		<dynamics damping="0" friction="0" />
 	</joint>
 	<transmission name="trans_2">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint_2">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor_2">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
@@ -110,13 +108,13 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J3.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J3.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J3.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J3.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -130,17 +128,16 @@
 		<child link="J3" />
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.165000" />
 		<axis xyz="-0.000000 1.000000 -0.000000" />
-		<limit effort="1" lower="0.314159265358979" upper="2.44346095279206"
-			velocity="0.68942250783028" />
+		<limit effort="1" lower="0.3141593" upper="2.443461" velocity="0.68942250783028" />
 		<dynamics damping="0" friction="0" />
 	</joint>
 	<transmission name="trans_3">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint_3">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor_3">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
@@ -148,13 +145,13 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J4.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J4.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J4.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J4.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -166,19 +163,18 @@
 	<joint name="joint_4" type="revolute">
 		<parent link="J3" />
 		<child link="J4" />
-		<origin rpy="0.000000 0.000000 0.000000" xyz="-0.012000 0.020000 -0.345000" />
+		<origin rpy="0.000000 0.000000 0.000000" xyz="-0.012000 0.020000 0.088000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
-		<limit effort="1" lower="-2.96705972839036" upper="2.96705972839036"
-			velocity="0.702189591308619" />
+		<limit effort="1" lower="-2.96706" upper="2.96706" velocity="0.702189591308619" />
 		<dynamics damping="0" friction="0" />
 	</joint>
 	<transmission name="trans_4">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint_4">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor_4">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
@@ -186,13 +182,13 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J5.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J5.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J5.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J5.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -204,19 +200,18 @@
 	<joint name="joint_5" type="revolute">
 		<parent link="J4" />
 		<child link="J5" />
-		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.020000 0.522500" />
+		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.020000 0.089500" />
 		<axis xyz="-0.000000 1.000000 -0.000000" />
-		<limit effort="1" lower="-1.65806278939461" upper="2.35619449019234"
-			velocity="0.702189591308619" />
+		<limit effort="1" lower="-1.658063" upper="2.356194" velocity="0.702189591308619" />
 		<dynamics damping="0" friction="0" />
 	</joint>
 	<transmission name="trans_5">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint_5">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor_5">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
@@ -224,13 +219,13 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J6.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J6.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://denso_robot_descriptions/cobotta_description/J6.stl" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/J6.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
 		<inertial>
@@ -244,79 +239,17 @@
 		<child link="J6" />
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.044500 0.042000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
-		<limit effort="1" lower="-2.96705972839036" upper="2.96705972839036"
-			velocity="1.05386470893922" />
+		<limit effort="1" lower="-2.96706" upper="2.96706" velocity="1.05386470893922" />
 		<dynamics damping="0" friction="0" />
 	</joint>
 	<transmission name="trans_6">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="joint_6">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor_6">
-			<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-
-	<!-- Add end effector model -->
-	<link name="spatula">
-		<visual>
-			<geometry>
-				<mesh filename="package://grinding_descriptions/mesh/cobotta/jig_spatula.stl" />
-			</geometry>
-		</visual>
-	</link>
-	<joint name="joint_spatula" type="fixed">
-		<!-- 実際はグリッパの厚みでzが-0.036されるので注意 -->
-		<!-- zはグリッパ考慮して最大0.07まではいけそう -->
-		<origin rpy="0 0 -1.57079632679" xyz="0 -0.026 0.049" />
-		<parent link="J6" />
-		<child link="spatula" />
-	</joint>
-
-	<link name="spatula_tip">
-		<visual>
-			<geometry>
-				<box size="0 0 0" />
-			</geometry>
-		</visual>
-	</link>
-	<joint name="joint_spatula_tip" type="fixed">
-		<!-- 治具で0.06+ゴムベラ0.03 -->
-		<origin rpy="-1.57079632679 0 -1.57079632679" xyz="0.09 0 0" />
-		<parent link="spatula" />
-		<child link="spatula_tip" />
-	</joint>
-
-
-	<link name="pestle">
-		<visual>
-			<geometry>
-				<mesh filename="package://grinding_descriptions/mesh/cobotta/jig_pestle_140.stl" />
-			</geometry>
-		</visual>
-	</link>
-	<joint name="joint_pestle" type="fixed">
-		<origin rpy="0 0 0" xyz="0 0 0" />
-		<parent link="J6" />
-		<child link="pestle" />
-	</joint>
-
-	<link name="pestle_tip">
-		<visual>
-			<geometry>
-				<box size="0 0 0" />
-			</geometry>
-		</visual>
-	</link>
-	<joint name="joint_pestle_tip" type="fixed">
-		<!-- for pestle -->
-		<origin rpy="0 0 0" xyz="0 0 0.160" />
-		<parent link="pestle" />
-		<child link="pestle_tip" />
-	</joint>
-
 </robot>
-
-	
