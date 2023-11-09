@@ -39,7 +39,7 @@ import motion_routines
 import marker_display
 import tf_publisher
 
-from kek_vision.srv import PowderPos
+from grinding_vision.srv import PowderPos
 
 from inputimeout import inputimeout, TimeoutOccurred
 
@@ -140,7 +140,7 @@ GATHERING_ACC_SCALE = 0.2
 
 # VF params
 RADIUS_THRESHOLD_OF_GATHERING = GRINDING_RADIUS_MAX
-debug_data_dir_path = "/root/ocla/catkin_ws/src/kek_vision/"
+debug_data_dir_path = "/root/ocla/catkin_ws/src/grinding_vision/"
 recursive_counts = 0
 # debug class
 my_marker = marker_display.MarkerDisplay("marker_pub")
@@ -484,14 +484,14 @@ def main():
     ):
         rospy.loginfo("Selected grinding and gathering with visual feedback")
         ###### init vision service
-        rospy.loginfo("Wait for kek_vision service")
+        rospy.loginfo("Wait for grinding_vision service")
         try:
             rospy.wait_for_service("/powder_pos", timeout=3.0)
             vision_server = rospy.ServiceProxy(
                 "/powder_pos", PowderPos, persistent=True
             )
         except ROSException:
-            rospy.logerr("timeout kek_vision service")
+            rospy.logerr("timeout grinding_vision service")
             time.sleep(1)
             exit()
 

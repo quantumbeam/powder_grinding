@@ -1,0 +1,6 @@
+string command
+float32 grinding_radius_max
+---
+float32 center_x
+float32 center_y
+float32 radius

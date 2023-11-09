@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- RealSense -->
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch" />
+
+  <!-- powder detector -->
+  <node name="powder_detector" pkg="grinding_vision" type="vision.py" output="screen">
+  </node>
+</launch>

@@ -6,7 +6,7 @@ import rospy
 from rospy.exceptions import ROSException
 from rospy.timer import sleep
 
-from kek_vision.srv import DiagonalPowderRadius
+from grinding_vision.srv import DiagonalPowderRadius
 from kek_sound.srv import GatheringFlagWithSound
 
 import time
@@ -496,7 +496,7 @@ def main():
             "/diagonal_vision", DiagonalPowderRadius, persistent=True
         )
     except ROSException:
-        rospy.logerr("timeout kek_vision service")
+        rospy.logerr("timeout grinding_vision service")
         exit()
 
     # rospy.loginfo("Wait for sound service")
