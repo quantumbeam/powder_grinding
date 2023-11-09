@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-compressed-image-transport ros-noetic-rqt* ros-noetic-rviz \
     ros-noetic-interactive-markers \
     ros-noetic-dynamixel-sdk \
+    ros-noetic-realsense2-camera \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
