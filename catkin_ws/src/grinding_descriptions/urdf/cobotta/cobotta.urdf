@@ -252,4 +252,63 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
+
+		<!-- Add end effector model -->
+	<link name="spatula">
+		<visual>
+			<geometry>
+				<mesh filename="package://grinding_descriptions/mesh/cobotta/jig_spatula.stl" />
+			</geometry>
+		</visual>
+	</link>
+	<joint name="joint_spatula" type="fixed">
+		<!-- 実際はグリッパの厚みでzが-0.036されるので注意 -->
+		<!-- zはグリッパ考慮して最大0.07まではいけそう -->
+		<origin rpy="0 0 -1.57079632679" xyz="0 -0.026 0.049" />
+		<parent link="J6" />
+		<child link="spatula" />
+	</joint>
+
+	<link name="spatula_tip">
+		<visual>
+			<geometry>
+				<box size="0 0 0" />
+			</geometry>
+		</visual>
+	</link>
+	<joint name="joint_spatula_tip" type="fixed">
+		<!-- 治具で0.06+ゴムベラ0.03 -->
+		<origin rpy="-1.57079632679 0 -1.57079632679" xyz="0.09 0 0" />
+		<parent link="spatula" />
+		<child link="spatula_tip" />
+	</joint>
+
+
+	<link name="pestle">
+		<visual>
+			<geometry>
+				<mesh filename="package://grinding_descriptions/mesh/cobotta/jig_pestle_140.stl" />
+			</geometry>
+		</visual>
+	</link>
+	<joint name="joint_pestle" type="fixed">
+		<origin rpy="0 0 0" xyz="0 0 0" />
+		<parent link="J6" />
+		<child link="pestle" />
+	</joint>
+
+	<link name="pestle_tip">
+		<visual>
+			<geometry>
+				<box size="0 0 0" />
+			</geometry>
+		</visual>
+	</link>
+	<joint name="joint_pestle_tip" type="fixed">
+		<!-- for pestle -->
+		<origin rpy="0 0 0" xyz="0 0 0.160" />
+		<parent link="pestle" />
+		<child link="pestle_tip" />
+	</joint>
+
 </robot>
