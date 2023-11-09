@@ -1,3 +1,8 @@
+## Known Issues
+- Cobotta description file(.dae) from [ROSConverter](https://wiki.ros.org/denso_robot_ros/ROSConverter) is not readable for Rviz, but it's readable for blender.
+  - Reconverted .dae file by cobotta_description_converter.py, it's readable for Rviz.
+
+
 ## 概論：Rviz(gazebo)で物体を表示するには
 **参考**
 - [URDF1](https://qiita.com/srs/items/35bbaadd6c4be1e39bb9)
