@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-interactive-markers \
     ros-noetic-dynamixel-sdk \
     ros-noetic-realsense2-camera \
+    ros-noetic-realsense2-description \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
