@@ -8,8 +8,6 @@
     version: master}
 - git: {local-name: third_party/DENSO_ROS, uri: 'https://github.com/DENSORobot/denso_robot_ros.git',
 version: master}
-- git: {local-name: third_party/leptrino_force_torque, uri: 'https://github.com/hiveground-ros-package/leptrino_force_torque.git',
-version: ROS1}
 - git: {local-name: third_party/universal_robot_moveit_and_gazebo, uri: 'https://github.com/ros-industrial/universal_robot.git',
 version: noetic-devel}
 
