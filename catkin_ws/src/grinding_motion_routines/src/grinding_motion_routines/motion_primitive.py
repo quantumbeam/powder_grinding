@@ -13,19 +13,13 @@ from numpy import pi
 class MotionPrimitive:
     def __init__(
         self,
-        start_joint_angle,
-        grinding_ready_joint_angle,
-        gathering_ready_joint_angle,
-        scooping_ready_joint_angle,
+        init_pose,
         ns=None,
         move_group_name="manipulator",
         ee_link="pestle_tip",
         robot_urdf="ur5e",
     ):
-        self.start_joint_angle = start_joint_angle
-        self.grinding_ready_joint_angle = grinding_ready_joint_angle
-        self.gathering_ready_joint_angle = gathering_ready_joint_angle
-        self.scooping_ready_joint_angle = scooping_ready_joint_angle
+        self.init_pose = init_pose
         self.moveit_executor = MoveitExecutor(move_group_name, ee_link)
         self.JTC_executor = JointTrajectoryControllerExecutor(
             ns=ns, robot_urdf=robot_urdf, tcp_link=ee_link
@@ -53,14 +47,9 @@ class MotionPrimitive:
         post_motion=True,
     ):
         if pre_motion:
-            self.moveit_executor.execute_to_joint_goal(
-                self.start_joint_angle,
-                vel_scale=moving_velocity_scale,
-                acc_scale=moving_acceleration_scale,
-                execute=True,
-            )
-            self.moveit_executor.execute_to_joint_goal(
-                self.grinding_ready_joint_angle,
+            self.moveit_executor.execute_to_goal_pose(
+                self.init_pose,
+                ee_link=ee_link,
                 vel_scale=moving_velocity_scale,
                 acc_scale=moving_acceleration_scale,
                 execute=True,
@@ -85,8 +74,9 @@ class MotionPrimitive:
                 ee_link=ee_link,
                 time_to_reach=3,
             )
-            self.moveit_executor.execute_to_joint_goal(
-                self.start_joint_angle,
+            self.moveit_executor.execute_to_goal_pose(
+                self.init_pose,
+                ee_link=ee_link,
                 vel_scale=moving_velocity_scale,
                 acc_scale=moving_acceleration_scale,
                 execute=True,
@@ -101,8 +91,9 @@ class MotionPrimitive:
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
     ):
-        self.moveit_executor.execute_to_joint_goal(
-            self.gathering_ready_joint_angle,
+        self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
+            ee_link=ee_link,
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
@@ -126,15 +117,9 @@ class MotionPrimitive:
                 acc_scale=grinding_acceleration_scale,
                 avoid_collisions=False,
             )
-            self.moveit_executor.execute_to_joint_goal(
-                self.gathering_ready_joint_angle,
-                vel_scale=moving_velocity_scale,
-                acc_scale=moving_acceleration_scale,
-                execute=True,
-            )
-
-        self.moveit_executor.execute_to_joint_goal(
-            self.start_joint_angle,
+        self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
+            ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
@@ -151,8 +136,9 @@ class MotionPrimitive:
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
     ):
-        self.moveit_executor.execute_to_joint_goal(
-            self.scooping_ready_joint_angle,
+        self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
+            ee_link=ee_link,
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
@@ -176,8 +162,9 @@ class MotionPrimitive:
                 acc_scale=moving_acceleration_scale,
                 avoid_collisions=False,
             )
-        self.moveit_executor.execute_to_joint_goal(
-            self.start_joint_angle,
+        self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
+            ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
@@ -195,8 +182,9 @@ class MotionPrimitive:
         moving_acceleration_scale=0.2,
         number_of_motion_steps=10,
     ):
-        self.moveit_executor.execute_to_joint_goal(
-            self.start_joint_angle,
+        self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
+            ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
@@ -240,8 +228,9 @@ class MotionPrimitive:
             acc_scale=moving_acceleration_scale,
         )
 
-        self.moveit_executor.execute_to_joint_goal(
-            self.start_joint_angle,
+        self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
+            ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,

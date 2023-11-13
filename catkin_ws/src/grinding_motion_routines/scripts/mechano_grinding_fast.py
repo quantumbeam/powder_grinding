@@ -8,6 +8,8 @@ import time
 from inputimeout import inputimeout, TimeoutOccurred
 
 from math import pi, tau, dist, fabs, cos, sin, sqrt
+import copy
+from scipy.spatial.transform import Rotation
 
 from grinding_motion_routines import (
     motion_generator,
@@ -128,25 +130,25 @@ def main():
     scooping_ee_link = rospy.get_param("~scooping_eef_link")
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
+    ################### init pose ###################
+    rospy.loginfo("goto init pose")
+    init_pos = copy.deepcopy(mortar_base_pos)
+    init_pos["z"] += 0.1
+    r = Rotation.from_euler("xyz", [pi, 0, pi], degrees=False)
+    quat = r.as_quat()
+    init_pose = list(init_pos.values()) + list(quat)
+    print(init_pose)
+    moveit.execute_to_goal_pose(init_pose, vel_scale=0.5, acc_scale=0.5)
+    print("init_pose", init_pose)
+
     ################### motion primitive ###################
-    start_joint_angle = rospy.get_param("~start_joint_angles")
-    grinding_ready_joint_angle = rospy.get_param("~grinding_ready_joint_angles")
-    gathering_ready_joint_angle = rospy.get_param("~gathering_ready_joint_angles")
-    scooping_ready_joint_angle = rospy.get_param("~scooping_ready_joint_angles")
     primitive = motion_primitive.MotionPrimitive(
-        start_joint_angle,
-        grinding_ready_joint_angle,
-        gathering_ready_joint_angle,
-        scooping_ready_joint_angle,
+        init_pose=init_pose,
     )
 
     ################### init planning scene ###################
     planning_scene = load_planning_scene.PlanningScene(moveit.move_group)
     planning_scene.init_planning_scene()
-
-    ################### init pose ###################
-    rospy.loginfo("goto init pose")
-    moveit.execute_to_joint_goal(start_joint_angle, vel_scale=0.1, acc_scale=0.1)
 
     grinding_sec = rospy.get_param("~grinding_sec_per_rotation") * rospy.get_param(
         "~grinding_number_of_rotation"
