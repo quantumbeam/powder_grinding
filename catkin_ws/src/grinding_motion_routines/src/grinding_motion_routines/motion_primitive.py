@@ -138,11 +138,28 @@ class MotionPrimitive:
     ):
         self.moveit_executor.execute_to_goal_pose(
             self.init_pose,
-            ee_link=ee_link,
+            ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
         )
+        scooping_ready_pose = self.moveit_executor.move_group.get_current_pose(
+            "pestle_tip"
+        )
+        scooping_ready_pose = self._pose_stamped_to_list(scooping_ready_pose)
+        r = Rotation.from_quat(scooping_ready_pose[3:])
+        r = r * Rotation.from_euler(
+            "xyz", [0, 0, pi + pi / 16]
+        )  # pi rotation has half probability to be clockwise or counterclockwise, so we add pi/16 to make it more likely to be counterclockwise
+        scooping_ready_pose[3:] = r.as_quat()
+        self.moveit_executor.execute_to_goal_pose(
+            scooping_ready_pose,
+            ee_link="pestle_tip",
+            vel_scale=moving_velocity_scale,
+            acc_scale=moving_acceleration_scale,
+            execute=True,
+        )
+
         success = self.moveit_executor.execute_cartesian_path_by_waypoints(
             waypoints=waypoints,
             jump_threshold=0.0,
@@ -162,6 +179,13 @@ class MotionPrimitive:
                 acc_scale=moving_acceleration_scale,
                 avoid_collisions=False,
             )
+        self.moveit_executor.execute_to_goal_pose(
+            scooping_ready_pose,
+            ee_link="pestle_tip",
+            vel_scale=moving_velocity_scale,
+            acc_scale=moving_acceleration_scale,
+            execute=True,
+        )
         self.moveit_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link="pestle_tip",
