@@ -118,7 +118,7 @@ def main():
     mortar_base_pos = rospy.get_param("~mortar_position")
     mortar_high = rospy.get_param("~mortar_hight")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
-    pouring_to_funnel_position = rospy.get_param("~pouring_to_funnel_position")
+    funnel_position = rospy.get_param("~funnel_position")
     motion_gen = motion_generator.MotionGenerator(
         mortar_base_pos, mortar_high, mortar_inner_scale
     )
@@ -232,9 +232,7 @@ def main():
                     "Start powder pouring demo at current position.\n execute = 'y', step by step = 's',  canncel = other\n"
                 )
                 if command_to_execute(key) != None:
-                    primitive.execute_powder_pouring(
-                        pouring_to_funnel_position.values()
-                    )
+                    primitive.execute_powder_pouring(funnel_position.values())
             elif motion_command == "all":
                 key = input(
                     "Start demo of grinding, gathering, scooring and pouring.\n execute = 'y', step by step = 's',  canncel = other\n"
@@ -258,9 +256,7 @@ def main():
                         ee_link=gathering_ee_link,
                     )
                     primitive.execute_scooping(compute_scooping_waypoints(motion_gen))
-                    primitive.execute_powder_pouring(
-                        pouring_to_funnel_position.values()
-                    )
+                    primitive.execute_powder_pouring(funnel_position.values())
 
             elif motion_command == "Rg" or motion_command == "RGG":
                 motion_counts = 0

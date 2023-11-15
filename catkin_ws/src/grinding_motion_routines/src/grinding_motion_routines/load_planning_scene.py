@@ -23,18 +23,24 @@ class PlanningScene:
         table_scale = rospy.get_param("~table_scale")
         mortar_pos = rospy.get_param("~mortar_position")
         mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
+        funnel_pos = rospy.get_param("~funnel_position")
+        funnel_scale = rospy.get_param("~funnel_scale")
+        self.table_scale = table_scale
 
         self._add_table(table_scale, table_pos)
         self._add_mortar(mortar_mesh_file_path, mortar_pos)
-        if table_pos["z"]<mortar_pos["z"]:# mortar position is high than table
-            self._add_mortar_base(mortar_inner_scale, mortar_pos, table_pos, table_scale)
+        if table_pos["z"] < mortar_pos["z"]:  # mortar position is high than table
+            self._add_mortar_base(
+                mortar_inner_scale, mortar_pos, table_pos, table_scale
+            )
+        self._add_funnel(funnel_pos, funnel_scale)
 
     def _add_table(self, table_scale, table_pos):
         table_pose = geometry_msgs.msg.PoseStamped()
         table_pose.header.frame_id = self.planning_frame
         table_pose.pose.orientation.w = 1.0
         table_pose.pose.position.z = table_pos["z"]
-        table_pose.pose.position.z -= (table_scale["z"] / 2)
+        table_pose.pose.position.z -= table_scale["z"] / 2
         self.scene.add_box(
             "table",
             table_pose,
@@ -47,8 +53,8 @@ class PlanningScene:
         mortar_base_pose.pose.orientation.w = 1.0
         mortar_base_pose.pose.position.y = mortar_pos["x"]
         mortar_base_pose.pose.position.y = mortar_pos["y"]
-        base_hight=(mortar_pos["z"]-table_pos["z"])
-        mortar_base_pose.pose.position.z = table_pos["z"]+base_hight/2
+        base_hight = mortar_pos["z"] - table_pos["z"]
+        mortar_base_pose.pose.position.z = table_pos["z"] + base_hight / 2
         self.scene.add_box(
             "mortar_base",
             mortar_base_pose,
@@ -62,6 +68,21 @@ class PlanningScene:
         mortar_pose.pose.position.y = mortar_pos["y"]
         mortar_pose.pose.position.z = mortar_pos["z"]
         self.scene.add_mesh("mortar", mortar_pose, file_path)
+
+    def _add_funnel(self, funnel_pos, funnel_scale):
+        funnel_pose = geometry_msgs.msg.PoseStamped()
+        funnel_pose.header.frame_id = self.planning_frame
+        funnel_pose.pose.orientation.w = 1.0
+        funnel_pose.pose.position.x = funnel_pos["x"]
+        funnel_pose.pose.position.y = funnel_pos["y"]
+        funnel_pose.pose.position.z = self.table_scale["z"] / 2
+        print(funnel_scale)
+        self.scene.add_cylinder(
+            "funnel",
+            funnel_pose,
+            funnel_scale["z"],
+            funnel_scale["x"],
+        )
 
 
 if __name__ == "__main__":

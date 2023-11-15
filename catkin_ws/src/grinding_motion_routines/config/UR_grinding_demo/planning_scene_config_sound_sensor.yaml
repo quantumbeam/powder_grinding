@@ -7,4 +7,5 @@ mortar_position  :  {x:  0.39436323098562737, y: 0.3668537939641375, z: 0} # z >
 mortar_inner_scale:  {x:  0.04, y: 0.04, z: 0.035} # official infomation says 0.04 * 0.04 * 0.032 but z is more deep actually 
 mortar_hight: 0.038  # mortar bottom hight from robot base,this value is calibraited by hand (calibrated same hight between pestle tip and mortar top surface)
 
-pouring_to_funnel_position  :  {x:  0.06693, y: 0.323, z: 0.19}
+funnel_position  :  {x:  0.06693, y: 0.323, z: 0.19}
+funnel_scale  :  {x:  0.015, y: 0.015, z: 0.2}

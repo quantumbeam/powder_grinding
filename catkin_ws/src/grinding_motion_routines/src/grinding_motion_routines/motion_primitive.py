@@ -201,7 +201,8 @@ class MotionPrimitive:
         target_position,
         delta_euler=np.array([0, 0, pi / 3 * 2]),
         ee_link="spoon_tip",
-        pouring_time=5,
+        pouring_velocity_scale=0.5,
+        pouring_acceleration_scale=0.5,
         moving_velocity_scale=0.2,
         moving_acceleration_scale=0.2,
         number_of_motion_steps=10,
@@ -240,8 +241,8 @@ class MotionPrimitive:
         self.moveit_executor.execute_cartesian_path_by_waypoints(
             pose_list,
             ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
+            vel_scale=pouring_velocity_scale,
+            acc_scale=pouring_acceleration_scale,
         )
 
         # reverse pouring
