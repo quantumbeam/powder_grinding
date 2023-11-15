@@ -227,7 +227,7 @@
         <origin xyz="0.0 0.0 ${-0.5 * wrist_3_inertia_length}" rpy="0 0 0" />
       </xacro:cylinder_inertial>
     </link>
-    <!-- user (nakajima) added urdf for pestle -->
+    <!-- user (nakajima) added links -->
     <link name="pestle">
       <!-- 0.0001 means avoiding collision between pestle and wrist3 -->
       <visual>
@@ -304,6 +304,24 @@
           <box size="0 0 0" />
         </geometry>
       </visual>
+    </link>
+    
+    <link name="camera">
+      <!-- 0.0001 means avoiding collision between pestle and wrist3 -->
+      <visual>
+        <origin xyz="0 0 0.0001" rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://grinding_descriptions/mesh/Rviz/Intel_RealSense_Depth_Camera_D435_v3.stl" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0001" rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://grinding_descriptions/mesh/Rviz/Intel_RealSense_Depth_Camera_D435_v3.stl" />
+        </geometry>
+      </collision>
     </link>
 
     <!-- joints: main serial chain -->
@@ -407,19 +425,7 @@
       </xacro:if>
       <dynamics damping="0" friction="0" />
     </joint>
-    <!-- user (nakajima) added urdf for pestle -->
-    <joint name="joint_pestle" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <parent link="${prefix}wrist_3_link" />
-      <child link="pestle" />
-    </joint>
-    <joint name="joint_pestle_tip" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0.130" />
-      <parent link="pestle" />
-      <child link="pestle_tip" />
-    </joint>
-
-
+  
     <!-- ROS-Industrial 'base' frame: base_link to UR 'Base' Coordinates transform -->
     <link name="${prefix}base" />
     <joint name="${prefix}base_link-base_fixed_joint" type="fixed">
@@ -450,13 +456,35 @@
       <child link="${prefix}tool0" />
     </joint>
 
-    <!-- center of surface on spatula bearing -->
-    <!-- twist3はrevolteし解が定まらないのでfixedされているflangeのjointをparentにする -->
-    <!-- <joint name="joint_spatula" type="fixed">
-      <origin rpy="${pi/2} 0 0" xyz="0.013 -0.03655 0" />
+    <!-- User (nakajima) added tool frame -->
+    <link name="${prefix}tool1" />
+    <joint name="${prefix}flange-tool1" type="fixed">
+      <!-- default toolframe: X+ left, Y+ up, Z+ front -->
+      <origin xyz="0.0075 0 0.0432" rpy="0 0 ${pi/2.0}" />
       <parent link="${prefix}flange" />
-      <child link="spatula" />
-    </joint> -->
+      <child link="${prefix}tool1" />
+    </joint>
+    <link name="${prefix}tool2" />
+    <joint name="${prefix}flange-tool2" type="fixed">
+      <!-- default toolframe: X+ left, Y+ up, Z+ front -->
+      <origin xyz="0.0075 0 -0.0432" rpy="0 ${pi} ${pi/2.0}" />
+      <parent link="${prefix}flange" />
+      <child link="${prefix}tool2" />
+    </joint>
+
+    <!-- user (nakajima) added joints -->
+    <joint name="joint_pestle" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <parent link="${prefix}wrist_3_link" />
+      <child link="pestle" />
+    </joint>
+    <joint name="joint_pestle_tip" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0.130" />
+      <parent link="pestle" />
+      <child link="pestle_tip" />
+    </joint>
+    
+    <!-- center of surface on spatula bearing -->
     <joint name="joint_spatula" type="fixed">
       <origin rpy="0 ${-pi/2} 0" xyz="-0.03655 0 0.013" />
       <parent link="${prefix}wrist_3_link" />
@@ -475,11 +503,16 @@
       <child link="spoon" />
     </joint>
     <joint name="joint_spoon_tip" type="fixed">
-      <!-- <origin rpy="0 0 0" xyz="0.03 0 0.115" /> -->
       <origin rpy="0 0 0" xyz="0.02 0 0.115" />
 
       <parent link="spoon" />
       <child link="spoon_tip" />
+    </joint>
+
+    <joint name="joint_camera" type="fixed">
+      <origin rpy="0 0 ${-pi/2.0}" xyz="0 0.0605 0.03" />
+      <parent link="${prefix}tool2" />
+      <child link="camera" />
     </joint>
 
   </xacro:macro>
