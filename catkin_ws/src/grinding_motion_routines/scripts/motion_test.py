@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
 import rospy
+import copy
+from scipy.spatial.transform import Rotation
+import numpy as np
+
+from geometry_msgs.msg import PoseStamped, Pose
 from grinding_motion_routines import (
     motion_generator,
     moveit_executor,
@@ -14,27 +19,22 @@ from grinding_motion_routines import (
 
 def main():
     rospy.init_node("mechano_grinding", anonymous=True)
+    debug_tf = tf_publisher.TFPublisher()
+    pi = np.pi
 
-    moveit = moveit_executor.MoveitExecutor("arm", "pestle_tip")
-    current_pose = moveit.move_group.get_current_pose()
-    print(current_pose)
-    current_pose.pose.position.z += 0.03
-    pose_list = [
-        current_pose.pose.position.x,
-        current_pose.pose.position.y,
-        current_pose.pose.position.z,
-        current_pose.pose.orientation.x,
-        current_pose.pose.orientation.y,
-        current_pose.pose.orientation.z,
-        current_pose.pose.orientation.w,
-    ]
+    mortar_base_position = rospy.get_param("/loading_planning_scene/mortar_position")
 
-    pose_list = [0.15, 0.15, 0.05, -0.68332, 0.71787, -0.067482, 0.11482]
+    moveit = moveit_executor.MoveitExecutor("manipulator", "camera")
+    r = Rotation.from_euler("xyz", [pi, 0, pi / 2], degrees=False)
+    quat = r.as_quat()
+    mortar_base_pose = list(mortar_base_position.values()) + list(quat)
+
+    camera_view_pose = copy.deepcopy(mortar_base_pose)
+    camera_view_pose[2] += 0.2
+    debug_tf.broadcast_tf_with_pose(camera_view_pose, "base_link")
+
     moveit.execute_to_goal_pose(
-        pose_list,
-        ee_link="pestle_tip",
-        vel_scale=1,
-        acc_scale=1,
+        camera_view_pose, ee_link="camera", vel_scale=0.1, acc_scale=0.1, execute=True
     )
 
 
