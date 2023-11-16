@@ -1,9 +1,15 @@
 FROM osrf/ros:noetic-desktop-full
 LABEL maintainer="Nakajima<yusaku_nakajima@ap.eng.osaka-u.ac.jp>"
 
-# キーボード設定の選択を聞かれないようにする
-ARG DEBIAN_FRONTEND=noninteractive
+# Ignore keybourd layout seting
+ENV DEBIAN_FRONTEND=noninteractive
 
+# set timezone
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+RUN apt-get update \
+    && apt-get install -y git tzdata
+
+RUN date
 # Install apt packages
 RUN apt-get update && apt-get install -y \
     git \
@@ -14,6 +20,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     terminator \
     iputils-ping net-tools \
+    libglib2.0-0 \
+    libgl1-mesa-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

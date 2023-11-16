@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- yolo8 -->
+<arg name="yolo_model" default="yolov8n-seg.pt"/>
+<arg name="detection_topic" default="yolo8_detection_result"/>
+<arg name="image_topic" default="/camera/color/image_raw"/>
+<arg name="conf_thres" default="0.25"/>
+<arg name="iou_thres" default="0.45"/>
+<arg name="max_det" default="300"/>
+<arg name="tracker" default="bytetrack.yaml"/>
+<arg name="debug" default="false"/>
+<arg name="debug_conf" default="true"/>
+<arg name="debug_line_width" default="1"/>
+<arg name="debug_font_size" default="1"/>
+<arg name="debug_font" default="Arial.ttf"/>
+<arg name="debug_labels" default="true"/>
+<arg name="debug_boxes" default="true"/>
+<include file="$(find ultralytics_ros)/launch/tracker.launch" pass_all_args="true"/>
+
+<!-- RealSense -->
+<arg name="realsense_init" default="false" />
+<include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="initial_reset" value="$(arg realsense_init)" />
+</include>
+
+
+</launch>
