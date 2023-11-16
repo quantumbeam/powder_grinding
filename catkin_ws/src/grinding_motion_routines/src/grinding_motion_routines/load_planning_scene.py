@@ -25,6 +25,9 @@ class PlanningScene:
         mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
         funnel_pos = rospy.get_param("~funnel_position")
         funnel_scale = rospy.get_param("~funnel_scale")
+        MasterSizer_pos = rospy.get_param("~MasterSizer_position")
+        MasterSizer_scale = rospy.get_param("~MasterSizer_scale")
+
         self.table_scale = table_scale
 
         self._add_table(table_scale, table_pos)
@@ -34,6 +37,7 @@ class PlanningScene:
                 mortar_inner_scale, mortar_pos, table_pos, table_scale
             )
         self._add_funnel(funnel_pos, funnel_scale)
+        self._add_MasterSizer(MasterSizer_pos, MasterSizer_scale)
 
     def _add_table(self, table_scale, table_pos):
         table_pose = geometry_msgs.msg.PoseStamped()
@@ -81,6 +85,20 @@ class PlanningScene:
             funnel_pose,
             funnel_scale["z"],
             funnel_scale["x"],
+        )
+
+    def _add_MasterSizer(self, MasterSizer_pos, MasterSizer_scale):
+        MasterSizer_pose = geometry_msgs.msg.PoseStamped()
+        MasterSizer_pose.header.frame_id = self.planning_frame
+        MasterSizer_pose.pose.orientation.w = 1.0
+        MasterSizer_pose.pose.position.x = MasterSizer_pos["x"]
+        MasterSizer_pose.pose.position.y = MasterSizer_pos["y"]
+        MasterSizer_pose.pose.position.z = MasterSizer_scale["z"] / 2
+        self.scene.add_cylinder(
+            "MasterSizer",
+            MasterSizer_pose,
+            MasterSizer_scale["z"],
+            MasterSizer_scale["x"],
         )
 
 
