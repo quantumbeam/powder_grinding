@@ -1,6 +1,6 @@
 <launch>
     <arg name="planning_scene_config"
-        default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config_sound_sensor.yaml" />
+        default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config.yaml" />
     <arg name="motion_config"
         default="$(find grinding_motion_routines)/config/UR_grinding_demo/motion_config.yaml" />
     <arg name="move_config"

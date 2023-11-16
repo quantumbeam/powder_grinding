@@ -1,6 +1,6 @@
 <launch>
     <arg name="planning_scene_config"
-        default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/planning_scene_config_sound_sensor.yaml" />
+        default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/planning_scene_config.yaml" />
     <arg name="motion_config"
         default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/calibrate_motar_position/motion_config.yaml" />
     <arg name="move_config"

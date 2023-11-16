@@ -1,5 +1,5 @@
 <launch>
-    <arg name="planning_scene_config" default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/UR_grinding_demo/planning_scene_config_sound_sensor.yaml"/>
+    <arg name="planning_scene_config" default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/UR_grinding_demo/planning_scene_config.yaml"/>
     <arg name="motion_config" default="/root/ocla/catkin_ws/src/grinding_motion_routines/config/UR_grinding_demo/motion_config.yaml"/>
     <arg name="rosbag_record" default="false"/>
     <arg name="rosbag_name" default=""/>
