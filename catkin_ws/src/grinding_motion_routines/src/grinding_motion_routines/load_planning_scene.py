@@ -75,8 +75,7 @@ class PlanningScene:
         funnel_pose.pose.orientation.w = 1.0
         funnel_pose.pose.position.x = funnel_pos["x"]
         funnel_pose.pose.position.y = funnel_pos["y"]
-        funnel_pose.pose.position.z = self.table_scale["z"] / 2
-        print(funnel_scale)
+        funnel_pose.pose.position.z = funnel_scale["z"] / 2
         self.scene.add_cylinder(
             "funnel",
             funnel_pose,
