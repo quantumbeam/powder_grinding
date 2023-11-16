@@ -74,6 +74,7 @@ scooping_number_of_waypoints : 20
 scooping_yaw_angle : rad(pi)
 
 
+pouring_hight_at_funnel : 0.2
 
 # sound param
 sound_RMS_threshold : 0.03

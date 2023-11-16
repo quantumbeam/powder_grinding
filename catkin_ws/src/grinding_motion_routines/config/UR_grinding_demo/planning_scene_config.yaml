@@ -9,8 +9,9 @@ mortar_hight: 0.038  # mortar bottom hight from robot base,this value is calibra
 
 # test funnel
 funnel_position  :  {x:  0.06693, y: 0.323, z: 0}
-funnel_scale  :  {x:  0.015, y: 0.015, z: 0.2}
+funnel_scale  :  {x:  0.015, y: 0.015, z: 0.15}
 
 # Master Sizer 3000E
-MasterSizer_position  :  {x:  0.053414, y: -0.5084, z: 0}
+MasterSizer_position  :  {x:  0.073414, y: -0.5184, z: 0}
 MasterSizer_scale  :  {x:  0.1, y: 0.1, z: 0.3}
+MasterSizer_relay_position  :  {x:  0.073414, y: -0.5184, z: 0}
