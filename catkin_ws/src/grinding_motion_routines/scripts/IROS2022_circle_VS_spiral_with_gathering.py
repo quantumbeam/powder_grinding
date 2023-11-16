@@ -36,7 +36,7 @@ import motion_routines
 import marker_display
 import tf_publisher
 
-from kek_vision.srv import PowderPos
+from grinding_vision.srv import PowderPos
 
 from inputimeout import inputimeout, TimeoutOccurred
 
