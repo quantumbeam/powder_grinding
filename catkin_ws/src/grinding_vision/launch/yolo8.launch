@@ -9,7 +9,7 @@
 <arg name="iou_thres" default="0.45"/>
 <arg name="max_det" default="300"/>
 <arg name="tracker" default="bytetrack.yaml"/>
-<arg name="debug" default="false"/>
+<arg name="debug" default="true"/>
 <arg name="debug_conf" default="true"/>
 <arg name="debug_line_width" default="1"/>
 <arg name="debug_font_size" default="1"/>
@@ -20,9 +20,15 @@
 
 <!-- RealSense -->
 <arg name="realsense_init" default="false" />
-<include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <arg name="initial_reset" value="$(arg realsense_init)" />
-</include>
+<arg name="color_width"         default="640"/>
+<arg name="color_height"        default="480"/>
+<arg name="depth_width"         default="640"/>
+<arg name="depth_height"        default="480"/>
+<arg name="enable_color"        default="true"/>
+<arg name="enable_depth"        default="true"/>
+<arg name="color_fps"           default="30"/>
+<arg name="depth_fps"           default="30"/>
+<include file="$(find realsense2_camera)/launch/rs_camera.launch" pass_all_args="true"/>
 
 
 </launch>
