@@ -11,7 +11,8 @@ class Realsense3DCoordinates:
         rospy.init_node("realsense_3d_coordinates", anonymous=True)
 
         # Configure depth and color streams
-        self.pipeline = rs.pipeline()
+        pipeline = rs.pipeline()
+        self.pipeline = pipeline
         config = rs.config()
         config.enable_stream(rs.stream.infrared, 1, 640, 480, rs.format.y8, 30)
         config.enable_stream(rs.stream.infrared, 2, 640, 480, rs.format.y8, 30)
@@ -74,7 +75,26 @@ class Realsense3DCoordinates:
 
                     # Process distance as needed
                     if distance > 0:
-                        print(f"Distance at pixel {target_pixel}: {distance} meters")
+                        # print(f"Distance at pixel {target_pixel}: {distance} meters")
+
+                        # Get 3D coordinates of target pixel
+                        # Step1: pixel to normalized coordinates
+                        # u = x pixel, v = y pixel
+                        # x_normalized = (u - cx) / fx
+                        # y_normalized = (v - cy) / fy
+                        # Step2: normalized coordinates to 3D coordinates
+                        # depth_value = depth_frame.get_distance(u, v)
+                        # x = x_normalized * depth_value
+                        # y = y_normalized * depth_value
+                        # z = depth_value
+                        depth_intrin = (
+                            depth_frame.profile.as_video_stream_profile().intrinsics
+                        )
+                        depth_pixel = [target_pixel[0], target_pixel[1]]
+                        depth_point = rs.rs2_deproject_pixel_to_point(
+                            depth_intrin, depth_pixel, distance
+                        )
+                        print(f"3D coordinates at pixel {target_pixel}: {depth_point}")
 
         finally:
             # Stop streaming
@@ -83,7 +103,7 @@ class Realsense3DCoordinates:
 
 if __name__ == "__main__":
     target_pixel = (296, 240)  # center of mortar
-    target_pixel = (470, 240)  # edge of mortar
+    # target_pixel = (470, 240)  # edge of mortar
     try:
         realsense_3d_coordinates = Realsense3DCoordinates()
         realsense_3d_coordinates.run(target_pixel)
