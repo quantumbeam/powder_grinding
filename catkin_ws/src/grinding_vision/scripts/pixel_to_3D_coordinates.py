@@ -30,6 +30,13 @@ class Realsense3DCoordinates:
         self.cx = None
         self.cy = None
 
+        # Set default target_pixel
+        self.target_pixel = (296, 240)
+
+        # Update target_pixel if set externally
+        if rospy.has_param("~target_pixel"):
+            self.target_pixel = tuple(rospy.get_param("~target_pixel"))
+
     def camera_info_callback(self, msg):
         # Extract camera intrinsics from CameraInfo message
         self.fx = msg.K[0]  # focal length in x direction
@@ -48,34 +55,35 @@ class Realsense3DCoordinates:
             depth_image = self.bridge.imgmsg_to_cv2(depth_msg, "32FC1")
 
             # Draw a red circle at the target pixel
-            target_pixel = (296, 240)  # center of mortar
-            cv2.circle(color_image, target_pixel, 5, (0, 0, 255), -1)
+            cv2.circle(color_image, self.target_pixel, 5, (0, 0, 255), -1)
 
             # Display the image with the drawn circle
             cv2.imshow("Color Image with Circle", color_image)
             cv2.waitKey(1)
 
             # Convert pixel coordinates to distance at the specified pixel
-            depth_value = depth_image[int(target_pixel[1]), int(target_pixel[0])]
+            depth_value = depth_image[
+                int(self.target_pixel[1]), int(self.target_pixel[0])
+            ]
 
             # Process distance as needed
             if depth_value > 0:
                 # Get 3D coordinates of target pixel
-                # Step1: pixel to normalized coordinates
-                x_normalized = (target_pixel[0] - self.cx) / self.fx
-                y_normalized = (target_pixel[1] - self.cy) / self.fy
+                x_normalized = (self.target_pixel[0] - self.cx) / self.fx
+                y_normalized = (self.target_pixel[1] - self.cy) / self.fy
 
-                # Step2: normalized coordinates to 3D coordinates
                 x = x_normalized * depth_value
                 y = y_normalized * depth_value
                 z = depth_value
 
-                # Step3: mm to m
+                # Convert mm to m
                 x = x / 1000
                 y = y / 1000
                 z = z / 1000
 
-                print(f"3D coordinates at pixel {target_pixel}: ({x}, {y}, {z}) meters")
+                print(
+                    f"3D coordinates at pixel {self.target_pixel}: ({x}, {y}, {z}) meters"
+                )
             else:
                 print("No depth value at target pixel")
 
