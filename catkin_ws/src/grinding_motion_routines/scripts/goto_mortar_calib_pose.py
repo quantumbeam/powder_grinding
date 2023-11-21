@@ -30,6 +30,7 @@ def main():
     mortar_base_pose = list(mortar_base_position.values()) + list(quat)
 
     camera_view_pose = copy.deepcopy(mortar_base_pose)
+    camera_view_pose[1] -= 0.05
     camera_view_pose[2] += 0.2
     debug_tf.broadcast_tf_with_pose(camera_view_pose, "base_link")
 
