@@ -1,6 +1,5 @@
 experimental_time : 90
 
-move_group_name: "manipulator"
 grinding_eef_link: "pestle_tip"
 gathering_eef_link: "spatula_tip"
 scooping_eef_link: "spoon_tip"

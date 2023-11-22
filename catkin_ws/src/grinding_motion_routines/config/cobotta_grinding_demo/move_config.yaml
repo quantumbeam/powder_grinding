@@ -1,7 +1,6 @@
 moving_vel_scale : 1
 moving_acc_scale : 1
 
-move_group_name: "arm"
 grinding_eef_link: "pestle_tip"
 gathering_eef_link: "spatula_tip"
 
