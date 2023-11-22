@@ -19,13 +19,11 @@ from grinding_motion_routines import (
 
 def main():
     rospy.init_node("mechano_grinding", anonymous=True)
-    moveit = moveit_executor.MoveitExecutor("manipulator", "camera")
+    moveit = moveit_executor.MoveitExecutor("manipulator", "camera_jig")
     debug_tf = tf_publisher.TFPublisher()
     pi = np.pi
 
     # Get planning scene parameters
-    # planning_scene = moveit.scene.get_current_state()
-    # Planning Sceneに含まれるオブジェクトをリストアップ
     object_names = moveit.scene.get_known_object_names()
     if "Mortar" in object_names:
         mortar_pose = moveit.scene.get_object_poses(["Mortar"])["Mortar"]
@@ -46,7 +44,7 @@ def main():
 
         moveit.execute_to_goal_pose(
             camera_view_pose,
-            ee_link="camera",
+            ee_link="camera_jig",
             vel_scale=0.1,
             acc_scale=0.1,
             execute=True,

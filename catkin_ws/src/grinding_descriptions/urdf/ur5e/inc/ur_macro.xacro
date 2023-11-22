@@ -305,8 +305,8 @@
         </geometry>
       </visual>
     </link>
-    
-    <link name="camera">
+
+    <link name="camera_jig">
       <!-- 0.0001 means avoiding collision between pestle and wrist3 -->
       <visual>
         <origin xyz="0 0 0.0001" rpy="0 0 0" />
@@ -322,6 +322,14 @@
             filename="package://grinding_descriptions/mesh/Rviz/Intel_RealSense_Depth_Camera_D435_v3.stl" />
         </geometry>
       </collision>
+    </link>
+    <link name="calibrated_color_optical_frame">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0 0 0" />
+        </geometry>
+      </visual>
     </link>
 
     <!-- joints: main serial chain -->
@@ -425,7 +433,7 @@
       </xacro:if>
       <dynamics damping="0" friction="0" />
     </joint>
-  
+
     <!-- ROS-Industrial 'base' frame: base_link to UR 'Base' Coordinates transform -->
     <link name="${prefix}base" />
     <joint name="${prefix}base_link-base_fixed_joint" type="fixed">
@@ -483,7 +491,7 @@
       <parent link="pestle" />
       <child link="pestle_tip" />
     </joint>
-    
+
     <!-- center of surface on spatula bearing -->
     <joint name="joint_spatula" type="fixed">
       <origin rpy="0 ${-pi/2} 0" xyz="-0.03655 0 0.0135" />
@@ -509,10 +517,17 @@
       <child link="spoon_tip" />
     </joint>
 
-    <joint name="joint_camera" type="fixed">
+    <joint name="joint_camera_jig" type="fixed">
       <origin rpy="0 0 ${-pi/2.0}" xyz="0 0.0605 0.03" />
       <parent link="${prefix}tool2" />
-      <child link="camera" />
+      <child link="camera_jig" />
+    </joint>
+
+    <!-- This frame is calculated by MoveitCalibration -->
+    <joint name="joint_calibrated_color_optical_frame" type="fixed">
+      <origin rpy="1.5208 0.0225205 -1.57642" xyz="0.0016629 -0.0548537 -0.0260291" />
+      <parent link="${prefix}tool0" />
+      <child link="calibrated_color_optical_frame" />
     </joint>
 
   </xacro:macro>
