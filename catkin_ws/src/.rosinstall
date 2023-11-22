@@ -12,6 +12,15 @@ version: master}
 version: noetic-devel}
 - git: {local-name: third_party/ultralytics_ros, uri: 'https://github.com/Alpaca-zip/ultralytics_ros.git',
 version: noetic-devel}
+- git: {local-name: third_party/hand_eye_calibration, uri: 'https://github.com/ros-planning/moveit_calibration.git',
+version: master}
+# Dynamixel
+- git: {local-name: third_party/dynamixel_workbench, uri: 'https://github.com/ROBOTIS-GIT/dynamixel-workbench.git',
+version: noetic-devel}
+- git: {local-name: third_party/dynamixel_workbench_msgs, uri: 'https://github.com/ROBOTIS-GIT/dynamixel-workbench-msgs.git',
+version: noetic-devel}
+- git: {local-name: third_party/dynamixel_SDK, uri: 'https://github.com/ROBOTIS-GIT/DynamixelSDK.git',
+version: master}
 
 
 
