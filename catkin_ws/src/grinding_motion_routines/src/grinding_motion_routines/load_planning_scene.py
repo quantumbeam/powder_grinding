@@ -62,7 +62,7 @@ class PlanningScene:
         table_pose.pose.position.z = table_pos["z"]
         table_pose.pose.position.z -= table_scale["z"] / 2
         self.scene.add_box(
-            "table",
+            "Table",
             table_pose,
             size=(table_scale["x"], table_scale["y"], table_scale["z"]),
         )
@@ -76,7 +76,7 @@ class PlanningScene:
         base_hight = mortar_pos["z"] - table_pos["z"]
         mortar_base_pose.pose.position.z = table_pos["z"] + base_hight / 2
         self.scene.add_box(
-            "mortar_base",
+            "Mortar_base",
             mortar_base_pose,
             size=(table_scale["x"], mortar_inner_scale["y"] * 2, base_hight),
         )
@@ -87,7 +87,7 @@ class PlanningScene:
         mortar_pose.pose.position.x = mortar_pos["x"]
         mortar_pose.pose.position.y = mortar_pos["y"]
         mortar_pose.pose.position.z = mortar_pos["z"]
-        self.scene.add_mesh("mortar", mortar_pose, file_path)
+        self.scene.add_mesh("Mortar", mortar_pose, file_path)
 
     def _add_funnel(self, funnel_pos, funnel_scale):
         funnel_pose = geometry_msgs.msg.PoseStamped()
@@ -97,7 +97,7 @@ class PlanningScene:
         funnel_pose.pose.position.y = funnel_pos["y"]
         funnel_pose.pose.position.z = funnel_scale["z"] / 2
         self.scene.add_cylinder(
-            "funnel",
+            "Funnel",
             funnel_pose,
             funnel_scale["z"],
             funnel_scale["x"],
