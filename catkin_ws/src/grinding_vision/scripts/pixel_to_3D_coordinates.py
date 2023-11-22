@@ -4,6 +4,7 @@ import rospy
 import cv2
 import numpy as np
 from sensor_msgs.msg import Image, CameraInfo
+from geometry_msgs.msg import PoseStamped
 from cv_bridge import CvBridge
 import message_filters
 
@@ -11,6 +12,12 @@ import message_filters
 class Realsense3DCoordinates:
     def __init__(self):
         rospy.init_node("realsense_3d_coordinates", anonymous=True)
+
+        # Pose Publisher
+        self.pose_pub = rospy.Publisher(
+            "/mortar_pose_from_camera_frame", PoseStamped, queue_size=10
+        )
+        self.parent_frame = "/calibrated_color_optical_frame"
 
         # Set up ROS subscribers
         self.image_sub = message_filters.Subscriber("/camera/color/image_raw", Image)
@@ -32,6 +39,8 @@ class Realsense3DCoordinates:
 
         # Set default target_pixel
         self.target_pixel = (296, 240)
+
+        self.rate = rospy.Rate(10)
 
         # Update target_pixel if set externally
         if rospy.has_param("~target_pixel"):
@@ -84,6 +93,21 @@ class Realsense3DCoordinates:
                 print(
                     f"3D coordinates at pixel {self.target_pixel}: ({x}, {y}, {z}) meters"
                 )
+
+                # Poseメッセージの作成
+                pose_msg = PoseStamped()
+                pose_msg.header.frame_id = self.parent_frame
+                pose_msg.header.stamp = color_msg.header.stamp
+                pose_msg.pose.position.x = x
+                pose_msg.pose.position.y = y
+                pose_msg.pose.position.z = z
+                pose_msg.pose.orientation.w = 1
+
+                # メッセージの公開
+                self.pose_pub.publish(pose_msg)
+
+                # Wait for 0.1 seconds (10 Hz) and then process the next frame
+                self.rate.sleep()
             else:
                 print("No depth value at target pixel")
 
@@ -94,7 +118,7 @@ class Realsense3DCoordinates:
         try:
             # Synchronize the image and depth topics
             ts = message_filters.ApproximateTimeSynchronizer(
-                [self.image_sub, self.depth_sub], queue_size=10, slop=0.1
+                [self.image_sub, self.depth_sub], queue_size=20, slop=0.1
             )
             ts.registerCallback(self.image_depth_callback)
 
