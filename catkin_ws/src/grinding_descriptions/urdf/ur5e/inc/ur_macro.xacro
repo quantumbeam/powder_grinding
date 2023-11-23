@@ -331,6 +331,14 @@
         </geometry>
       </visual>
     </link>
+    <link name="calibrated_depth_optical_frame">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0 0 0" />
+        </geometry>
+      </visual>
+    </link>
 
     <!-- joints: main serial chain -->
     <joint name="${prefix}base_link-base_link_inertia" type="fixed">
@@ -528,6 +536,12 @@
       <origin rpy="1.5208 0.0225205 -1.57642" xyz="0.0016629 -0.0548537 -0.0260291" />
       <parent link="${prefix}tool0" />
       <child link="calibrated_color_optical_frame" />
+    </joint>
+
+    <joint name="joint_calibrated_depth_optical_frame" type="fixed">
+      <origin rpy="${-pi/2} 0 ${-pi/2}" xyz="0 0 0" />
+      <parent link="calibrated_color_optical_frame" />
+      <child link="calibrated_depth_optical_frame" />
     </joint>
 
   </xacro:macro>
