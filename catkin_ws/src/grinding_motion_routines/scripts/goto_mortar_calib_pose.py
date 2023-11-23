@@ -19,7 +19,8 @@ from grinding_motion_routines import (
 
 def main():
     rospy.init_node("mechano_grinding", anonymous=True)
-    moveit = moveit_executor.MoveitExecutor("manipulator", "camera_jig")
+    ee_link = "calibrated_depth_optical_frame"
+    moveit = moveit_executor.MoveitExecutor("manipulator", ee_link)
     debug_tf = tf_publisher.TFPublisher()
     pi = np.pi
 
@@ -38,13 +39,12 @@ def main():
         mortar_base_pose = mortar_base_position + list(quat)
 
         camera_view_pose = copy.deepcopy(mortar_base_pose)
-        camera_view_pose[1] -= 0.05
-        camera_view_pose[2] += 0.2
+        camera_view_pose[2] += 0.22
         debug_tf.broadcast_tf_with_pose(camera_view_pose, "base_link")
 
         moveit.execute_to_goal_pose(
             camera_view_pose,
-            ee_link="camera_jig",
+            ee_link=ee_link,
             vel_scale=0.1,
             acc_scale=0.1,
             execute=True,
