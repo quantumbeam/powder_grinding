@@ -13,6 +13,7 @@ class MortarDetector:
     def __init__(self):
         self.parent_frame = "calibrated_depth_optical_frame"
         self.child_frame = "base_link"
+        self.target_yolo_class_id = 61  # yolov8のtoiletのクラスID
 
         self.realsense_position_estimator = PixelTo3DPosition()
         self.pose_transformer = PoseTransformer()  # PoseTransformerのインスタンス化
@@ -30,9 +31,13 @@ class MortarDetector:
     def detection_callback(self, msg):
         if not msg.detections:
             return
-
-        detection = msg.detections[0]
-        center = detection.bbox.center
+        center = None
+        for detection in msg.detections:
+            if detection.results[0].id == self.target_yolo_class_id:
+                center = detection.bbox.center
+                break
+        if center is None:
+            return
 
         # # ターゲットピクセルを更新
         # detector.realsense_position_estimator.target_pixel = (int(320), int(240))
