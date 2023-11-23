@@ -1,34 +1,43 @@
 <?xml version="1.0"?>
 <launch>
 
-<!-- yolo8 -->
-<arg name="yolo_model" default="yolov8n-seg.pt"/>
-<arg name="detection_topic" default="yolo8_detection_result"/>
-<arg name="image_topic" default="/camera/color/image_raw"/>
-<arg name="conf_thres" default="0.25"/>
-<arg name="iou_thres" default="0.45"/>
-<arg name="max_det" default="300"/>
-<arg name="tracker" default="bytetrack.yaml"/>
-<arg name="debug" default="true"/>
-<arg name="debug_conf" default="true"/>
-<arg name="debug_line_width" default="1"/>
-<arg name="debug_font_size" default="1"/>
-<arg name="debug_font" default="Arial.ttf"/>
-<arg name="debug_labels" default="true"/>
-<arg name="debug_boxes" default="true"/>
-<include file="$(find ultralytics_ros)/launch/tracker.launch" pass_all_args="true"/>
+    <!-- yolo8 -->
+    <arg name="yolo_model" default="yolov8n-seg.pt" />
+    <arg name="detection_topic" default="yolo8_detection_result" />
+    <arg name="image_topic" default="/camera/color/image_raw" />
+    <arg name="conf_thres" default="0.25" />
+    <arg name="iou_thres" default="0.45" />
+    <arg name="max_det" default="300" />
+    <arg name="tracker" default="bytetrack.yaml" />
+    <arg name="debug" default="true" />
+    <arg name="debug_conf" default="true" />
+    <arg name="debug_line_width" default="1" />
+    <arg name="debug_font_size" default="1" />
+    <arg name="debug_font" default="Arial.ttf" />
+    <arg name="debug_labels" default="true" />
+    <arg name="debug_boxes" default="true" />
+    <include file="$(find ultralytics_ros)/launch/tracker.launch" pass_all_args="true" />
 
-<!-- RealSense -->
-<arg name="realsense_init" default="false" />
-<arg name="color_width"         default="640"/>
-<arg name="color_height"        default="480"/>
-<arg name="depth_width"         default="640"/>
-<arg name="depth_height"        default="480"/>
-<arg name="enable_color"        default="true"/>
-<arg name="enable_depth"        default="true"/>
-<arg name="color_fps"           default="30"/>
-<arg name="depth_fps"           default="30"/>
-<include file="$(find realsense2_camera)/launch/rs_camera.launch" pass_all_args="true"/>
+    <!-- RealSense -->
+    <arg name="realsense_init" default="false" />
+    <arg name="color_width" default="640" />
+    <arg name="color_height" default="480" />
+    <arg name="color_fps" default="30" />
+    <arg name="depth_width" default="640" />
+    <arg name="depth_height" default="480" />
+    <arg name="depth_fps" default="30" />
+    <arg name="enable_color" default="true" />
+    <arg name="enable_depth" default="true" />
+    <arg name="enable_infra1" value="false" />
+    <arg name="enable_infra2" value="false" />
+    <arg name="enable_fisheye" value="false" />
+    <arg name="enable_gyro" value="false" />
+    <arg name="enable_accel" value="false" />
+    <arg name="enable_pointcloud" value="true" />
+    <arg name="enable_sync" value="true" />
+    <arg name="publish_tf" default="false" />
+    <arg name="tf_prefix" value="calibrated" />
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch" pass_all_args="true" />
 
 
 </launch>
