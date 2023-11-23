@@ -4,21 +4,13 @@ import rospy
 import cv2
 import numpy as np
 from sensor_msgs.msg import Image, CameraInfo
-from geometry_msgs.msg import PoseStamped
 from cv_bridge import CvBridge
 import message_filters
+import time
 
 
-class Realsense3DCoordinates:
+class PixelTo3DPosition:
     def __init__(self):
-        rospy.init_node("realsense_3d_coordinates", anonymous=True)
-
-        # Pose Publisher
-        self.pose_pub = rospy.Publisher(
-            "/mortar_pose_from_camera_frame", PoseStamped, queue_size=10
-        )
-        self.parent_frame = "/calibrated_color_optical_frame"
-
         # Set up ROS subscribers
         self.image_sub = message_filters.Subscriber("/camera/color/image_raw", Image)
         self.depth_sub = message_filters.Subscriber(
@@ -38,13 +30,9 @@ class Realsense3DCoordinates:
         self.cy = None
 
         # Set default target_pixel
-        self.target_pixel = (296, 240)
+        self.target_pixel = (-1, -1)
 
-        self.rate = rospy.Rate(10)
-
-        # Update target_pixel if set externally
-        if rospy.has_param("~target_pixel"):
-            self.target_pixel = tuple(rospy.get_param("~target_pixel"))
+        self.position_result = None
 
     def camera_info_callback(self, msg):
         # Extract camera intrinsics from CameraInfo message
@@ -57,18 +45,20 @@ class Realsense3DCoordinates:
         if self.fx is None or self.fy is None or self.cx is None or self.cy is None:
             rospy.logwarn("Camera intrinsics not yet received. Skipping frame.")
             return
+        if self.target_pixel == (-1, -1):
+            rospy.logwarn("Target pixel is default value. Skipping frame.")
+            return
 
         try:
             # Convert ROS messages to OpenCV images
-            color_image = self.bridge.imgmsg_to_cv2(color_msg, "bgr8")
             depth_image = self.bridge.imgmsg_to_cv2(depth_msg, "32FC1")
 
             # Draw a red circle at the target pixel
-            cv2.circle(color_image, self.target_pixel, 5, (0, 0, 255), -1)
-
+            # color_image = self.bridge.imgmsg_to_cv2(color_msg, "bgr8")
+            # cv2.circle(color_image, self.target_pixel, 5, (0, 0, 255), -1)
             # Display the image with the drawn circle
-            cv2.imshow("Color Image with Circle", color_image)
-            cv2.waitKey(1)
+            # cv2.imshow("Color Image with Circle", color_image)
+            # cv2.waitKey(1)
 
             # Convert pixel coordinates to distance at the specified pixel
             depth_value = depth_image[
@@ -90,24 +80,12 @@ class Realsense3DCoordinates:
                 y = y / 1000
                 z = z / 1000
 
-                print(
-                    f"3D coordinates at pixel {self.target_pixel}: ({x}, {y}, {z}) meters"
-                )
+                # rospy.loginfo(
+                #     f"3D coordinates at pixel {self.target_pixel}: ({x}, {y}, {z}) meters"
+                # )
 
-                # Poseメッセージの作成
-                pose_msg = PoseStamped()
-                pose_msg.header.frame_id = self.parent_frame
-                pose_msg.header.stamp = color_msg.header.stamp
-                pose_msg.pose.position.x = x
-                pose_msg.pose.position.y = y
-                pose_msg.pose.position.z = z
-                pose_msg.pose.orientation.w = 1
+                self.position_result = [x, y, z]
 
-                # メッセージの公開
-                self.pose_pub.publish(pose_msg)
-
-                # Wait for 0.1 seconds (10 Hz) and then process the next frame
-                self.rate.sleep()
             else:
                 print("No depth value at target pixel")
 
@@ -115,22 +93,23 @@ class Realsense3DCoordinates:
             rospy.logerr(f"Error processing images: {e}")
 
     def run(self):
-        try:
-            # Synchronize the image and depth topics
-            ts = message_filters.ApproximateTimeSynchronizer(
-                [self.image_sub, self.depth_sub], queue_size=20, slop=0.1
-            )
-            ts.registerCallback(self.image_depth_callback)
-
-            rospy.spin()
-
-        finally:
-            cv2.destroyAllWindows()
+        # try:
+        # Synchronize the image and depth topics
+        ts = message_filters.TimeSynchronizer(
+            [self.image_sub, self.depth_sub],
+            queue_size=10,
+        )
+        ts.registerCallback(self.image_depth_callback)
+        rospy.spin()
+        # finally:
+        #     cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
+    rospy.init_node("realsense_3d_coordinates", anonymous=True)
     try:
-        realsense_3d_coordinates = Realsense3DCoordinates()
+        realsense_3d_coordinates = PixelTo3DPosition()
+        realsense_3d_coordinates.target_pixel = (320, 240)
         realsense_3d_coordinates.run()
     except rospy.ROSInterruptException:
         pass
