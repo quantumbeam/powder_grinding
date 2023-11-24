@@ -92,25 +92,27 @@ class MortarPositionFineTuning:
             pose.pose.orientation.w,
         ]
 
-    def caliblate_mortar_hight(self, step=0.01):
-        calibration_finished = False
+    def caliblate_mortar_hight(self, step):
         delta = np.zeros(7)
-        delta[2] = step * -1
 
-        rospy.loginfo(f"Force z before move: {self.current_force.z}")
-        if np.abs(self.current_force.z) > self.force_threshold:
-            calibration_finished = True
-            finished_pose = self.moveit.move_group.get_current_pose()
-            rospy.loginfo("Calibration finished")
-            print("EE Pose:", finished_pose)
-            print("Moratr hight:", finished_pose.pose.position.z)
-            return
+        if step is None:
+            for _ in range(1000):
+                delta[2] = -0.001
+                result = self._move_and_check_force(delta)
+                if result:
+                    break
+                if rospy.is_shutdown():
+                    break
+        else:
+            delta[2] = -step
+            self._move_and_check_force(delta)
 
-        # Move to next position
+    def _move_and_check_force(self, delta):
         current_pose = self._pose_stumped_to_list(
             self.moveit.move_group.get_current_pose()
         )
         next_pose = current_pose + delta
+
         self.moveit.execute_cartesian_path_to_goal_pose(
             next_pose,
             ee_link=self.grinding_eef_link,
@@ -119,13 +121,15 @@ class MortarPositionFineTuning:
         )
 
         rospy.loginfo(f"Force z after move: {self.current_force.z}")
+
         if np.abs(self.current_force.z) > self.force_threshold:
-            calibration_finished = True
             finished_pose = self.moveit.move_group.get_current_pose()
             rospy.loginfo("Calibration finished")
             print("EE Pose:", finished_pose)
-            print("Moratr hight:", finished_pose.pose.position.z)
-            return
+            print("Mortar height:", finished_pose.pose.position.z)
+            return True
+        else:
+            return False
 
     def fine_tuning_mortar_position(self):
         generator = MotionGenerator()
@@ -240,13 +244,15 @@ def main():
             arm.move_to_position_above_mortar()
         elif key == "2":
             try:
-                # 入力を受け取る
                 input_value = input(
-                    "Enter moving z [mm], then press enter to start moving:"
+                    "Enter the adjustment step in mm for calibrating mortar height (leave blank for default 0.5 mm, 1000 steps calibration), then press enter to start: "
                 )
-                # 数値に変換を試みる
-                step = float(input_value)
-                arm.caliblate_mortar_hight(step / 1000)
+
+                if input_value == "":
+                    arm.caliblate_mortar_hight(None)
+                else:
+                    step = float(input_value)
+                    arm.caliblate_mortar_hight(step / 1000)
             except ValueError:
                 # 数値に変換できない場合のエラーメッセージ
                 print("Invalid input. Please enter a number.\n")
