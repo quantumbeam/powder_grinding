@@ -11,17 +11,17 @@
     <arg name="depth_fps" default="30" />
     <arg name="enable_color" default="true" />
     <arg name="enable_depth" default="true" />
-    <arg name="enable_infra1" value="false" />
-    <arg name="enable_infra2" value="false" />
-    <arg name="enable_fisheye" value="false" />
-    <arg name="enable_gyro" value="false" />
-    <arg name="enable_accel" value="false" />
-    <arg name="enable_pointcloud" value="true" />
-    <arg name="enable_sync" value="true" />
+    <arg name="enable_infra1" default="false" />
+    <arg name="enable_infra2" default="false" />
+    <arg name="enable_fisheye" default="false" />
+    <arg name="enable_gyro" default="false" />
+    <arg name="enable_accel" default="false" />
+    <arg name="enable_pointcloud" default="true" />
+    <arg name="enable_sync" default="true" />
 
 
     <arg name="publish_tf" default="false" />
-    <arg name="tf_prefix" value="calibrated" />
+    <arg name="tf_prefix" default="calibrated" />
 
     <!-- point cloud link name is [tf_prefix]_depth_optical_frame -->
     <include file="$(find realsense2_camera)/launch/rs_camera.launch" pass_all_args="true" />
