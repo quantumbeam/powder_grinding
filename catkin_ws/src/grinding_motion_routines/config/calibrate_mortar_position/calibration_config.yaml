@@ -1,0 +1,3 @@
+force_threshold: 3
+calibration_move_step: 0.001
+calibration_plate_tickness: 0.0052
