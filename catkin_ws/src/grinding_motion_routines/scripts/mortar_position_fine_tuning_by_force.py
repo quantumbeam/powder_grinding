@@ -29,7 +29,6 @@ class MortarPositionFineTuning:
         self.mortar_position = rospy.get_param("~mortar_position")
         self.mortar_scale = rospy.get_param("~mortar_inner_scale")
         self.force_threshold = rospy.get_param("~force_threshold")
-        self.calibration_move_step = rospy.get_param("~calibration_move_step")
         self.total_joints_limits_for_trajectory = 0.1
 
         self.filterd_wrench_topic = rospy.get_param("~filterd_wrench_topic")
@@ -55,9 +54,6 @@ class MortarPositionFineTuning:
             print(f"Service call failed: {e}")
             exit()
 
-        # Move to start position
-        self._goto_start_position()
-
     def _zero_ft_sensor(self):
         time.sleep(1)
         rospy.loginfo("Zeroing FT sensor")
@@ -68,7 +64,7 @@ class MortarPositionFineTuning:
         self.current_force = wrench_msg.wrench.force
         self.current_torque = wrench_msg.wrench.torque
 
-    def _goto_start_position(self):
+    def move_to_position_above_mortar(self):
         rospy.loginfo("Moving to start position")
         q = tf.quaternion_from_euler(pi, 0, pi)
         pose = [
@@ -96,37 +92,44 @@ class MortarPositionFineTuning:
             pose.pose.orientation.w,
         ]
 
-    def caliblate_mortar_hight(self):
-        # Move to mortar bottom
+    def caliblate_mortar_hight(self, step=0.01):
         calibration_finished = False
         delta = np.zeros(7)
-        delta[2] = self.calibration_move_step * -1
-        for i in range(10):
-            rospy.loginfo(f"Force z: {self.current_force.z}")
-            if np.abs(self.current_force.z) > self.force_threshold:
-                calibration_finished = True
-                finished_pose = self.moveit.move_group.get_current_pose()
-                rospy.loginfo("Calibration finished")
-                print("EE Pose:", finished_pose)
-                print("Moratr hight:", finished_pose.pose.position.z)
-                break
-            current_pose = self._pose_stumped_to_list(
-                self.moveit.move_group.get_current_pose()
-            )
-            next_pose = current_pose + delta
-            self.moveit.execute_cartesian_path_to_goal_pose(
-                next_pose,
-                ee_link=self.grinding_eef_link,
-                vel_scale=0.1,
-                acc_scale=0.1,
-            )
+        delta[2] = step * -1
 
-        if not calibration_finished:
-            rospy.logerr("Calibration failed")
+        rospy.loginfo(f"Force z before move: {self.current_force.z}")
+        if np.abs(self.current_force.z) > self.force_threshold:
+            calibration_finished = True
+            finished_pose = self.moveit.move_group.get_current_pose()
+            rospy.loginfo("Calibration finished")
+            print("EE Pose:", finished_pose)
+            print("Moratr hight:", finished_pose.pose.position.z)
+            return
+
+        # Move to next position
+        current_pose = self._pose_stumped_to_list(
+            self.moveit.move_group.get_current_pose()
+        )
+        next_pose = current_pose + delta
+        self.moveit.execute_cartesian_path_to_goal_pose(
+            next_pose,
+            ee_link=self.grinding_eef_link,
+            vel_scale=0.1,
+            acc_scale=0.1,
+        )
+
+        rospy.loginfo(f"Force z after move: {self.current_force.z}")
+        if np.abs(self.current_force.z) > self.force_threshold:
+            calibration_finished = True
+            finished_pose = self.moveit.move_group.get_current_pose()
+            rospy.loginfo("Calibration finished")
+            print("EE Pose:", finished_pose)
+            print("Moratr hight:", finished_pose.pose.position.z)
+            return
 
     def fine_tuning_mortar_position(self):
         generator = MotionGenerator()
-        self._goto_start_position()
+        self.move_to_position_above_mortar()
 
         for i in range(10):
             waypoints = generator.create_circular_waypoints(
@@ -174,7 +177,7 @@ class MortarPositionFineTuning:
             response = self.service_client("stop")
 
             # Move to start position
-            self._goto_start_position()
+            self.move_to_position_above_mortar()
 
             # Update mortar position
             mortar_position = generator.mortar_center_position
@@ -224,7 +227,7 @@ def main():
         key = input(
             "Select calibration mode and press enter\n"
             + "0: Exit\n"
-            + "1: Go to initial position\n"
+            + "1: Move to position above mortar\n"
             + "2: Calibrate mortar hight\n"
             + "3: Fine tuning mortar position\n"
             + "4: Calibrate grinding motion to target force\n"
@@ -234,9 +237,20 @@ def main():
             rospy.signal_shutdown("Exiting calibration")
             break
         elif key == "1":
-            arm._goto_start_position()
+            arm.move_to_position_above_mortar()
         elif key == "2":
-            arm.caliblate_mortar_hight()
+            try:
+                # 入力を受け取る
+                input_value = input(
+                    "Enter moving z [mm], then press enter to start moving:"
+                )
+                # 数値に変換を試みる
+                step = float(input_value)
+                arm.caliblate_mortar_hight(step / 1000)
+            except ValueError:
+                # 数値に変換できない場合のエラーメッセージ
+                print("Invalid input. Please enter a number.\n")
+
         elif key == "3":
             arm.fine_tuning_mortar_position()
         elif key == "4":
