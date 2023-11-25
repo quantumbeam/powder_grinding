@@ -1,60 +1,51 @@
+### Powder Grinding Package for ROS
 
-This is powder grinding package for ROS.
-This package is used the papers for [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) in IROS 2022 and [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) in IROS 2023.
+**Repository for Robotic Powder Grinding in Material Science**
 
-TOC
-- [Overview](#overview)
-- [Supported robot](#supported-robot)
-- [Quick start](#quick-start)
-  - [Setting up environments of Host PC, robot and docker](#setting-up-environments-of-host-pc-robot-and-docker)
-  - [Running docker container](#running-docker-container)
-  - [Build ROS packages on Docker container](#build-ros-packages-on-docker-container)
-- [Known Issues](#known-issues)
-- [Tuture work](#tuture-work)
-- [License](#license)
+#### **Related Publications**
+- [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
+- [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
 
+#### **Table of Contents**
+1. [Overview](#overview)
+2. [Supported Robots](#supported-robot)
+3. [Quick Start Guide](#quick-start)
+   - [Environment Setup](#setting-up-environments-of-host-pc-robot-and-docker)
+   - [Running Docker Container](#running-docker-container)
+   - [Building ROS Packages](#build-ros-packages-on-docker-container)
+4. [Known Issues](#known-issues)
+5. [Future Work](#tuture-work)
+6. [License](#license)
 
-# Overview
-Update: 2023/10/24
-This repository is for ROS environment for robot control.
+### Overview
+**Last Updated:** 2023/10/24  
+This repository focuses on the ROS environment for robot control.
 
-# Supported robot
+### Supported Robots
 - UR5e
-- UR3e (confirmed motion only simulation)
+- UR3e (confirmed in simulation only)
 - Cobotta
 
-# Quick start
+### Quick Start Guide
 
-## Setting up environments of Host PC, robot and docker
-[Read setup document](./docker/README.md)
+#### Setting up Environments of Host PC, Robot, and Docker
+- [Setup Instructions](./docker/README.md)
 
+#### Running Docker Container
+- Execute: `./RUN-DOCKER-CONTAINER.sh`
+- With Terminator: `./LAUNCH-TERMINATOR-TERMINAL.sh`
 
-## Running docker container
-- Run docker container
-```./RUN-DOCKER-CONTAINER.sh```
+#### Building ROS Packages in Docker Container
+- Inside `catkin_ws`: `./BUILD_ROS_WORKSPACE.sh`
 
-- Run docker container and launch terminals on terminator
-```./LAUNCH-TERMINATOR-TERMINAL.sh```
+### Known Issues
+- Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
+- Build failure in **moveit_calibration_plugins** due to missing `numpy/arrayobject.h`. Solution: Add the numpy path to `CMakeLists.txt`'s `include_directories`.
+  - Example path: `/usr/local/lib/python3.8/dist-packages/numpy/core/include`
 
-## Build ROS packages on Docker container
-- Run build command in catkin_ws
-```./BUILD_ROS_WORKSPACE.sh```
+### Future Work
+- Automated detection of mortar X,Y positions using a camera.
+- Automated detection of mortar Z position using a force sensor.
 
-
-
-
-
-
-# Known Issues
-- .dea file of Cobotta description is not readable, although it is recomended by DENSO.
-  - Use .stl file instead of .dea file.
-- 
-
-# Tuture work
-- [ ] Automated estimation of mortar X,Y position by camera (mortar position detection by camera)
-    - Camera jig and calibration is required
-- [ ] Automated estimation of mortar Z position by force sensor
-
-
-# License
-This repository is licensed under the MIT license, see [LICENSE](./LICENSE).
+### License
+This repository is under the MIT license. See [LICENSE](./LICENSE) for details.
