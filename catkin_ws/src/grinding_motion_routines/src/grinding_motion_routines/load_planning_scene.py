@@ -121,7 +121,7 @@ class PlanningScene:
 if __name__ == "__main__":
     roscpp_initialize(sys.argv)
     rospy.init_node("load_planning_scene")
-    move_group = MoveGroupCommander(rospy.get_param("~moveit_group_name", None))
+    move_group = MoveGroupCommander(rospy.get_param("~move_group_name", None))
     planning_scene = PlanningScene(move_group)
     planning_scene.init_planning_scene()
     roscpp_shutdown()

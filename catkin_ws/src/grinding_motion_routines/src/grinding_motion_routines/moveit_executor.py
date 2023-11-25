@@ -16,14 +16,14 @@ from scipy.spatial.transform import Slerp
 class MoveitExecutor(object):
     """Executor including MoveItCommander . This class can command moving manipurator with single pose or way points."""
 
-    def __init__(self, moveit_group_name, ee_link):
+    def __init__(self, move_group_name, ee_link):
         # initialize
         moveit_commander.roscpp_initialize(sys.argv)
         robot = moveit_commander.RobotCommander()
         scene = moveit_commander.PlanningSceneInterface()
 
         # set moveit group name
-        move_group = moveit_commander.MoveGroupCommander(moveit_group_name)
+        move_group = moveit_commander.MoveGroupCommander(move_group_name)
 
         # set moveit velocity and accelalation
         move_group.set_max_acceleration_scaling_factor(1.0)
