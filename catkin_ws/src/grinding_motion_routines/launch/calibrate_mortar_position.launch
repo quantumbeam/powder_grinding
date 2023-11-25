@@ -1,0 +1,29 @@
+<launch>
+    <arg name="filterd_wrench_topic" default="/wrench/filtered" />
+    <arg name="zero_wrench_service" default="/wrench/filtered/zero_ftsensor" />
+
+    <arg
+        name="planning_scene_config"
+        default="$(find grinding_motion_routines)/config/calibrate_mortar_position/planning_scene_config.yaml" />
+    <arg
+        name="motion_config"
+        default="$(find grinding_motion_routines)/config/calibrate_mortar_position/motion_config.yaml" />
+    <arg
+        name="calibration_config"
+        default="$(find grinding_motion_routines)/config/calibrate_mortar_position/calibration_config.yaml" />
+
+    <node
+        name="wrench_subscriber" pkg="grinding_motion_routines"
+        type="subscribe_wrench.py"
+        output="screen"></node>
+    <node name="mortar_position_fine_tuning"
+        pkg="grinding_motion_routines"
+        type="mortar_position_fine_tuning_by_force.py"
+        output="screen">
+        <param name="filterd_wrench_topic" value="$(arg filterd_wrench_topic)" />
+        <param name="zero_wrench_service" value="$(arg zero_wrench_service)" />
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+        <rosparam command="load" file="$(arg motion_config)" />
+        <rosparam command="load" file="$(arg calibration_config)" />
+    </node>
+</launch>

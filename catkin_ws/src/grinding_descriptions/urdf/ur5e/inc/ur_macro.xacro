@@ -533,13 +533,13 @@
 
     <!-- This frame is calculated by MoveitCalibration -->
     <joint name="joint_calibrated_color_optical_frame" type="fixed">
-      <origin rpy="1.5208 0.0225205 -1.57642" xyz="0.0016629 -0.0548537 -0.0260291" />
-      <parent link="${prefix}tool0" />
+      <origin xyz="-0.0147918 -0.000782691 -0.050422" rpy="0.0053461 3.11399 0.0150722" />
+      <parent link="${prefix}flange" />
       <child link="calibrated_color_optical_frame" />
     </joint>
 
     <joint name="joint_calibrated_depth_optical_frame" type="fixed">
-      <origin rpy="${-pi/2} 0 ${-pi/2}" xyz="0 0 0" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
       <parent link="calibrated_color_optical_frame" />
       <child link="calibrated_depth_optical_frame" />
     </joint>

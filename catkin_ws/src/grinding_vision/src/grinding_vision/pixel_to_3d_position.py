@@ -31,8 +31,8 @@ class PixelTo3DPosition:
 
         # Set default target_pixel
         self.target_pixel = (-1, -1)
-
         self.position_result = None
+        self.default_depth_value = 0.1  # [m]
 
     def camera_info_callback(self, msg):
         # Extract camera intrinsics from CameraInfo message
@@ -64,30 +64,31 @@ class PixelTo3DPosition:
             depth_value = depth_image[
                 int(self.target_pixel[1]), int(self.target_pixel[0])
             ]
-
             # Process distance as needed
-            if depth_value > 0:
-                # Get 3D coordinates of target pixel
-                x_normalized = (self.target_pixel[0] - self.cx) / self.fx
-                y_normalized = (self.target_pixel[1] - self.cy) / self.fy
+            if depth_value <= 0:
+                print(
+                    "No depth value at target pixel. Setting depth value manually.",
+                    self.default_depth_value,
+                )
+                depth_value = self.default_depth_value
+            # Get 3D coordinates of target pixel
+            x_normalized = (self.target_pixel[0] - self.cx) / self.fx
+            y_normalized = (self.target_pixel[1] - self.cy) / self.fy
 
-                x = x_normalized * depth_value
-                y = y_normalized * depth_value
-                z = depth_value
+            x = x_normalized * depth_value
+            y = y_normalized * depth_value
+            z = depth_value
 
-                # Convert mm to m
-                x = x / 1000
-                y = y / 1000
-                z = z / 1000
+            # Convert mm to m
+            x = x / 1000
+            y = y / 1000
+            z = z / 1000
 
-                # rospy.loginfo(
-                #     f"3D coordinates at pixel {self.target_pixel}: ({x}, {y}, {z}) meters"
-                # )
+            # rospy.loginfo(
+            #     f"3D coordinates at pixel {self.target_pixel}: ({x}, {y}, {z}) meters"
+            # )
 
-                self.position_result = [x, y, z]
-
-            else:
-                print("No depth value at target pixel")
+            self.position_result = [x, y, z]
 
         except Exception as e:
             rospy.logerr(f"Error processing images: {e}")

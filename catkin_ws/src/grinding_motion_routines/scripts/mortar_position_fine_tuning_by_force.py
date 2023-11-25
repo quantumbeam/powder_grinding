@@ -2,13 +2,13 @@
 
 # ROS-related imports
 import rospy
-from geometry_msgs.msg import WrenchStamped
-
-from ur_control.arm import Arm
-from ur_control import transformations
 import tf.transformations as tf
+from threading import Event
 
-from grinding_motion_routines.motion_routines import MotionGenerator
+from std_srvs.srv import Empty
+from geometry_msgs.msg import WrenchStamped
+from grinding_motion_routines.motion_generator import MotionGenerator
+from grinding_motion_routines.moveit_executor import MoveitExecutor
 from grinding_motion_routines.srv import PositionCalibrateVector
 
 import argparse
@@ -17,87 +17,123 @@ import time
 from math import pi
 
 
-class MortarPositionFineTuning(Arm):
+class MortarPositionFineTuning:
     def __init__(
-        self, use_gripper, ns, joint_names_prefix, robot_urdf, tcp_link, ft_topic
-    ) -> None:
-        super().__init__(
-            gripper=use_gripper,
-            namespace=ns,
-            joint_names_prefix=joint_names_prefix,
-            robot_urdf=robot_urdf,
-            robot_urdf_package=robot_urdf,
-            ee_link=tcp_link,
-            ft_topic=ft_topic,
-        )
+        self,
+        move_group_name="manipulator",
+        ee_link="pestle_tip",
+    ):
+        self.moveit = MoveitExecutor(move_group_name, ee_link)
+        self.grinding_eef_link = rospy.get_param("~grinding_eef_link")
 
         self.mortar_position = rospy.get_param("~mortar_position")
         self.mortar_scale = rospy.get_param("~mortar_inner_scale")
-        self.force_threshold = rospy.get_param(
-            "~force_threshold_of_morat_hight_calibration"
-        )
-        self.calibration_step = rospy.get_param("~calibration_step")
-        self.sum_joints_limits_for_trajectory = rospy.get_param(
-            "~sum_joints_limits_for_trajectory"
+        self.force_threshold = rospy.get_param("~force_threshold")
+        self.total_joints_limits_for_trajectory = 0.1
+
+        self.filterd_wrench_topic = rospy.get_param("~filterd_wrench_topic")
+        rospy.Subscriber(
+            self.filterd_wrench_topic,
+            WrenchStamped,
+            self._wrench_callback,
+            queue_size=1,
         )
 
         # Subscribe to wrench service
+        rospy.loginfo("Waiting for wrench service")
+        self.zero_wrench_service_name = rospy.get_param("~zero_wrench_service")
+        rospy.wait_for_service(self.zero_wrench_service_name)
         rospy.wait_for_service("/start_stop_recording")
         try:
             self.service_client = rospy.ServiceProxy(
                 "/start_stop_recording", PositionCalibrateVector
             )
+            self.ft_service = rospy.ServiceProxy(self.zero_wrench_service_name, Empty)
 
         except rospy.ServiceException as e:
             print(f"Service call failed: {e}")
+            exit()
 
-        # Move to start position
-        self._goto_start_position()
+    def _zero_ft_sensor(self):
+        time.sleep(1)
+        rospy.loginfo("Zeroing FT sensor")
+        self.ft_service.call()
+        time.sleep(1)
 
-    def _goto_start_position(self):
+    def _wrench_callback(self, wrench_msg):
+        self.current_force = wrench_msg.wrench.force
+        self.current_torque = wrench_msg.wrench.torque
+
+    def move_to_position_above_mortar(self):
         rospy.loginfo("Moving to start position")
         q = tf.quaternion_from_euler(pi, 0, pi)
         pose = [
             self.mortar_position["x"],
             self.mortar_position["y"],
-            self.mortar_position["z"] + 0.04,
+            self.mortar_position["z"] + 0.1,
         ] + list(q)
-        self.set_target_pose(pose, wait=True, t=3)
-
-        time.sleep(1)
-        rospy.loginfo("Zeroing FT sensor")
-        self.zero_ft_sensor()
-        time.sleep(1)
-
-    def caliblate_mortar_hight(self):
-        # Move to start position
-        self._goto_start_position()
-
-        # Move to near mortar bottom
-        xc = transformations.transform_pose(self.end_effector(), [0, 0, -0.03, 0, 0, 0])
-        self.set_target_pose(pose=xc, wait=True, t=2)
-
-        # Move to mortar bottom
-        delta = np.zeros(6)
-        delta[2] = -0.0001
-        for i in range(1000):
-            x = self.end_effector()
-            xc = transformations.transform_pose(x, delta)
-            self.set_target_pose(pose=xc, wait=True, t=0.01)
-            force_z = self.get_ee_wrench()[2]
-            rospy.loginfo(f"Force z: {force_z}")
-            if np.abs(force_z) > self.force_threshold:
-                break
-        rospy.loginfo("Calibration finished")
-        print("EE Pose:", np.round(self.end_effector(), 5).tolist())
-        print(
-            "Moratr hight:",
-            np.round(self.end_effector()[2] + self.mortar_scale["z"], 5).tolist(),
+        self.moveit.execute_cartesian_path_to_goal_pose(
+            pose,
+            ee_link=self.grinding_eef_link,
+            vel_scale=0.1,
+            acc_scale=0.1,
         )
+
+        self._zero_ft_sensor()
+
+    def _pose_stumped_to_list(self, pose):
+        return [
+            pose.pose.position.x,
+            pose.pose.position.y,
+            pose.pose.position.z,
+            pose.pose.orientation.x,
+            pose.pose.orientation.y,
+            pose.pose.orientation.z,
+            pose.pose.orientation.w,
+        ]
+
+    def caliblate_mortar_hight(self, step):
+        delta = np.zeros(7)
+
+        if step is None:
+            for _ in range(1000):
+                delta[2] = -0.001
+                result = self._move_and_check_force(delta)
+                if result:
+                    break
+                if rospy.is_shutdown():
+                    break
+        else:
+            delta[2] = -step
+            self._move_and_check_force(delta)
+
+    def _move_and_check_force(self, delta):
+        current_pose = self._pose_stumped_to_list(
+            self.moveit.move_group.get_current_pose()
+        )
+        next_pose = current_pose + delta
+
+        self.moveit.execute_cartesian_path_to_goal_pose(
+            next_pose,
+            ee_link=self.grinding_eef_link,
+            vel_scale=0.1,
+            acc_scale=0.1,
+        )
+
+        rospy.loginfo(f"Force z after move: {self.current_force.z}")
+
+        if np.abs(self.current_force.z) > self.force_threshold:
+            finished_pose = self.moveit.move_group.get_current_pose()
+            rospy.loginfo("Calibration finished")
+            print("EE Pose:", finished_pose)
+            print("Mortar height:", finished_pose.pose.position.z)
+            return True
+        else:
+            return False
 
     def fine_tuning_mortar_position(self):
         generator = MotionGenerator()
-        self._goto_start_position()
+        self.move_to_position_above_mortar()
 
         for i in range(10):
             waypoints = generator.create_circular_waypoints(
@@ -145,7 +181,7 @@ class MortarPositionFineTuning(Arm):
             response = self.service_client("stop")
 
             # Move to start position
-            self._goto_start_position()
+            self.move_to_position_above_mortar()
 
             # Update mortar position
             mortar_position = generator.mortar_center_position
@@ -161,47 +197,72 @@ class MortarPositionFineTuning(Arm):
             generator.update_mortar_position(mortar_position)
             rospy.loginfo(f"New mortar position: {mortar_position}")
 
+    def subscribe_wrench(self):
+        rospy.loginfo("Subscribing to wrench for 10 seconds")
+        self.timer_event = Event()
+        self.display_timer = rospy.Timer(rospy.Duration(1), self._display_wrench_data)
+        self.stop_timer = rospy.Timer(
+            rospy.Duration(10), self._stop_wrench_subscription, oneshot=True
+        )
+        self.timer_event.wait()
+
+    def _display_wrench_data(self, event):
+        if not self.timer_event.is_set():
+            force = np.array(
+                [self.current_force.x, self.current_force.y, self.current_force.z]
+            )
+            torque = np.array(
+                [self.current_torque.x, self.current_torque.y, self.current_torque.z]
+            )
+            rospy.loginfo(f"Force: {force}, Torque: {torque}")
+
+    def _stop_wrench_subscription(self, event):
+        self.display_timer.shutdown()
+        self.timer_event.set()
+        rospy.loginfo("Stopping wrench subscription after 10 seconds")
+
 
 def main():
-    arg_fmt = argparse.RawDescriptionHelpFormatter
-    parser = argparse.ArgumentParser(formatter_class=arg_fmt, description=main.__doc__)
-    parser.add_argument(
-        "--namespace",
-        type=str,
-        help="Namespace of arm (useful when having multiple arms)",
-        default=None,
-    )
-    parser.add_argument(
-        "--gripper", action="store_true", help="enable gripper commands"
-    )
-    parser.add_argument(
-        "--robot",
-        type=str,
-        help='Version of Universal Robot arm. Default="ur3e"',
-        default="ur3e",
-    )
-    args = parser.parse_args(rospy.myargv()[1:])
     rospy.init_node("mortar_position_calibration", anonymous=True)
 
-    ns = args.namespace
-    robot_urdf = "ur5e"
-    rospackage = None
-    tcp_link = "pestle_tip"
-    use_gripper = args.gripper
-    joint_names_prefix = ns + "_" if ns else ""
-    ft_topic = "wrench"
+    arm = MortarPositionFineTuning()
 
-    arm = MortarPositionFineTuning(
-        use_gripper,
-        ns,
-        joint_names_prefix,
-        robot_urdf,
-        tcp_link,
-        ft_topic,
-    )
+    while not rospy.is_shutdown():
+        key = input(
+            "Select calibration mode and press enter\n"
+            + "0: Exit\n"
+            + "1: Move to position above mortar\n"
+            + "2: Calibrate mortar hight\n"
+            + "3: Fine tuning mortar position\n"
+            + "4: Calibrate grinding motion to target force\n"
+            + "5: Subscribe wrench\n"
+        )
+        if key == "0":
+            rospy.signal_shutdown("Exiting calibration")
+            break
+        elif key == "1":
+            arm.move_to_position_above_mortar()
+        elif key == "2":
+            try:
+                input_value = input(
+                    "Enter the adjustment step in mm for calibrating mortar height (leave blank for default 0.5 mm, 1000 steps calibration), then press enter to start: "
+                )
 
-    # arm.caliblate_mortar_hight()
-    arm.fine_tuning_mortar_position()
+                if input_value == "":
+                    arm.caliblate_mortar_hight(None)
+                else:
+                    step = float(input_value)
+                    arm.caliblate_mortar_hight(step / 1000)
+            except ValueError:
+                # 数値に変換できない場合のエラーメッセージ
+                print("Invalid input. Please enter a number.\n")
+
+        elif key == "3":
+            arm.fine_tuning_mortar_position()
+        elif key == "4":
+            arm.caliblate_grinding_motion_to_target_force()
+        elif key == "5":
+            arm.subscribe_wrench()
 
 
 if __name__ == "__main__":
