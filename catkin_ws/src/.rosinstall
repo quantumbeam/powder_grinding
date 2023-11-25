@@ -8,6 +8,8 @@
     version: master}
 - git: {local-name: third_party/DENSO_ROS, uri: 'https://github.com/DENSORobot/denso_robot_ros.git',
 version: master}
+- git: {local-name: third_party/DENSO_Cobotta_ROS, uri: 'https://github.com/DENSORobot/denso_cobotta_ros.git',
+version: master}
 - git: {local-name: third_party/universal_robot_moveit_and_gazebo, uri: 'https://github.com/ros-industrial/universal_robot.git',
 version: noetic-devel}
 - git: {local-name: third_party/ultralytics_ros, uri: 'https://github.com/Alpaca-zip/ultralytics_ros.git',

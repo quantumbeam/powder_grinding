@@ -1,4 +1,28 @@
 <robot name="cobotta">
+	<!-- Parameters for gazebo simulation.
+		NOTE: These are roughly estimated values.
+	-->
+	<xacro:property name="joint_damping" value="0.001" />
+	<xacro:property name="joint_friction" value="0.61" />
+	<xacro:property name="base_mass" value="1.4" /> 
+	<xacro:property name="J1_mass" value="1.29" />
+	<xacro:property name="J2_mass" value="0.39" />
+	<xacro:property name="J3_mass" value="0.35" />
+	<xacro:property name="J4_mass" value="0.35" />
+	<xacro:property name="J5_mass" value="0.19" />
+	<xacro:property name="J6_mass" value="0.03" />
+
+	<!-- Macro for calculating inertial matrix-->
+	<xacro:macro name="inertia_macro" params="radius height mass *origin">
+    	<inertial>
+    	  <mass value="${mass}" />
+		  <xacro:insert_block name="origin" />
+    	  <inertia ixx="${((1 / 4) * mass * radius * radius) + ((1 / 12) * mass * height * height)}" ixy="0.0" ixz="0.0"
+    	    iyy="${((1 / 4) * mass * radius * radius) + ((1 / 12) * mass * height * height)}" iyz="0.0"
+    	    izz="${(1 / 2) * mass * radius * radius}" />
+    	</inertial>
+  	</xacro:macro>
+
 	<gazebo>
 		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
 			<robotNamespace>/cobotta</robotNamespace>
@@ -13,22 +37,18 @@
 		<visual>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl"
-					scale="1 1 1" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl" scale="1 1 1" />
 			</geometry>
 		</visual>
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
-				<mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl"
-					scale="1 1 1" />
+				<mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
-			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		<xacro:inertia_macro radius="0.08" height="0.06" mass="${base_mass}">
+			<origin rpy="0.000000 0.000000 0.000000" xyz="-0.021310 0.000002 0.044011"/>
+		</xacro:inertia_macro>
 	</link>
 	<link name="J1">
 		<visual>
@@ -43,11 +63,9 @@
 				<mesh filename="package://grinding_descriptions/urdf/cobotta/J1.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
-			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		<xacro:inertia_macro radius="0.06" height="0.1" mass="${J1_mass}">
+			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.15" />
+		</xacro:inertia_macro>
 	</link>
 	<joint name="joint_1" type="revolute">
 		<parent link="base_link" />
@@ -55,7 +73,7 @@
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.108000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
 		<limit effort="1" lower="-2.617994" upper="2.617994" velocity="0.383012504350156" />
-		<dynamics damping="0" friction="0" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
 	</joint>
 	<transmission name="trans_1">
 		<type>transmission_interface/SimpleTransmission</type>
@@ -80,11 +98,9 @@
 				<mesh filename="package://grinding_descriptions/urdf/cobotta/J2.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
-			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		<xacro:inertia_macro radius="0.03" height="0.12" mass="${J2_mass}">
+			<origin rpy="0.000000 0.000000 0.000000" xyz="-0.020000 0.100000 0.070000" />
+		</xacro:inertia_macro>
 	</link>
 	<joint name="joint_2" type="revolute">
 		<parent link="J1" />
@@ -92,7 +108,7 @@
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.072000" />
 		<axis xyz="-0.000000 1.000000 -0.000000" />
 		<limit effort="1" lower="-1.047198" upper="1.745329" velocity="0.37256670877697" />
-		<dynamics damping="0" friction="0" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
 	</joint>
 	<transmission name="trans_2">
 		<type>transmission_interface/SimpleTransmission</type>
@@ -117,11 +133,9 @@
 				<mesh filename="package://grinding_descriptions/urdf/cobotta/J3.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
-			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		<xacro:inertia_macro radius="0.03" height="0.11" mass="${J3_mass}">
+			<origin rpy="0.000000 0.000000 0.000000" xyz="-0.01000 0.020000 0.030000" />
+		</xacro:inertia_macro>
 	</link>
 	<joint name="joint_3" type="revolute">
 		<parent link="J2" />
@@ -129,7 +143,7 @@
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.165000" />
 		<axis xyz="-0.000000 1.000000 -0.000000" />
 		<limit effort="1" lower="0.3141593" upper="2.443461" velocity="0.68942250783028" />
-		<dynamics damping="0" friction="0" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
 	</joint>
 	<transmission name="trans_3">
 		<type>transmission_interface/SimpleTransmission</type>
@@ -154,11 +168,9 @@
 				<mesh filename="package://grinding_descriptions/urdf/cobotta/J4.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
-			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		<xacro:inertia_macro radius="0.03" height="0.11" mass="${J4_mass}">
+			<origin rpy="0.000000 0.000000 0.000000" xyz="0.0000 0.000000 0.055000"/>
+		</xacro:inertia_macro>
 	</link>
 	<joint name="joint_4" type="revolute">
 		<parent link="J3" />
@@ -166,7 +178,7 @@
 		<origin rpy="0.000000 0.000000 0.000000" xyz="-0.012000 0.020000 0.088000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
 		<limit effort="1" lower="-2.96706" upper="2.96706" velocity="0.702189591308619" />
-		<dynamics damping="0" friction="0" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
 	</joint>
 	<transmission name="trans_4">
 		<type>transmission_interface/SimpleTransmission</type>
@@ -191,11 +203,9 @@
 				<mesh filename="package://grinding_descriptions/urdf/cobotta/J5.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
-			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		<xacro:inertia_macro radius="0.03" height="0.06" mass="${J5_mass}">
+			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.040000 0.015000"/>
+		</xacro:inertia_macro>
 	</link>
 	<joint name="joint_5" type="revolute">
 		<parent link="J4" />
@@ -203,7 +213,7 @@
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.020000 0.089500" />
 		<axis xyz="-0.000000 1.000000 -0.000000" />
 		<limit effort="1" lower="-1.658063" upper="2.356194" velocity="0.702189591308619" />
-		<dynamics damping="0" friction="0" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
 	</joint>
 	<transmission name="trans_5">
 		<type>transmission_interface/SimpleTransmission</type>
@@ -228,11 +238,9 @@
 				<mesh filename="package://grinding_descriptions/urdf/cobotta/J6.stl" scale="1 1 1" />
 			</geometry>
 		</collision>
-		<inertial>
-			<mass value="1" />
+		<xacro:inertia_macro radius="0.03" height="0.01" mass="${J6_mass}">
 			<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
-			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
-		</inertial>
+		</xacro:inertia_macro>
 	</link>
 	<joint name="joint_6" type="revolute">
 		<parent link="J5" />
@@ -240,7 +248,7 @@
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.044500 0.042000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
 		<limit effort="1" lower="-2.96706" upper="2.96706" velocity="1.05386470893922" />
-		<dynamics damping="0" friction="0" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
 	</joint>
 	<transmission name="trans_6">
 		<type>transmission_interface/SimpleTransmission</type>
@@ -253,7 +261,7 @@
 		</actuator>
 	</transmission>
 
-		<!-- Add end effector model -->
+		
 	<link name="spatula">
 		<visual>
 			<geometry>
@@ -262,8 +270,8 @@
 		</visual>
 	</link>
 	<joint name="joint_spatula" type="fixed">
-		<!-- 実際はグリッパの厚みでzが-0.036されるので注意 -->
-		<!-- zはグリッパ考慮して最大0.07まではいけそう -->
+		
+		
 		<origin rpy="0 0 -1.57079632679" xyz="0 -0.026 0.049" />
 		<parent link="J6" />
 		<child link="spatula" />
@@ -277,7 +285,7 @@
 		</visual>
 	</link>
 	<joint name="joint_spatula_tip" type="fixed">
-		<!-- 治具で0.06+ゴムベラ0.03 -->
+		
 		<origin rpy="-1.57079632679 0 -1.57079632679" xyz="0.09 0 0" />
 		<parent link="spatula" />
 		<child link="spatula_tip" />
@@ -305,7 +313,7 @@
 		</visual>
 	</link>
 	<joint name="joint_pestle_tip" type="fixed">
-		<!-- for pestle -->
+		
 		<origin rpy="0 0 0" xyz="0 0 0.160" />
 		<parent link="pestle" />
 		<child link="pestle_tip" />
