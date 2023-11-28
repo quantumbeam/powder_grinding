@@ -22,7 +22,7 @@ class PlanningScene:
     def init_planning_scene(self):
         mortar_mesh_file_path = (
             roslib.packages.get_pkg_dir("grinding_descriptions")
-            + "/mesh/Rviz/mortar_40mm.stl"
+            + "/mesh/moveit_scene_object/mortar_40mm.stl"
         )
         table_pos = rospy.get_param("~table_position", None)
         table_scale = rospy.get_param("~table_scale", None)
