@@ -306,23 +306,7 @@
       </visual>
     </link>
 
-    <link name="camera_jig">
-      <!-- 0.0001 means avoiding collision between pestle and wrist3 -->
-      <visual>
-        <origin xyz="0 0 0.0001" rpy="0 0 0" />
-        <geometry>
-          <mesh
-            filename="package://grinding_descriptions/mesh/Rviz/Intel_RealSense_Depth_Camera_D435_v3.stl" />
-        </geometry>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0.0001" rpy="0 0 0" />
-        <geometry>
-          <mesh
-            filename="package://grinding_descriptions/mesh/Rviz/Intel_RealSense_Depth_Camera_D435_v3.stl" />
-        </geometry>
-      </collision>
-    </link>
+
     <link name="calibrated_color_optical_frame">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -483,9 +467,16 @@
     <link name="${prefix}tool2" />
     <joint name="${prefix}flange-tool2" type="fixed">
       <!-- default toolframe: X+ left, Y+ up, Z+ front -->
-      <origin xyz="0.0075 0 -0.0432" rpy="0 ${pi} ${pi/2.0}" />
+      <origin xyz="0.0075 0.0432 0" rpy="${-pi/2.0} ${pi/2.0} 0" />
       <parent link="${prefix}flange" />
       <child link="${prefix}tool2" />
+    </joint>
+    <link name="${prefix}tool3" />
+    <joint name="${prefix}flange-tool3" type="fixed">
+      <!-- default toolframe: X+ left, Y+ up, Z+ front -->
+      <origin xyz="0.0075 0 -0.0432" rpy="0 ${pi} ${pi/2.0}" />
+      <parent link="${prefix}flange" />
+      <child link="${prefix}tool3" />
     </joint>
 
     <!-- user (nakajima) added joints -->
@@ -495,13 +486,13 @@
       <child link="pestle" />
     </joint>
     <joint name="joint_pestle_tip" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0.130" />
+      <origin rpy="0 0 0" xyz="0 0 0.12044162537801482" />
       <parent link="pestle" />
       <child link="pestle_tip" />
     </joint>
 
     <!-- center of surface on spatula bearing -->
-    <joint name="joint_spatula" type="fixed">
+    <!-- <joint name="joint_spatula" type="fixed">
       <origin rpy="0 ${-pi/2} 0" xyz="-0.03655 0 0.0135" />
       <parent link="${prefix}wrist_3_link" />
       <child link="spatula" />
@@ -510,26 +501,36 @@
       <origin rpy="0 0 0" xyz="0 0 0.092" />
       <parent link="spatula" />
       <child link="spatula_tip" />
+    </joint> -->
+    <joint name="joint_spatula" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <parent link="${prefix}tool1" />
+      <child link="spatula" />
     </joint>
+    <joint name="joint_spatula_tip" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0.092" />
+      <parent link="spatula" />
+      <child link="spatula_tip" />
+    </joint>
+
 
     <!-- center of surface  on jig-->
     <joint name="joint_spoon" type="fixed">
-      <origin rpy="${-pi/2} 0 0" xyz="0.008 0.042 0" />
-      <parent link="${prefix}flange" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <parent link="${prefix}tool2" />
       <child link="spoon" />
     </joint>
     <joint name="joint_spoon_tip" type="fixed">
-      <origin rpy="0 0 0" xyz="0.02 0 0.115" />
-
+      <origin rpy="0 0 ${pi}" xyz="0 -0.025 0.145" />
       <parent link="spoon" />
       <child link="spoon_tip" />
     </joint>
 
-    <joint name="joint_camera_jig" type="fixed">
+    <!-- <joint name="joint_camera_jig" type="fixed">
       <origin rpy="0 0 ${-pi/2.0}" xyz="0 0.0605 0.03" />
-      <parent link="${prefix}tool2" />
+      <parent link="${prefix}tool3" />
       <child link="camera_jig" />
-    </joint>
+    </joint> -->
 
     <!-- This frame is calculated by MoveitCalibration -->
     <joint name="joint_calibrated_color_optical_frame" type="fixed">
