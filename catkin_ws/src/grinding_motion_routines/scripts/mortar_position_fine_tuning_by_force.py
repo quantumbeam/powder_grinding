@@ -4,6 +4,7 @@
 import rospy
 import tf.transformations as tf
 from threading import Event
+import tf2_ros
 
 from std_srvs.srv import Empty
 from geometry_msgs.msg import WrenchStamped
@@ -64,6 +65,23 @@ class MortarPositionFineTuning:
         self.current_force = wrench_msg.wrench.force
         self.current_torque = wrench_msg.wrench.torque
 
+    def _listen_tf(self, parent_frame, child_frame):
+        tfBuffer = tf2_ros.Buffer()
+        listener = tf2_ros.TransformListener(tfBuffer)
+        rate = rospy.Rate(10.0)
+        rate.sleep()
+
+        try:
+            trans = tfBuffer.lookup_transform(child_frame, parent_frame, rospy.Time())
+            return trans
+        except (
+            tf2_ros.LookupException,
+            tf2_ros.ConnectivityException,
+            tf2_ros.ExtrapolationException,
+        ) as err:
+            print("tf listen error%s" % err)
+            return err
+
     def move_to_position_above_mortar(self):
         rospy.loginfo("Moving to start position")
         q = tf.quaternion_from_euler(pi, 0, pi)
@@ -78,8 +96,40 @@ class MortarPositionFineTuning:
             vel_scale=0.1,
             acc_scale=0.1,
         )
-
         self._zero_ft_sensor()
+
+    def caliblate_pestle_tip_position(self, boad_tickness):
+        # moving to vertical pose of current position
+        vertical_pose = self._pose_stumped_to_list(
+            self.moveit.move_group.get_current_pose()
+        )
+        orientation = tf.quaternion_from_euler(0, pi, 0)
+        vertical_pose[3:] = orientation
+        print(vertical_pose)
+        self.moveit.execute_to_goal_pose(vertical_pose, ee_link=self.grinding_eef_link)
+
+        delta = np.zeros(7)
+        for _ in range(1000):
+            delta[2] = -0.001
+            result = self._move_and_check_force(delta)
+            if result:
+                rospy.loginfo("Calibration finished")
+                # calculate the pestle tip position
+                robot_base_palte_tickness = rospy.get_param(
+                    "~robot_base_palte_tickness"
+                )
+                tool0_pose = self._listen_tf("base_link", "tool0")
+                pestle_tip_length = (
+                    abs(tool0_pose.transform.translation.z)
+                    + robot_base_palte_tickness
+                    - boad_tickness
+                )
+
+                rospy.loginfo("Pestle tip length: %s", pestle_tip_length)
+                rospy.loginfo("You can update the pestle tip length in URDF file")
+                break
+            if rospy.is_shutdown():
+                break
 
     def _pose_stumped_to_list(self, pose):
         return [
@@ -92,20 +142,24 @@ class MortarPositionFineTuning:
             pose.pose.orientation.w,
         ]
 
-    def caliblate_mortar_hight(self, step):
+    def caliblate_mortar_hight(self, boad_tickness):
         delta = np.zeros(7)
 
-        if step is None:
-            for _ in range(1000):
-                delta[2] = -0.001
-                result = self._move_and_check_force(delta)
-                if result:
-                    break
-                if rospy.is_shutdown():
-                    break
-        else:
-            delta[2] = -step
-            self._move_and_check_force(delta)
+        for _ in range(1000):
+            delta[2] = -0.001
+            result = self._move_and_check_force(delta)
+            if result:
+                rospy.loginfo("Calibration finished")
+                pestle_tip_pose = self._pose_stumped_to_list(
+                    self.moveit.move_group.get_current_pose()
+                )
+                mortar_position_Z = (
+                    pestle_tip_pose.transform.translation.z - boad_tickness
+                )
+                rospy.loginfo("Mortar position Z: %s", mortar_position_Z)
+                break
+            if rospy.is_shutdown():
+                break
 
     def _move_and_check_force(self, delta):
         current_pose = self._pose_stumped_to_list(
@@ -123,10 +177,6 @@ class MortarPositionFineTuning:
         rospy.loginfo(f"Force z after move: {self.current_force.z}")
 
         if np.abs(self.current_force.z) > self.force_threshold:
-            finished_pose = self.moveit.move_group.get_current_pose()
-            rospy.loginfo("Calibration finished")
-            print("EE Pose:", finished_pose)
-            print("Mortar height:", finished_pose.pose.position.z)
             return True
         else:
             return False
@@ -231,37 +281,43 @@ def main():
         key = input(
             "Select calibration mode and press enter\n"
             + "0: Exit\n"
-            + "1: Move to position above mortar\n"
-            + "2: Calibrate mortar hight\n"
-            + "3: Fine tuning mortar position\n"
-            + "4: Calibrate grinding motion to target force\n"
-            + "5: Subscribe wrench\n"
+            + "1: Calibrate pestle tip position\n"
+            + "2: Set rough Mortar XY position as pestle tip\n"
+            + "3: Move to position above Mortar\n"
+            + "4: Calibrate Mortar Z\n"
+            + "5: Fine tuning Mortar XY position\n"
+            + "6: Calibrate grinding target force\n"
+            + "7: Subscribe wrench\n"
         )
         if key == "0":
-            rospy.signal_shutdown("Exiting calibration")
-            break
+            rospy.loginfo("Exit calibration mode")
+            rospy.signal_shutdown("finish")
         elif key == "1":
-            arm.move_to_position_above_mortar()
-        elif key == "2":
             try:
-                input_value = input(
-                    "Enter the adjustment step in mm for calibrating mortar height (leave blank for default 0.5 mm, 1000 steps calibration), then press enter to start: "
+                tickness = input(
+                    "Enter the tickness of board in mm, then press enter to start: "
                 )
-
-                if input_value == "":
-                    arm.caliblate_mortar_hight(None)
+                if tickness == "":
+                    print("Invalid input. Please enter a number.\n")
                 else:
-                    step = float(input_value)
-                    arm.caliblate_mortar_hight(step / 1000)
+                    arm.caliblate_pestle_tip_position(float(tickness))
             except ValueError:
                 # 数値に変換できない場合のエラーメッセージ
                 print("Invalid input. Please enter a number.\n")
 
         elif key == "3":
-            arm.fine_tuning_mortar_position()
+            arm.move_to_position_above_mortar()
         elif key == "4":
-            arm.caliblate_grinding_motion_to_target_force()
+            tickness = input(
+                "Enter the tickness of board in mm, then press enter to start: "
+            )
+            arm.caliblate_mortar_hight(tickness)
+
         elif key == "5":
+            arm.fine_tuning_mortar_position()
+        elif key == "6":
+            arm.caliblate_grinding_motion_to_target_force()
+        elif key == "7":
             arm.subscribe_wrench()
 
 
