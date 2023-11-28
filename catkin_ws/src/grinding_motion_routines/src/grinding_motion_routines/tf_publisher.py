@@ -12,7 +12,7 @@ class TFPublisher:
         pass
 
     def broadcast_tf_with_waypoints(
-        self, waypoints, parent_link="world", child_link="debug_"
+        self, waypoints, parent_link="base_link", child_link="debug_"
     ):
         rate = rospy.Rate(10)
         for index, pose in enumerate(waypoints):
@@ -30,7 +30,7 @@ class TFPublisher:
             )
             rate.sleep()
 
-    def broadcast_tf_with_pose(self, pose, parent_link="world", child_link="debug"):
+    def broadcast_tf_with_pose(self, pose, parent_link="base_link", child_link="debug"):
         pub_pose = Pose()
         pub_pose.position.x = pose[0]
         pub_pose.position.y = pose[1]
