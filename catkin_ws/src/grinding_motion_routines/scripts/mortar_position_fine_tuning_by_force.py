@@ -27,7 +27,7 @@ class MortarPositionFineTuning:
         self.moveit = MoveitExecutor(move_group_name, ee_link)
         self.grinding_eef_link = rospy.get_param("~grinding_eef_link")
 
-        self.mortar_position = rospy.get_param("~mortar_position")
+        self.mortar_position = rospy.get_param("~mortar_top_position")
         self.mortar_scale = rospy.get_param("~mortar_inner_scale")
         self.force_threshold = rospy.get_param("~force_threshold")
         self.total_joints_limits_for_trajectory = 0.1

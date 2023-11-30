@@ -15,7 +15,17 @@ class MarkerDisplay(object):
     def __init__(self, marker_publisher_name):
         self.pub = rospy.Publisher(marker_publisher_name, MarkerArray, queue_size=10)
 
-    def display_waypoints(self, waypoints, scale=0.003, type=None):
+    def clear_marker(self):
+        marker = Marker()
+        marker_array = MarkerArray()
+        marker.action = Marker.DELETEALL
+        marker_array.markers.append(marker)
+        self.pub.publish(marker_array)
+
+    def display_waypoints(self, waypoints, scale=0.003, type=None, clear=False):
+        if clear:
+            self.clear_marker()
+
         pub = self.pub
         marker = Marker()
         marker_array = MarkerArray()

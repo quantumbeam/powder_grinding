@@ -114,7 +114,7 @@ def main():
     experimental_time = rospy.get_param("~experimental_time")
 
     ################### motion generator ###################
-    mortar_base_pos = rospy.get_param("~mortar_position")
+    mortar_base_pos = rospy.get_param("~mortar_top_position")
     mortar_high = rospy.get_param("~mortar_hight")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
     motion_gen = motion_generator.MotionGenerator(
@@ -235,7 +235,7 @@ def main():
                         vel_scale=0.5,
                         acc_scale=0.5,
                     )
-                    
+
                     moveit.execute_to_goal_pose(
                         init_pose,
                         ee_link=gathering_ee_link,

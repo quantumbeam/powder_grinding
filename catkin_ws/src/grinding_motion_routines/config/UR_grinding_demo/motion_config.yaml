@@ -25,8 +25,8 @@ grinding_center_pos:
 grinding_number_of_rotation : 30
 grinding_sec_per_rotation : 0.5
 grinding_angle_param : 0.3
-grinding_rz_begining : 37.5
-grinding_rz_end : 37.5
+grinding_rz_begining : 35
+grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10

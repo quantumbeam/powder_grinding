@@ -36,15 +36,18 @@ debug_marker = marker_display.MarkerDisplay("debug_marker")
 debug_tf = tf_publisher.TFPublisher()
 
 
-def display_debug_waypoints(waypoints, tf_name="debug"):
-    rospy.loginfo("Display waypoints")
-    debug_marker.display_waypoints(waypoints)
-    debug_tf.broadcast_tf_with_waypoints(
-        waypoints, parent_link="base_link", child_link=tf_name + "_waypoints"
-    )
+def display_debug_waypoints(waypoints, debug_type, tf_name="debug"):
+    if debug_type == "mk":
+        rospy.loginfo("Display waypoints marker")
+        debug_marker.display_waypoints(waypoints, clear=True)
+    elif debug_type == "tf":
+        rospy.loginfo("Display waypoints tf")
+        debug_tf.broadcast_tf_with_waypoints(
+            waypoints, parent_link="base_link", child_link=tf_name + "_waypoints"
+        )
 
 
-def compute_grinding_waypoints(motion_generator, debug=False):
+def compute_grinding_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
         begining_position=rospy.get_param("~grinding_pos_begining"),
         end_position=rospy.get_param("~grinding_pos_end"),
@@ -58,12 +61,12 @@ def compute_grinding_waypoints(motion_generator, debug=False):
         ),
         center_position=rospy.get_param("~grinding_center_pos"),
     )
-    if debug:
-        display_debug_waypoints(waypoints)
+    if debug_type != False:
+        display_debug_waypoints(waypoints, debug_type)
     return waypoints
 
 
-def compute_gathering_waypoints(motion_generator, debug=False):
+def compute_gathering_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
         begining_position=rospy.get_param("~circular_gathering_pos_begining"),
         end_position=rospy.get_param("~circular_gathering_pos_end"),
@@ -76,12 +79,12 @@ def compute_gathering_waypoints(motion_generator, debug=False):
             "~circular_gathering_number_of_waypoints_per_circle"
         ),
     )
-    if debug:
-        display_debug_waypoints(waypoints)
+    if debug_type != False:
+        display_debug_waypoints(waypoints, debug_type)
     return waypoints
 
 
-def compute_scooping_waypoints(motion_generator, debug=False):
+def compute_scooping_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_cartesian_waypoints(
         begining_position=rospy.get_param("~scooping_pos_begining"),
         end_position=rospy.get_param("~scooping_pos_end"),
@@ -91,8 +94,8 @@ def compute_scooping_waypoints(motion_generator, debug=False):
         yaw_angle=rospy.get_param("~scooping_yaw_angle"),
         number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
     )
-    if debug:
-        display_debug_waypoints(waypoints, tf_name="sc")
+    if debug_type != False:
+        display_debug_waypoints(waypoints, debug_type)
 
     return waypoints
 
@@ -109,7 +112,9 @@ def exit_process(msg=""):
 def command_to_execute(cmd):
     if cmd == "y":
         return True
-    elif cmd == "s":
+    elif cmd == "mk":
+        return False
+    elif cmd == "tf":
         return False
     else:
         return None
@@ -121,14 +126,11 @@ def main():
     experimental_time = rospy.get_param("~experimental_time")
 
     ################### motion generator ###################
-    mortar_base_pos = rospy.get_param("~mortar_position")
-    mortar_high = rospy.get_param("~mortar_hight")
+    mortar_base_pos = rospy.get_param("~mortar_top_position")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
     funnel_position = rospy.get_param("~funnel_position")
     pouring_hight = rospy.get_param("~pouring_hight_at_funnel")
-    motion_gen = motion_generator.MotionGenerator(
-        mortar_base_pos, mortar_high, mortar_inner_scale
-    )
+    motion_gen = motion_generator.MotionGenerator(mortar_base_pos, mortar_inner_scale)
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
@@ -140,7 +142,7 @@ def main():
     ################### init pose ###################
     init_pos = copy.deepcopy(mortar_base_pos)
     rospy.loginfo("Mortar pos: " + str(init_pos))
-    init_pos["z"] += 0.1
+    init_pos["z"] += 0.05
     r = Rotation.from_euler("xyz", [pi, 0, pi], degrees=False)
     quat = r.as_quat()
     init_pose = list(init_pos.values()) + list(quat)
@@ -169,8 +171,6 @@ def main():
             motion_command = input(
                 "q \t= exit.\n"
                 + "scene \t= init planning scene.\n"
-                + "calib_hight \t= go to calibration pose of mortar hight.\n"
-                + "calib_pos \t= go to calibration pose of mortar position.\n"
                 + "g \t= grinding demo.\n"
                 + "G \t= circular gathering demo.\n"
                 + "sc \t= scooping demo.\n"
@@ -187,31 +187,13 @@ def main():
             elif motion_command == "scene":
                 rospy.loginfo("Init planning scene")
                 planning_scene.init_planning_scene()
-            elif motion_command == "calib_hight":
-                rospy.loginfo("Go to caliblation pose of mortar hight")
-                pos = mortar_base_pos
-                pos["z"] += rospy.get_param("~mortar_hight")
-                quat = tf.quaternion_from_euler(0, -pi, 0)
-                calib_pose = list(pos.values()) + quat.tolist()
-                moveit.execute_cartesian_path_to_goal_pose(
-                    calib_pose, ee_link=grinding_ee_link
-                )
-            elif motion_command == "calib_pos":
-                rospy.loginfo("Go to caliblation pose of mortar position")
-                mortar_position_calib_joint_angles = rospy.get_param(
-                    "~mortar_position_calib_joint_angles"
-                )
-                moveit.execute_to_joint_goal(
-                    mortar_position_calib_joint_angles, vel_scale=0.1, acc_scale=0.1
-                )
 
             elif motion_command == "g":
                 key = input(
-                    "Start grinding demo.\n execute = 'y', show waypoints = 's', canncel = other\n"
+                    "Start grinding demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
                 )
-                if key == "s":
-                    compute_grinding_waypoints(motion_gen, debug=True)
-                elif command_to_execute(key) != None:
+                exec = command_to_execute(key)
+                if exec:
                     grinding_joint_trajectory = (
                         primitive.JTC_executor.generate_joint_trajectory(
                             compute_grinding_waypoints(motion_gen),
@@ -225,36 +207,44 @@ def main():
                         ee_link=grinding_ee_link,
                         grinding_sec=grinding_sec,
                     )
+                elif exec == False:
+                    compute_grinding_waypoints(motion_gen, debug_type=key)
             elif motion_command == "G":
                 key = input(
-                    "Start circular gathering demo.\n execute = 'y', show waypoints = 's',  canncel = other\n"
+                    "Start circular gathering demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
                 )
-                if key == "s":
-                    compute_gathering_waypoints(motion_gen, debug=True)
-                elif command_to_execute(key) != None:
+                exec = command_to_execute(key)
+                if exec:
                     primitive.execute_gathering(
                         compute_gathering_waypoints(motion_gen),
                         ee_link=gathering_ee_link,
                     )
+                elif exec == False:
+                    compute_gathering_waypoints(motion_gen, debug_type=key)
+
             elif motion_command == "sc":
                 key = input(
-                    "Start scooping demo.\n execute = 'y', show waypoints = 's',  canncel = other\n"
+                    "Start scooping demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
                 )
-                if key == "s":
-                    compute_scooping_waypoints(motion_gen, debug=True)
-                elif command_to_execute(key) != None:
+                exec = command_to_execute(key)
+                if exec:
                     primitive.execute_scooping(compute_scooping_waypoints(motion_gen))
+                elif exec == False:
+                    display_debug_waypoints(
+                        compute_scooping_waypoints(motion_gen), debug_type=key
+                    )
             elif motion_command == "po":
                 key = input(
-                    "Start powder pouring demo at current position.\n execute = 'y', show waypoints = 's',  canncel = other\n"
+                    "Start powder pouring demo at current position.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
                 )
-                if command_to_execute(key) != None:
+                exec = command_to_execute(key)
+                if exec:
                     primitive.execute_powder_pouring(pouring_position)
             elif motion_command == "all":
                 key = input(
-                    "Start demo of grinding, gathering, scooring and pouring.\n execute = 'y', show waypoints = 's',  canncel = other\n"
+                    "Start demo of grinding, gathering, scooring and pouring.\n execute = 'y', canncel = other\n"
                 )
-                if command_to_execute(key) != None:
+                if command_to_execute(key):
                     grinding_joint_trajectory = (
                         primitive.JTC_executor.generate_joint_trajectory(
                             compute_grinding_waypoints(motion_gen),

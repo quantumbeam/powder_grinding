@@ -11,27 +11,11 @@ from numpy import pi, nan
 
 
 class MotionGenerator:
-    def __init__(self, mortar_base_position, moratr_hight, mortar_inner_scale):
-        """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_scale [x:,y:,z:], 'float' moratr_hight"""
+    def __init__(self, mortar_top_center_position, mortar_inner_scale):
+        """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_scale [x:,y:,z:]"""
 
-        self.mortar_top_center_position = mortar_base_position.copy()
-        self.mortar_top_center_position["z"] += moratr_hight
-
+        self.mortar_top_center_position = mortar_top_center_position
         self.mortar_inner_scale = mortar_inner_scale
-
-    # def _convert_pose(self, waypoints):
-    #     # arrayからwaypointsに変換
-    #     pose_buf = Pose()
-    #     pose_waypoints = []
-    #     for pose in waypoints:
-    #         pose_buf.position.x = pose[0]
-    #         pose_buf.position.y = pose[1]
-    #         pose_buf.position.z = pose[2]
-    #         pose_buf.orientation = Quaternion(
-    #             x=pose[3], y=pose[4], z=pose[5], w=pose[6]
-    #         )
-    #         pose_waypoints.append(copy.deepcopy(pose_buf))
-    #     return pose_waypoints
 
     def _calc_quaternion_of_mortar_inner_wall(
         self, position, angle_param, yaw, fixed_quaternion=False
