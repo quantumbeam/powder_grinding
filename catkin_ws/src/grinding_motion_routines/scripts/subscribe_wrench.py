@@ -26,24 +26,33 @@ def handle_start_stop(req):
         forces_x.clear()
         forces_y.clear()
         forces_z.clear()
-        return PositionCalibrateVectorResponse(True, 0, 0, 0)
+        return PositionCalibrateVectorResponse(True, 0, 0, 0, 0, 0, 0)
     elif req.command == "stop":
         is_recording = False
         # Compute the integrals and return
-        integral_x, integral_y, var_z = compute_statistics()
+        integral_x, integral_y, integral_z, var_x, var_y, var_z = compute_statistics()
 
-        return PositionCalibrateVectorResponse(True, integral_x, integral_y, var_z)
+        return PositionCalibrateVectorResponse(
+            True, integral_x, integral_y, integral_z, var_x, var_y, var_z
+        )
 
 
 def compute_statistics():
     global forces_x, forces_y
     integral_x = sum(forces_x)
     integral_y = sum(forces_y)
+    integral_z = sum(forces_z)
+    var_x = np.var(forces_x)
+    var_y = np.var(forces_y)
     var_z = np.var(forces_z)
     rospy.loginfo(f"Integral x: {integral_x}")
     rospy.loginfo(f"Integral y: {integral_y}")
+    rospy.loginfo(f"Integral z: {integral_z}")
+    rospy.loginfo(f"Variance x: {var_x}")
+    rospy.loginfo(f"Variance y: {var_y}")
     rospy.loginfo(f"Variance z: {var_z}")
-    return integral_x, integral_y, var_z
+
+    return integral_x, integral_y, integral_z, var_x, var_y, var_z
 
 
 def wrench_callback(wrench_msg):

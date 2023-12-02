@@ -15,18 +15,17 @@ class PlanningScene:
         self.scene = PlanningSceneInterface()
         self.scene.remove_world_object("table")
         self.scene.remove_world_object("mortar")
-        self.scene.remove_world_object("mortar_base")
         self.scene.remove_world_object("funnel")
         self.scene.remove_world_object("MasterSizer")
 
     def init_planning_scene(self):
         mortar_mesh_file_path = (
             roslib.packages.get_pkg_dir("grinding_descriptions")
-            + "/mesh/Rviz/mortar_40mm.stl"
+            + "/mesh/moveit_scene_object/mortar_40mm.stl"
         )
         table_pos = rospy.get_param("~table_position", None)
         table_scale = rospy.get_param("~table_scale", None)
-        mortar_pos = rospy.get_param("~mortar_position", None)
+        mortar_pos = rospy.get_param("~mortar_top_position", None)
         mortar_inner_scale = rospy.get_param("~mortar_inner_scale", None)
         funnel_pos = rospy.get_param("~funnel_position", None)
         funnel_scale = rospy.get_param("~funnel_scale", None)
@@ -40,12 +39,6 @@ class PlanningScene:
         # Add mortar if parameters are provided
         if mortar_pos:
             self._add_mortar(mortar_mesh_file_path, mortar_pos)
-            if (
-                table_pos and table_pos["z"] < mortar_pos["z"]
-            ):  # mortar position is higher than table
-                self._add_mortar_base(
-                    mortar_inner_scale, mortar_pos, table_pos, table_scale
-                )
 
         # Add funnel if parameters are provided
         if funnel_pos and funnel_scale:
@@ -65,20 +58,6 @@ class PlanningScene:
             "Table",
             table_pose,
             size=(table_scale["x"], table_scale["y"], table_scale["z"]),
-        )
-
-    def _add_mortar_base(self, mortar_inner_scale, mortar_pos, table_pos, table_scale):
-        mortar_base_pose = geometry_msgs.msg.PoseStamped()
-        mortar_base_pose.header.frame_id = self.planning_frame
-        mortar_base_pose.pose.orientation.w = 1.0
-        mortar_base_pose.pose.position.y = mortar_pos["x"]
-        mortar_base_pose.pose.position.y = mortar_pos["y"]
-        base_hight = mortar_pos["z"] - table_pos["z"]
-        mortar_base_pose.pose.position.z = table_pos["z"] + base_hight / 2
-        self.scene.add_box(
-            "Mortar_base",
-            mortar_base_pose,
-            size=(table_scale["x"], mortar_inner_scale["y"] * 2, base_hight),
         )
 
     def _add_mortar(self, file_path, mortar_pos):

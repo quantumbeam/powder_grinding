@@ -1,3 +1,6 @@
-force_threshold: 3
-calibration_move_step: 0.001
-calibration_plate_tickness: 0.0052
+robot_base_palte_tickness: 0.015 # [m]
+force_threshold: 3 # [N]
+Z_calibration_step: 0.001 # [m]
+
+XY_calibration_step: 0.0005 # [m]
+calibrated_variance_of_force: 0.01 # [N^2]

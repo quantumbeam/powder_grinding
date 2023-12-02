@@ -25,8 +25,8 @@ grinding_center_pos:
 grinding_number_of_rotation : 30
 grinding_sec_per_rotation : 0.5
 grinding_angle_param : 0.3
-grinding_rz_begining : 37.5
-grinding_rz_end : 37.5
+grinding_rz_begining : 35
+grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
@@ -46,7 +46,7 @@ circular_gathering_rz_end : 31.3
 circular_gathering_vel_scale : 0.1
 circular_gathering_acc_scale : 0.1
 circular_gathering_number_of_waypoints_per_circle : 20
-circular_gathering_yaw_angle : rad(pi)
+circular_gathering_yaw_angle : rad(pi/2)
 
 # scooping params 
 # scooping_pos_begining : 
@@ -70,7 +70,7 @@ scooping_angle_param : 1
 scooping_vel_scale : 0.1
 scooping_acc_scale : 0.1
 scooping_number_of_waypoints : 20
-scooping_yaw_angle : rad(pi)
+scooping_yaw_angle : rad(-pi/2)
 
 
 pouring_hight_at_funnel : 0.2

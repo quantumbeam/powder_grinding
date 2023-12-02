@@ -4,9 +4,8 @@ move_group_name: "manipulator"
 table_position  :  {x: 0, y: 0, z: -0.015} # 0.015 is hight of UR5e base plate
 table_scale  :  {x: 0.9, y: 1.5, z: 0.1}
 
-mortar_position  :  {x:  0.39436323098562737, y: 0.3668537939641375, z: 0} # z > 0
+mortar_top_position  :  {x:  0.39436323098562737, y: 0.3668537939641375, z: 0.04267344145385177} 
 mortar_inner_scale:  {x:  0.04, y: 0.04, z: 0.035} # official infomation says 0.04 * 0.04 * 0.032 but z is more deep actually 
-mortar_hight: 0.038  # mortar bottom hight from robot base,this value is calibraited by hand (calibrated same hight between pestle tip and mortar top surface)
 
 # test funnel
 funnel_position  :  {x:  0.06693, y: 0.323, z: 0}
