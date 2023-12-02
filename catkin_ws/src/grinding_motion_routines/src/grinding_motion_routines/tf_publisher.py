@@ -9,6 +9,7 @@ class TFPublisher:
     def __init__(self) -> None:
         self.broadcaster = tf2_ros.TransformBroadcaster()
         self.tf = geometry_msgs.msg.TransformStamped()
+        
         pass
 
     def broadcast_tf_with_waypoints(
