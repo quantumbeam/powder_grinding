@@ -1,6 +1,6 @@
 <launch>
-    <arg name="filterd_wrench_topic" default="/wrench/filtered" />
-    <arg name="zero_wrench_service" default="/wrench/filtered/zero_ftsensor" />
+    <arg name="filterd_wrench_topic" default="/leptrino/force_torque/filtered" />
+    <arg name="zero_wrench_service" default="/leptrino/force_torque/filtered/zero_ftsensor" />
 
     <arg
         name="planning_scene_config"

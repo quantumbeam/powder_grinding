@@ -5,7 +5,7 @@
         <param name="com_port" value="$(arg comport)" />
     </node>
 
-    <node name="ft_filter" pkg="grinding_force_torque" type="ft_filter.py"
+    <node name="leptrino_ft_filter" pkg="grinding_force_torque" type="ft_filter.py"
         args="-z -t 'leptrino/force_torque'"
         output="screen" />
 </launch>  
