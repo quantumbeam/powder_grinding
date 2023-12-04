@@ -115,10 +115,9 @@ def main():
 
     ################### motion generator ###################
     mortar_base_pos = rospy.get_param("~mortar_top_position")
-    mortar_high = rospy.get_param("~mortar_hight")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
     motion_gen = motion_generator.MotionGenerator(
-        mortar_base_pos, mortar_high, mortar_inner_scale
+        mortar_base_pos, mortar_inner_scale
     )
 
     ################### motion executor ###################
