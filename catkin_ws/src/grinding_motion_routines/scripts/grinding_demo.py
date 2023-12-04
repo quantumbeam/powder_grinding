@@ -220,7 +220,6 @@ def main():
                     )
             elif motion_command == "GG":
                 if input_command("Start grinding and gathering demo.") != None:
-                    time.sleep(5)
                     waypoints = compute_grinding_waypoints(motion_gen)
                     moveit.execute_cartesian_path_by_waypoints(
                         waypoints,
