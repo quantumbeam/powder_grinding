@@ -126,9 +126,8 @@ class MortarPositionFineTuning:
         vertical_pose = self._pose_stumped_to_list(
             self.moveit.move_group.get_current_pose()
         )
-        orientation = tf.quaternion_from_euler(0, pi, 0)
-        vertical_pose[3:] = orientation
-        print(vertical_pose)
+        quat = Rotation.from_euler("xyz", [0, pi, 0]).as_quat()
+        vertical_pose[3:] = quat
         self.moveit.execute_to_goal_pose(vertical_pose, ee_link=self.grinding_eef_link)
 
     def move_to_position_above_mortar(self):
@@ -231,9 +230,14 @@ class MortarPositionFineTuning:
 
         # Execute waypoints
         rospy.loginfo("Goto initial position")
-        self.moveit.execute_cartesian_path_to_goal_pose(
-            waypoints[0], ee_link=self.grinding_eef_link, vel_scale=0.1, acc_scale=0.1
+        self.moveit.execute_cartesian_path_by_waypoints(
+            waypoints[0:10],
+            ee_link=self.grinding_eef_link,
+            vel_scale=0.1,
+            acc_scale=0.1,
         )
+        rospy.sleep(1)  # wait for force sensor to settle
+
         rospy.loginfo("Start calibration grinding motion")
         self.xy_calibrate_service_client("start")
         self.moveit.execute_cartesian_path_by_waypoints(
@@ -244,26 +248,26 @@ class MortarPositionFineTuning:
         rospy.loginfo("Calibration grinding motion finished")
 
         # Update mortar position
-        # direction of x axis of end-effector is opposite from base_link
-        # direction of y axis of end-effector is same as base_link
+        # direction of x axis of end-effector is same as force sensor
+        # direction of y axis of end-effector is opposite from force sensor
         step = rospy.get_param("~XY_calibration_step")
         new_mortar_position = self.mortar_position.copy()
         if response.integral_force_x > 0:
-            new_mortar_position["x"] += step
-        elif response.integral_force_x < 0:
             new_mortar_position["x"] -= step
+        elif response.integral_force_x < 0:
+            new_mortar_position["x"] += step
         if response.integral_force_y > 0:
-            new_mortar_position["y"] -= step
-        elif response.integral_force_y < 0:
             new_mortar_position["y"] += step
-        self.mortar_position = new_mortar_position
+        elif response.integral_force_y < 0:
+            new_mortar_position["y"] -= step
 
         rospy.loginfo("Current mortar position: %s", self.mortar_position)
-        rospy.loginfo("New mortar position: %s", self.mortar_position)
+        rospy.loginfo("New mortar position: %s", new_mortar_position)
 
-        # rospy.set_param("~mortar_top_position", self.mortar_position)
-        # self.scene.init_planning_scene()
-        # generator.update_mortar_position(self.mortar_position)
+        rospy.set_param("~mortar_top_position", new_mortar_position)
+        self.scene.init_planning_scene()
+        generator.update_mortar_position(new_mortar_position)
+        self.mortar_position = new_mortar_position
 
         # Check variance of force
         if (

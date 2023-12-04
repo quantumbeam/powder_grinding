@@ -26,7 +26,7 @@ class PlanningScene:
         table_pos = rospy.get_param("~table_position", None)
         table_scale = rospy.get_param("~table_scale", None)
         mortar_pos = rospy.get_param("~mortar_top_position", None)
-        mortar_inner_scale = rospy.get_param("~mortar_inner_scale", None)
+        print("Loading mortar pos:", mortar_pos)
         funnel_pos = rospy.get_param("~funnel_position", None)
         funnel_scale = rospy.get_param("~funnel_scale", None)
         MasterSizer_pos = rospy.get_param("~MasterSizer_position", None)
