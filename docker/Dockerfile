@@ -1,3 +1,4 @@
+
 FROM osrf/ros:noetic-desktop-full
 LABEL maintainer="Nakajima<yusaku_nakajima@ap.eng.osaka-u.ac.jp>"
 
@@ -56,7 +57,6 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
 RUN echo "source /home/ubuntu/onolab/catkin_ws/devel/setup.bash" >> /root/.bashrc
 RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> /root/.bashrc
 RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
-RUN mkdir -p /home/ubuntu/onolab/catkin_ws/src
 RUN cd /home/ubuntu/onolab/catkin_ws && /bin/bash -c "source /opt/ros/noetic/setup.sh; catkin build"
 
 

@@ -115,10 +115,9 @@ def main():
 
     ################### motion generator ###################
     mortar_base_pos = rospy.get_param("~mortar_top_position")
-    mortar_high = rospy.get_param("~mortar_hight")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
     motion_gen = motion_generator.MotionGenerator(
-        mortar_base_pos, mortar_high, mortar_inner_scale
+        mortar_base_pos, mortar_inner_scale
     )
 
     ################### motion executor ###################
@@ -221,7 +220,6 @@ def main():
                     )
             elif motion_command == "GG":
                 if input_command("Start grinding and gathering demo.") != None:
-                    time.sleep(5)
                     waypoints = compute_grinding_waypoints(motion_gen)
                     moveit.execute_cartesian_path_by_waypoints(
                         waypoints,
