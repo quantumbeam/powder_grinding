@@ -207,74 +207,89 @@ class MortarPositionFineTuning:
         self.scene.init_planning_scene()
 
     def fine_tuning_mortar_position(self):
-        variance_threshold = rospy.get_param("~calibrated_variance_of_force")
+        date = time.strftime("%Y%m%d_%H%M%S_")
+        while not rospy.is_shutdown():
+            variance_threshold = rospy.get_param("~calibrated_variance_of_force")
 
-        self.move_to_position_above_mortar()
-        generator = MotionGenerator(self.mortar_position, self.mortar_scale)
+            self.move_to_position_above_mortar()
+            generator = MotionGenerator(self.mortar_position, self.mortar_scale)
 
-        # Create waypoints
-        waypoints = generator.create_circular_waypoints(
-            begining_position=rospy.get_param("~grinding_pos_begining"),
-            end_position=rospy.get_param("~grinding_pos_end"),
-            begining_radious_z=rospy.get_param("~grinding_rz_begining"),
-            end_radious_z=rospy.get_param("~grinding_rz_end"),
-            angle_param=rospy.get_param("~grinding_angle_param"),
-            yaw_angle=rospy.get_param("~grinding_yaw_angle"),
-            number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
-            number_of_waypoints_per_circle=rospy.get_param(
-                "~grinding_number_of_waypoints_per_circle"
-            ),
-        )
+            # Create waypoints
+            waypoints = generator.create_circular_waypoints(
+                begining_position=rospy.get_param("~grinding_pos_begining"),
+                end_position=rospy.get_param("~grinding_pos_end"),
+                begining_radious_z=rospy.get_param("~grinding_rz_begining"),
+                end_radious_z=rospy.get_param("~grinding_rz_end"),
+                angle_param=rospy.get_param("~grinding_angle_param"),
+                yaw_angle=rospy.get_param("~grinding_yaw_angle"),
+                number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
+                number_of_waypoints_per_circle=rospy.get_param(
+                    "~grinding_number_of_waypoints_per_circle"
+                ),
+            )
 
-        self.marker_display.display_waypoints(waypoints, clear=True)
+            self.marker_display.display_waypoints(waypoints, clear=True)
 
-        # Execute waypoints
-        rospy.loginfo("Goto initial position")
-        self.moveit.execute_cartesian_path_by_waypoints(
-            waypoints[0:10],
-            ee_link=self.grinding_eef_link,
-            vel_scale=0.1,
-            acc_scale=0.1,
-        )
-        rospy.sleep(1)  # wait for force sensor to settle
+            # Execute waypoints
+            rospy.loginfo("Goto initial position")
+            self.moveit.execute_cartesian_path_by_waypoints(
+                waypoints[0:10],
+                ee_link=self.grinding_eef_link,
+                vel_scale=0.1,
+                acc_scale=0.1,
+            )
+            rospy.sleep(1)  # wait for force sensor to settle
 
-        rospy.loginfo("Start calibration grinding motion")
-        self.xy_calibrate_service_client("start")
-        self.moveit.execute_cartesian_path_by_waypoints(
-            waypoints, ee_link=self.grinding_eef_link, vel_scale=1, acc_scale=1
-        )
-        response = self.xy_calibrate_service_client("stop")
-        self.move_to_position_above_mortar()
-        rospy.loginfo("Calibration grinding motion finished")
+            rospy.loginfo("Start calibration grinding motion")
+            self.xy_calibrate_service_client("start")
+            self.moveit.execute_cartesian_path_by_waypoints(
+                waypoints, ee_link=self.grinding_eef_link, vel_scale=1, acc_scale=1
+            )
+            response = self.xy_calibrate_service_client("stop")
+            self.move_to_position_above_mortar()
+            rospy.loginfo("Calibration grinding motion finished")
 
-        # Update mortar position
-        # direction of x axis of end-effector is same as force sensor
-        # direction of y axis of end-effector is opposite from force sensor
-        step = rospy.get_param("~XY_calibration_step")
-        new_mortar_position = self.mortar_position.copy()
-        if response.integral_force_x > 0:
-            new_mortar_position["x"] -= step
-        elif response.integral_force_x < 0:
-            new_mortar_position["x"] += step
-        if response.integral_force_y > 0:
-            new_mortar_position["y"] += step
-        elif response.integral_force_y < 0:
-            new_mortar_position["y"] -= step
+            # Update mortar position
+            # direction of x axis of end-effector is same as force sensor
+            # direction of y axis of end-effector is opposite from force sensor
+            step = rospy.get_param("~XY_calibration_step")
+            new_mortar_position = self.mortar_position.copy()
+            if abs(response.variance_force_x) < 1:
+                rospy.loginfo("No movement in x direction")
+            elif response.integral_force_x > 0:
+                new_mortar_position["x"] -= step
+            elif response.integral_force_x < 0:
+                new_mortar_position["x"] += step
 
-        rospy.loginfo("Current mortar position: %s", self.mortar_position)
-        rospy.loginfo("New mortar position: %s", new_mortar_position)
+            if abs(response.variance_force_y) < 1:
+                rospy.loginfo("No movement in y direction")
+            elif response.integral_force_y > 0:
+                new_mortar_position["y"] -= step
+            elif response.integral_force_y < 0:
+                new_mortar_position["y"] += step
 
-        rospy.set_param("~mortar_top_position", new_mortar_position)
-        self.scene.init_planning_scene()
-        generator.update_mortar_position(new_mortar_position)
-        self.mortar_position = new_mortar_position
+            rospy.loginfo("Current mortar position: %s", self.mortar_position)
+            rospy.loginfo("New mortar position: %s", new_mortar_position)
+            writer = open(
+                "/home/ubuntu/onolab/catkin_ws/src/grinding_motion_routines/config/calibrate_mortar_position/"
+                + date
+                + "calibration_result.txt",
+                "a",
+            )
+            writer.write(
+                f"Current mortar position: {self.mortar_position},\n New mortar position: {new_mortar_position},\n response: {response}\n\n"
+            )
+            writer.close()
 
-        # Check variance of force
-        if (
-            abs(response.integral_force_x) < variance_threshold
-            and abs(response.integral_force_y) < variance_threshold
-        ):
-            rospy.loginfo("Calibration finished")
+            rospy.set_param("~mortar_top_position", new_mortar_position)
+            self.scene.init_planning_scene()
+            generator.update_mortar_position(new_mortar_position)
+            self.mortar_position = new_mortar_position
+
+            # Check variance of force
+            if abs(response.variance_force_z) < variance_threshold:
+                rospy.loginfo("Calibration finished")
+                break
 
     def subscribe_wrench(self):
         rospy.loginfo("Subscribing to wrench for 10 seconds")

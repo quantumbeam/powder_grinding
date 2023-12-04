@@ -11,7 +11,11 @@
     <arg
         name="calibration_config"
         default="$(find grinding_motion_routines)/config/calibrate_mortar_position/calibration_config.yaml" />
-
+    
+    <!-- Launch leptrino F/T sensor -->
+    <!-- <include file="$(find grinding_force_torque)/launch/leptrino.launch" /> -->
+    
+    <!-- Launch calibration -->
     <node
         name="wrench_subscriber" pkg="grinding_motion_routines"
         type="subscribe_wrench.py"
