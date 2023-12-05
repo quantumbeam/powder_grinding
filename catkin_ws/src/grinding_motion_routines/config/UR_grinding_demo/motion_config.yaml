@@ -5,14 +5,6 @@ gathering_eef_link: "spatula_tip"
 scooping_eef_link: "spoon_tip"
 
 # grinding params
-
-pestle_radius : 10
-minimum_grinding_radius: 5
-fixed_grinding: True
-arm_moving_at_vision: True
-fixed_vision_threshold: True
-vision_threshold: 25
-
 grinding_pos_begining : 
   - -8
   - 0
@@ -23,14 +15,15 @@ grinding_center_pos:
   - 0
   - 0
 grinding_number_of_rotation : 30
-grinding_sec_per_rotation : 0.5
-grinding_angle_param : 0.3
+grinding_sec_per_rotation : 0.5 # 0.5 >
+grinding_angle_param : 0.3 #0 - 0.3
 grinding_rz_begining : 35
 grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
 grinding_yaw_angle : rad(pi)
+grinding_total_joint_diffence_for_planning : 1
 
 # circular gathering params 
 circular_gathering_pos_begining : 

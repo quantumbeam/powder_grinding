@@ -137,6 +137,10 @@ def main():
     grinding_ee_link = rospy.get_param("~grinding_eef_link")
     gathering_ee_link = rospy.get_param("~gathering_eef_link")
     scooping_ee_link = rospy.get_param("~scooping_eef_link")
+    grinding_total_joint_diffence_for_planning = rospy.get_param(
+        "~grinding_total_joint_diffence_for_planning"
+    )
+    rospy.loginfo(grinding_total_joint_diffence_for_planning)
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
     ################### init pose ###################
@@ -194,13 +198,11 @@ def main():
                 )
                 exec = command_to_execute(key)
                 if exec:
-                    grinding_joint_trajectory = (
-                        primitive.JTC_executor.generate_joint_trajectory(
-                            compute_grinding_waypoints(motion_gen),
-                            total_joint_limit=1,
-                            ee_link=grinding_ee_link,
-                            trial_number=20,
-                        )
+                    grinding_joint_trajectory = primitive.JTC_executor.generate_joint_trajectory(
+                        compute_grinding_waypoints(motion_gen),
+                        total_joint_limit=grinding_total_joint_diffence_for_planning,
+                        ee_link=grinding_ee_link,
+                        trial_number=20,
                     )
                     primitive.execute_grinding(
                         grinding_joint_trajectory,
@@ -245,13 +247,11 @@ def main():
                     "Start demo of grinding, gathering, scooring and pouring.\n execute = 'y', canncel = other\n"
                 )
                 if command_to_execute(key):
-                    grinding_joint_trajectory = (
-                        primitive.JTC_executor.generate_joint_trajectory(
-                            compute_grinding_waypoints(motion_gen),
-                            total_joint_limit=1,
-                            ee_link=grinding_ee_link,
-                            trial_number=20,
-                        )
+                    grinding_joint_trajectory = primitive.JTC_executor.generate_joint_trajectory(
+                        compute_grinding_waypoints(motion_gen),
+                        total_joint_limit=grinding_total_joint_diffence_for_planning,
+                        ee_link=grinding_ee_link,
+                        trial_number=20,
                     )
                     primitive.execute_grinding(
                         grinding_joint_trajectory,

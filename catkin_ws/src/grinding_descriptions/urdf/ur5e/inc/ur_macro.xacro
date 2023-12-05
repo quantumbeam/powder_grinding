@@ -492,7 +492,7 @@
     </joint>
 
     <!-- center of surface on spatula bearing -->
-    <!-- <joint name="joint_spatula" type="fixed">
+    <joint name="joint_spatula" type="fixed">
       <origin rpy="0 ${-pi/2} 0" xyz="-0.03655 0 0.0135" />
       <parent link="${prefix}wrist_3_link" />
       <child link="spatula" />
@@ -501,8 +501,8 @@
       <origin rpy="0 0 0" xyz="0 0 0.092" />
       <parent link="spatula" />
       <child link="spatula_tip" />
-    </joint> -->
-    <joint name="joint_spatula" type="fixed">
+    </joint>
+    <!-- <joint name="joint_spatula" type="fixed">
       <origin rpy="0 0 0" xyz="0 0 0" />
       <parent link="${prefix}tool1" />
       <child link="spatula" />
@@ -511,7 +511,7 @@
       <origin rpy="0 0 0" xyz="0 0 0.092" />
       <parent link="spatula" />
       <child link="spatula_tip" />
-    </joint>
+    </joint> -->
 
 
     <!-- center of surface  on jig-->
