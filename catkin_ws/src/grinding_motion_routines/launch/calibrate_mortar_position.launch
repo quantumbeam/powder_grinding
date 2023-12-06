@@ -8,9 +8,6 @@
         name="planning_scene_config"
         default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/planning_scene_config.yaml" />
     <arg
-        name="motion_config"
-        default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/motion_config.yaml" />
-    <arg
         name="calibration_config"
         default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/calibration_config.yaml" />
     
@@ -37,7 +34,6 @@
         <param name="UR_FT_sensor_topic" value="$(arg UR_FT_sensor_topic)" />
         <param name="zero_wrench_UR_service" value="$(arg zero_wrench_UR_service)" />
         <rosparam command="load" file="$(arg planning_scene_config)" />
-        <rosparam command="load" file="$(arg motion_config)" />
         <rosparam command="load" file="$(arg calibration_config)" />
     </node>
 </launch>

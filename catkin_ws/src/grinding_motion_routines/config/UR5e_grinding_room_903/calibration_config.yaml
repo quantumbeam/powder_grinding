@@ -4,3 +4,24 @@ Z_calibration_step: 0.001 # [m]
 
 XY_calibration_step: 0.0001 # [m]
 calibrated_variance_of_force: 0.2 # [N^2]
+
+
+# grinding params
+grinding_eef_link: "pestle_tip"
+grinding_pos_begining : 
+  - -8
+  - 0
+grinding_pos_end :
+  - -8
+  - 0.0001
+grinding_center_pos:
+  - 0
+  - 0
+grinding_number_of_rotation : 10
+grinding_angle_param : 0.3
+grinding_rz_begining : 35
+grinding_rz_end : 35
+grinding_vel_scale : 1
+grinding_acc_scale : 1
+grinding_number_of_waypoints_per_circle : 10
+grinding_yaw_angle : rad(pi)
