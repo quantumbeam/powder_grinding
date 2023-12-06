@@ -5,7 +5,7 @@ Z_calibration_step: 0.001 # [m]
 XY_calibration_step: 0.0001 # [m]
 calibrated_variance_of_force: 0.2 # [N^2]
 
-caliblate_log_dir_path: "/home/ubuntu/onolab/catkin_ws/src/grinding_motion_routines/config/calibrate_mortar_position/"
+caliblate_log_dir_path: "/home/ubuntu/onolab/catkin_ws/src/grinding_motion_routines/config/UR5e_grinding_room_903/"
 
 # grinding params
 grinding_eef_link: "pestle_tip"
