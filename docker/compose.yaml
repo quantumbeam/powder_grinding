@@ -41,4 +41,3 @@ services:
       - "50004" # script_command_port of UR
       - "5007" # cobotta
     tty: true
-    shm_size: 1g
