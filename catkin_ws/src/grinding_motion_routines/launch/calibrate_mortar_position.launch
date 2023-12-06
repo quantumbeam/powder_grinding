@@ -4,13 +4,13 @@
 
     <arg
         name="planning_scene_config"
-        default="$(find grinding_motion_routines)/config/calibrate_mortar_position/planning_scene_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/planning_scene_config.yaml" />
     <arg
         name="motion_config"
-        default="$(find grinding_motion_routines)/config/calibrate_mortar_position/motion_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/motion_config.yaml" />
     <arg
         name="calibration_config"
-        default="$(find grinding_motion_routines)/config/calibrate_mortar_position/calibration_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/calibration_config.yaml" />
     
     <!-- Launch leptrino F/T sensor -->
     <!-- <include file="$(find grinding_force_torque)/launch/leptrino.launch" /> -->
@@ -22,7 +22,7 @@
         output="screen"></node>
     <node name="mortar_position_fine_tuning"
         pkg="grinding_motion_routines"
-        type="mortar_position_fine_tuning_by_force.py"
+        type="calibrate_mortar_position.py"
         output="screen">
         <param name="filterd_wrench_topic" value="$(arg filterd_wrench_topic)" />
         <param name="zero_wrench_service" value="$(arg zero_wrench_service)" />
