@@ -18,4 +18,4 @@ catkin build
 
 # Update enviromental veriables
 source /opt/ros/$ROS_DISTRO/setup.bash
-source /home/ubuntu/onolab/catkin_ws/devel/setup.bash
+source ./devel/setup.bash
