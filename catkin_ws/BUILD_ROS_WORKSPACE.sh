@@ -7,7 +7,7 @@ sudo apt update
 rosdep update
 
 # Updating ROSDEP and installing dependencies
-cd /home/ubuntu/onolab/catkin_ws && vcs import src < src/.rosinstall
+vcs import src < src/.rosinstall
 rosdep install --from-paths src --ignore-src --rosdistro=$ROS_DISTRO -y
 
 # Build
