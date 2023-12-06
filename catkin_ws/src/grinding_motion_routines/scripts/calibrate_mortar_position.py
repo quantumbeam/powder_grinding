@@ -38,7 +38,7 @@ class MortarPositionFineTuning:
         self.mortar_position = rospy.get_param("~mortar_top_position")
         self.mortar_scale = rospy.get_param("~mortar_inner_scale")
         self.force_threshold = rospy.get_param("~force_threshold")
-        self.total_joints_limits_for_trajectory = 0.1
+        self.caliblate_log_dir_path = rospy.get_param("~caliblate_log_dir_path")
 
         self.filterd_mortar_wrench_topic = rospy.get_param("~FT_sensor_under_mortar_topic")
         self.filterd_UR_wrench_topic = rospy.get_param("~UR_FT_sensor_topic")
@@ -269,21 +269,21 @@ class MortarPositionFineTuning:
             if abs(response.variance_force_x) < 1:
                 rospy.loginfo("No movement in x direction")
             elif response.integral_force_x > 0:
-                new_mortar_position["x"] -= step
-            elif response.integral_force_x < 0:
                 new_mortar_position["x"] += step
-
+            elif response.integral_force_x < 0:
+                new_mortar_position["x"] -= step
+    
             if abs(response.variance_force_y) < 1:
                 rospy.loginfo("No movement in y direction")
             elif response.integral_force_y > 0:
-                new_mortar_position["y"] -= step
-            elif response.integral_force_y < 0:
                 new_mortar_position["y"] += step
+            elif response.integral_force_y < 0:
+                new_mortar_position["y"] -= step
 
             rospy.loginfo("Current mortar position: %s", self.mortar_position)
             rospy.loginfo("New mortar position: %s", new_mortar_position)
             writer = open(
-                "/home/ubuntu/onolab/catkin_ws/src/grinding_motion_routines/config/calibrate_mortar_position/"
+                self.caliblate_log_dir_path
                 + date
                 + "calibration_result.txt",
                 "a",
