@@ -10,10 +10,10 @@ from math import sqrt
 
 class AbsoluteForce:
     def __init__(self):
-        # Subscriberの作成
-        self.sub = rospy.Subscriber("/wrench", WrenchStamped, self.callback)
+        wrench_topic = rospy.get_param("~wrench_topic", "/wrench")
+        self.sub = rospy.Subscriber(wrench_topic, WrenchStamped, self.callback)
         # Publisherの作成
-        self.pub = rospy.Publisher("/abs_force", Float64, queue_size=1)
+        self.pub = rospy.Publisher(wrench_topic+"/abs_force", Float64, queue_size=1)
 
         self.var_reset()
         self.publish_data_counts = 100

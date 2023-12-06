@@ -14,11 +14,6 @@
         <rosparam command="load" file="$(arg motion_config)" />
     </node>
 
-    <group if="$(arg abs_force)">
-        <node name="abs_force_pub" pkg="grinding_motion_routines" type="abs_force_publisher.py"
-            output="screen" />
-    </group>
-
     <group if="$(arg rosbag_record)">
         <node pkg="rosbag" type="record" name="rosbag_record"
             args='record -a -o $(arg rosbag_name) -x "/camera/depth/(.*)|/camera/color/image_raw/(.*)"' />
