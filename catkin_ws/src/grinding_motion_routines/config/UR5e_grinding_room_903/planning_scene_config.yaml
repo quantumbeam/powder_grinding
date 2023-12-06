@@ -4,7 +4,7 @@ move_group_name: "manipulator"
 table_position  :  {x: 0, y: 0, z: -0.015} # 0.015 is hight of UR5e base plate
 table_scale  :  {x: 0.9, y: 1.5, z: 0.1}
 
-mortar_top_position  :  {x: 0.39436323098562737, y: -0.1, z: 0.08952612996948098} 
+mortar_top_position  :  {x: 0.3915104647524096, y: -0.0998653670842102, z: 0.08906167917333031}
 mortar_inner_scale:  {x:  0.04, y: 0.04, z: 0.035} # official infomation says 0.04 * 0.04 * 0.032 but z is more deep actually 
 
 # test funnel
