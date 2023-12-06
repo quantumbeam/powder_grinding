@@ -1,10 +1,16 @@
-### Powder Grinding Package for ROS
+### Powder Grinding Package for ROS noetic
 
 **Repository for Robotic Powder Grinding in Material Science**
 
 #### **Related Publications**
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
 - [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
+
+#### Todo
+- Update pestle tip to URDF?
+- Update planning scene congig yaml from pos z, rough pos x and y, finetuned x and y
+- Add TF of FT sensor to decide calibrate direction
+
 
 #### **Table of Contents**
 1. [Overview](#overview)
