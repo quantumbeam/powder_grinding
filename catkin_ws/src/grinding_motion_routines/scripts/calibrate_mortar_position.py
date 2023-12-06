@@ -40,33 +40,41 @@ class MortarPositionFineTuning:
         self.force_threshold = rospy.get_param("~force_threshold")
         self.total_joints_limits_for_trajectory = 0.1
 
-        self.filterd_wrench_topic = rospy.get_param("~filterd_wrench_topic")
+        self.filterd_mortar_wrench_topic = rospy.get_param("~FT_sensor_under_mortar_topic")
+        self.filterd_UR_wrench_topic = rospy.get_param("~UR_FT_sensor_topic")
         rospy.Subscriber(
-            self.filterd_wrench_topic,
-            WrenchStamped,
-            self._wrench_callback,
-            queue_size=1,
-        )
+            self.filterd_mortar_wrench_topic,WrenchStamped,self._mortar_wrench_callback,queue_size=1)
+        rospy.Subscriber(
+            self.filterd_UR_wrench_topic,WrenchStamped,self._UR_wrench_callback,queue_size=1)
 
         # Subscribe to wrench service
         rospy.loginfo("Waiting for wrench service")
-        self.zero_wrench_service_name = rospy.get_param("~zero_wrench_service")
-        rospy.wait_for_service(self.zero_wrench_service_name)
+        self.zero_mortar_wrench_service_name = rospy.get_param("~zero_wrench_under_mortar_service")
+        rospy.wait_for_service(self.zero_mortar_wrench_service_name)
+        self.zero_UR_wrench_service_name = rospy.get_param("~zero_wrench_UR_service")
+        rospy.wait_for_service(self.zero_UR_wrench_service_name)
         rospy.wait_for_service("/start_stop_recording")
         try:
             self.xy_calibrate_service_client = rospy.ServiceProxy(
                 "/start_stop_recording", PositionCalibrateVector
             )
-            self.ft_service = rospy.ServiceProxy(self.zero_wrench_service_name, Empty)
+            self.ft_mortar_service = rospy.ServiceProxy(self.zero_mortar_wrench_service_name, Empty)
+            self.ft_UR_service = rospy.ServiceProxy(self.zero_UR_wrench_service_name, Empty)
 
         except rospy.ServiceException as e:
             print(f"Service call failed: {e}")
             exit()
 
-    def _zero_ft_sensor(self):
+    def _zero_mortar_ft_sensor(self):
         time.sleep(1)
         rospy.loginfo("Zeroing FT sensor")
-        self.ft_service.call()
+        self.ft_mortar_service.call()
+        time.sleep(1)
+
+    def _zero_UR_ft_sensor(self):
+        time.sleep(1)
+        rospy.loginfo("Zeroing FT sensor")
+        self.ft_UR_service.call()
         time.sleep(1)
 
     def _pose_stumped_to_list(self, pose):
@@ -80,9 +88,13 @@ class MortarPositionFineTuning:
             pose.pose.orientation.w,
         ]
 
-    def _wrench_callback(self, wrench_msg):
-        self.current_force = wrench_msg.wrench.force
-        self.current_torque = wrench_msg.wrench.torque
+    def _mortar_wrench_callback(self, wrench_msg):
+        self.current_mortar_force = wrench_msg.wrench.force
+        self.current_mortar_torque = wrench_msg.wrench.torque
+    
+    def _UR_wrench_callback(self, wrench_msg):
+        self.current_UR_force = wrench_msg.wrench.force
+        self.current_UR_torque = wrench_msg.wrench.torque
 
     def _listen_tf(self, parent_frame, child_frame):
         tfBuffer = tf2_ros.Buffer()
@@ -101,7 +113,7 @@ class MortarPositionFineTuning:
             print("tf listen error%s" % err)
             return err
 
-    def _move_and_check_force(self, delta):
+    def _move_and_check_force_z(self, delta,force_z):
         current_pose = self._pose_stumped_to_list(
             self.moveit.move_group.get_current_pose()
         )
@@ -114,9 +126,9 @@ class MortarPositionFineTuning:
             acc_scale=0.1,
         )
 
-        rospy.loginfo(f"Force z after move: {self.current_force.z}")
+        rospy.loginfo(f"Force z after move: {force_z}")
 
-        if np.abs(self.current_force.z) > self.force_threshold:
+        if np.abs(force_z) > self.force_threshold:
             return True
         else:
             return False
@@ -145,17 +157,16 @@ class MortarPositionFineTuning:
             acc_scale=0.1,
         )
 
-        self._zero_ft_sensor()
 
     def caliblate_pestle_tip_position(self, boad_tickness):
         self._move_verticale_pose_of_current_position()
-        self._zero_ft_sensor()
+        self._zero_UR_ft_sensor()
 
         delta = np.zeros(7)
         step = rospy.get_param("~Z_calibration_step")
         for _ in range(1000):
             delta[2] = -step
-            result = self._move_and_check_force(delta)
+            result = self._move_and_check_force_z(delta,self.current_UR_force.z)
             if result:
                 rospy.loginfo("Calibration finished")
                 # calculate the pestle tip position
@@ -177,16 +188,16 @@ class MortarPositionFineTuning:
 
     def caliblate_mortar_hight(self, boad_tickness):
         self._move_verticale_pose_of_current_position()
-        self._zero_ft_sensor()
+        self._zero_UR_ft_sensor()
 
         delta = np.zeros(7)
         step = rospy.get_param("~Z_calibration_step")
         for _ in range(1000):
             delta[2] = -step
-            result = self._move_and_check_force(delta)
+            result = self._move_and_check_force_z(delta,self.current_mortar_force.z)
             if result:
                 rospy.loginfo("Calibration finished")
-                pestle_tip_pose = self.moveit.move_group.get_current_pose()
+                pestle_tip_pose = self.moveit.move_group.get_current_pose() 
                 mortar_position_Z = pestle_tip_pose.pose.position.z - boad_tickness
                 rospy.loginfo("Mortar position Z: %s", mortar_position_Z)
                 self.mortar_position["z"] = mortar_position_Z
@@ -212,6 +223,7 @@ class MortarPositionFineTuning:
             variance_threshold = rospy.get_param("~calibrated_variance_of_force")
 
             self.move_to_position_above_mortar()
+            self._zero_mortar_ft_sensor()
             generator = MotionGenerator(self.mortar_position, self.mortar_scale)
 
             # Create waypoints

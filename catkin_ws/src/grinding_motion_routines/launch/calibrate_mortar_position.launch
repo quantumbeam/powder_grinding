@@ -1,6 +1,8 @@
 <launch>
-    <arg name="filterd_wrench_topic" default="/leptrino/force_torque/filtered" />
-    <arg name="zero_wrench_service" default="/leptrino/force_torque/filtered/zero_ftsensor" />
+    <arg name="FT_sensor_under_mortar_topic" default="/leptrino/force_torque/filtered" />
+    <arg name="UR_FT_sensor_topic" default="/wrench/filtered" />
+    <arg name="zero_wrench_under_mortar_service" default="/leptrino/force_torque/filtered/zero_ftsensor" />
+    <arg name="zero_wrench_UR_service" default="/wrench/filtered/zero_ftsensor" />
 
     <arg
         name="planning_scene_config"
@@ -12,8 +14,14 @@
         name="calibration_config"
         default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/calibration_config.yaml" />
     
-    <!-- Launch leptrino F/T sensor -->
+    <!-- Launch F/T sensor filter -->
     <!-- <include file="$(find grinding_force_torque)/launch/leptrino.launch" /> -->
+    <node name="leptrino_ft_filter" pkg="grinding_force_torque" type="ft_filter.py"
+    args="-z -t 'leptrino/force_torque'"
+    output="screen" />
+    <node name="UR_ft_filter" pkg="grinding_force_torque" type="ft_filter.py"
+    args="-z -t 'wrench'"
+    output="screen" />
     
     <!-- Launch calibration -->
     <node
@@ -24,8 +32,10 @@
         pkg="grinding_motion_routines"
         type="calibrate_mortar_position.py"
         output="screen">
-        <param name="filterd_wrench_topic" value="$(arg filterd_wrench_topic)" />
-        <param name="zero_wrench_service" value="$(arg zero_wrench_service)" />
+        <param name="FT_sensor_under_mortar_topic" value="$(arg FT_sensor_under_mortar_topic)" />
+        <param name="zero_wrench_under_mortar_service" value="$(arg zero_wrench_under_mortar_service)" />
+        <param name="UR_FT_sensor_topic" value="$(arg UR_FT_sensor_topic)" />
+        <param name="zero_wrench_UR_service" value="$(arg zero_wrench_UR_service)" />
         <rosparam command="load" file="$(arg planning_scene_config)" />
         <rosparam command="load" file="$(arg motion_config)" />
         <rosparam command="load" file="$(arg calibration_config)" />

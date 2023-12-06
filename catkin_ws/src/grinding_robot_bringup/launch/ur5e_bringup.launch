@@ -50,14 +50,6 @@
   <arg name="visual_params"
     default="$(find grinding_descriptions)/config/ur5e/visual_parameters.yaml" />
 
-  <!-- UR FT sensor launch -->
-  <group unless="$(arg sim)">
-    <remap from="/cartesian_compliance_controller/ft_sensor_wrench" to="/wrench/filtered" />
-    <node name="ft_filter" pkg="ur_control" type="ft_filter.py" args="-z -t 'wrench'"
-      output="screen" />
-  </group>
-
-
   <!-- run the real robot or simulator (gazebo) -->
   <!-- The controllers are fixed real or sim, you can change controllers for your app -->
   <group if="$(arg sim)">
