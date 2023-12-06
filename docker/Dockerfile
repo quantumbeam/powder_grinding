@@ -57,6 +57,5 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
 RUN echo "source /home/ubuntu/onolab/catkin_ws/devel/setup.bash" >> /root/.bashrc
 RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> /root/.bashrc
 RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
-RUN cd /home/ubuntu/onolab/catkin_ws && /bin/bash -c "source /opt/ros/noetic/setup.sh; catkin build"
 
 
