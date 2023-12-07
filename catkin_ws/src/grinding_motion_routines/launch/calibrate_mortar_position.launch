@@ -22,8 +22,8 @@
     
     <!-- Launch calibration -->
     <node
-        name="wrench_subscriber" pkg="grinding_motion_routines"
-        type="subscribe_wrench.py"
+        name="wrench_statistics_publisher" pkg="grinding_motion_routines"
+        type="wrench_statistics.py"
         output="screen"></node>
     <node name="mortar_position_fine_tuning"
         pkg="grinding_motion_routines"
