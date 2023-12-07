@@ -53,10 +53,10 @@ class MortarPositionFineTuning:
         rospy.wait_for_service(self.zero_mortar_wrench_service_name)
         self.zero_UR_wrench_service_name = rospy.get_param("~zero_wrench_UR_service")
         rospy.wait_for_service(self.zero_UR_wrench_service_name)
-        rospy.wait_for_service("/start_stop_recording")
+        rospy.wait_for_service("/wrench_statistics")
         try:
-            self.xy_calibrate_service_client = rospy.ServiceProxy(
-                "/start_stop_recording", PositionCalibrateVector
+            self.wrench_statistics_service = rospy.ServiceProxy(
+                "/wrench_statistics", PositionCalibrateVector
             )
             self.ft_mortar_service = rospy.ServiceProxy(self.zero_mortar_wrench_service_name, Empty)
             self.ft_UR_service = rospy.ServiceProxy(self.zero_UR_wrench_service_name, Empty)
@@ -253,11 +253,11 @@ class MortarPositionFineTuning:
             rospy.sleep(1)  # wait for force sensor to settle
 
             rospy.loginfo("Start calibration grinding motion")
-            self.xy_calibrate_service_client("start")
+            self.wrench_statistics_service("start")
             self.moveit.execute_cartesian_path_by_waypoints(
                 waypoints, ee_link=self.grinding_eef_link, vel_scale=1, acc_scale=1
             )
-            response = self.xy_calibrate_service_client("stop")
+            response = self.wrench_statistics_service("stop")
             self.move_to_position_above_mortar()
             rospy.loginfo("Calibration grinding motion finished")
 
@@ -266,14 +266,14 @@ class MortarPositionFineTuning:
             # direction of y axis of end-effector is opposite from force sensor
             step = rospy.get_param("~XY_calibration_step")
             new_mortar_position = self.mortar_position.copy()
-            if abs(response.variance_force_x) < 1:
+            if abs(response.variance_force_x) < variance_threshold:
                 rospy.loginfo("No movement in x direction")
             elif response.integral_force_x > 0:
                 new_mortar_position["x"] -= step
             elif response.integral_force_x < 0:
                 new_mortar_position["x"] += step
     
-            if abs(response.variance_force_y) < 1:
+            if abs(response.variance_force_y) < variance_threshold:
                 rospy.loginfo("No movement in y direction")
             elif response.integral_force_y > 0:
                 new_mortar_position["y"] -= step
@@ -299,7 +299,7 @@ class MortarPositionFineTuning:
             self.mortar_position = new_mortar_position
 
             # Check variance of force
-            if abs(response.variance_force_z) < variance_threshold:
+            if abs(response.variance_force_z) < variance_threshold*2:
                 rospy.loginfo("Calibration finished")
                 break
 

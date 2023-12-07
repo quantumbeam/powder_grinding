@@ -3,6 +3,8 @@
     <arg name="UR_FT_sensor_topic" default="/wrench/filtered" />
     <arg name="zero_wrench_under_mortar_service" default="/leptrino/force_torque/filtered/zero_ftsensor" />
     <arg name="zero_wrench_UR_service" default="/wrench/filtered/zero_ftsensor" />
+    
+    <arg name="wrench_statistics_service" default="/wrench_statistics" />
 
     <arg
         name="planning_scene_config"
@@ -21,10 +23,11 @@
     output="screen" />
     
     <!-- Launch calibration -->
-    <node
-        name="wrench_statistics_publisher" pkg="grinding_motion_routines"
-        type="wrench_statistics.py"
-        output="screen"></node>
+    <node name="wrench_statistics" pkg="grinding_force_torque" type="wrench_statistics.py" output="screen">
+        <param name="wrench_topic" value="$(arg FT_sensor_under_mortar_topic)" />
+        <param name="wrench_statistics_service" value="$(arg wrench_statistics_service)" />    
+    </node>
+    
     <node name="mortar_position_fine_tuning"
         pkg="grinding_motion_routines"
         type="calibrate_mortar_position.py"
