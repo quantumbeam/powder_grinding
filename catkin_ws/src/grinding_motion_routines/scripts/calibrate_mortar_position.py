@@ -269,16 +269,16 @@ class MortarPositionFineTuning:
             if abs(response.variance_force_x) < 1:
                 rospy.loginfo("No movement in x direction")
             elif response.integral_force_x > 0:
-                new_mortar_position["x"] += step
-            elif response.integral_force_x < 0:
                 new_mortar_position["x"] -= step
+            elif response.integral_force_x < 0:
+                new_mortar_position["x"] += step
     
             if abs(response.variance_force_y) < 1:
                 rospy.loginfo("No movement in y direction")
             elif response.integral_force_y > 0:
-                new_mortar_position["y"] += step
-            elif response.integral_force_y < 0:
                 new_mortar_position["y"] -= step
+            elif response.integral_force_y < 0:
+                new_mortar_position["y"] += step
 
             rospy.loginfo("Current mortar position: %s", self.mortar_position)
             rospy.loginfo("New mortar position: %s", new_mortar_position)
