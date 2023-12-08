@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   visualization_msgs
   message_generation
+  ultralytics_ros
 )
 
 catkin_python_setup()

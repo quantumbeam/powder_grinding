@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(grinding_motion_routines)
 
+# Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   moveit_commander
@@ -10,21 +11,27 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  message_generation
+  grinding_force_torque
 )
 
+# Need to import the python modules from the package setup.py
 catkin_python_setup()
 
-# add_service_files(
-#   FILES
+
+## C++ ##
+# Create catkin info
+# catkin_package()
+
+# Include directories
+# include_directories(${catkin_INCLUDE_DIRS})
+
+# Add c++ files
+# add_executable()
+
+# Add libraries
+# target_link_libraries(
+#   ${catkin_LIBRARIES}
 # )
 
-generate_messages(
-  DEPENDENCIES
-  std_srvs
-  std_msgs
-)
 
-catkin_package()
 
-include_directories(${catkin_INCLUDE_DIRS})
