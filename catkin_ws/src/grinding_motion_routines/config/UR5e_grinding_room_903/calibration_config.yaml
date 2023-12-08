@@ -4,6 +4,9 @@ Z_calibration_step: 0.001 # [m]
 
 XY_calibration_step: 0.0001 # [m]
 calibration_average_force_threshold: 0.1 # [N^2]
+calibration_variance_force_threshold: 1 # [N^2]
+
+
 
 caliblate_log_dir_path: "/home/ubuntu/onolab/catkin_ws/src/grinding_motion_routines/config/UR5e_grinding_room_903/"
 

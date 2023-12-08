@@ -65,15 +65,10 @@ class MortarPositionFineTuning:
             print(f"Service call failed: {e}")
             exit()
 
-    def _zero_mortar_ft_sensor(self):
+    def _zero_ft_sensor(self):
         time.sleep(1)
         rospy.loginfo("Zeroing FT sensor")
         self.ft_mortar_service.call()
-        time.sleep(1)
-
-    def _zero_UR_ft_sensor(self):
-        time.sleep(1)
-        rospy.loginfo("Zeroing FT sensor")
         self.ft_UR_service.call()
         time.sleep(1)
 
@@ -160,7 +155,7 @@ class MortarPositionFineTuning:
 
     def caliblate_pestle_tip_position(self, boad_tickness):
         self._move_verticale_pose_of_current_position()
-        self._zero_UR_ft_sensor()
+        self._zero_ft_sensor()
 
         delta = np.zeros(7)
         step = rospy.get_param("~Z_calibration_step")
@@ -188,7 +183,7 @@ class MortarPositionFineTuning:
 
     def caliblate_mortar_hight(self, boad_tickness):
         self._move_verticale_pose_of_current_position()
-        self._zero_UR_ft_sensor()
+        self._zero_ft_sensor()
 
         delta = np.zeros(7)
         step = rospy.get_param("~Z_calibration_step")
@@ -219,11 +214,15 @@ class MortarPositionFineTuning:
 
     def fine_tuning_mortar_position(self):
         date = time.strftime("%Y%m%d_%H%M%S_")
+        average_force_threshold = rospy.get_param("~calibration_average_force_threshold")
+        variance_force_threshold = rospy.get_param("~calibration_variance_force_threshold")
+        force_x_calibrated = False
+        force_y_calibrated = False
         while not rospy.is_shutdown():
-            average_force_threshold = rospy.get_param("~calibration_average_force_threshold")
+            
 
             self.move_to_position_above_mortar()
-            self._zero_mortar_ft_sensor()
+            self._zero_ft_sensor()
             generator = MotionGenerator(self.mortar_position, self.mortar_scale)
 
             # Create waypoints
@@ -268,17 +267,23 @@ class MortarPositionFineTuning:
             new_mortar_position = self.mortar_position.copy()
             if abs(response.average_force_x) < average_force_threshold:
                 rospy.loginfo("No movement in x direction")
+                force_x_calibrated = True
             elif response.average_force_x > 0:
                 new_mortar_position["x"] -= step
+                force_x_calibrated = False
             elif response.average_force_x < 0:
                 new_mortar_position["x"] += step
+                force_x_calibrated = False
     
             if abs(response.average_force_y) < average_force_threshold:
                 rospy.loginfo("No movement in y direction")
+                force_y_calibrated = True
             elif response.average_force_y > 0:
                 new_mortar_position["y"] -= step
+                force_y_calibrated = False
             elif response.average_force_y < 0:
                 new_mortar_position["y"] += step
+                force_y_calibrated = False
 
             rospy.loginfo("Current mortar position: %s", self.mortar_position)
             rospy.loginfo("New mortar position: %s", new_mortar_position)
@@ -299,7 +304,7 @@ class MortarPositionFineTuning:
             self.mortar_position = new_mortar_position
 
             # Check variance of force
-            if (abs(response.average_force_x) < average_force_threshold) and (abs(response.average_force_y) < average_force_threshold):
+            if force_x_calibrated and force_y_calibrated:
                 rospy.loginfo("Calibration finished")
                 break
 
