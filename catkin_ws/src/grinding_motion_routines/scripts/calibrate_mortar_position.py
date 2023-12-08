@@ -14,7 +14,7 @@ from grinding_motion_routines.moveit_executor import MoveitExecutor
 from grinding_motion_routines.load_planning_scene import PlanningScene
 from grinding_motion_routines.marker_display import MarkerDisplay
 
-from grinding_motion_routines.srv import PositionCalibrateVector
+from grinding_force_torque.srv import WrenchStatistics
 
 import argparse
 import numpy as np
@@ -56,7 +56,7 @@ class MortarPositionFineTuning:
         rospy.wait_for_service("/wrench_statistics")
         try:
             self.wrench_statistics_service = rospy.ServiceProxy(
-                "/wrench_statistics", PositionCalibrateVector
+                "/wrench_statistics", WrenchStatistics
             )
             self.ft_mortar_service = rospy.ServiceProxy(self.zero_mortar_wrench_service_name, Empty)
             self.ft_UR_service = rospy.ServiceProxy(self.zero_UR_wrench_service_name, Empty)
@@ -268,16 +268,16 @@ class MortarPositionFineTuning:
             new_mortar_position = self.mortar_position.copy()
             if abs(response.variance_force_x) < variance_threshold:
                 rospy.loginfo("No movement in x direction")
-            elif response.integral_force_x > 0:
+            elif response.average_force_x > 0:
                 new_mortar_position["x"] -= step
-            elif response.integral_force_x < 0:
+            elif response.average_force_x < 0:
                 new_mortar_position["x"] += step
     
             if abs(response.variance_force_y) < variance_threshold:
                 rospy.loginfo("No movement in y direction")
-            elif response.integral_force_y > 0:
+            elif response.average_force_y > 0:
                 new_mortar_position["y"] -= step
-            elif response.integral_force_y < 0:
+            elif response.average_force_y < 0:
                 new_mortar_position["y"] += step
 
             rospy.loginfo("Current mortar position: %s", self.mortar_position)

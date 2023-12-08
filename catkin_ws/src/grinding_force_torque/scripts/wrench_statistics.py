@@ -4,9 +4,9 @@ import rospy
 import tf
 import numpy as np
 from geometry_msgs.msg import WrenchStamped, Point
-from grinding_motion_routines.srv import (
-    PositionCalibrateVector,
-    PositionCalibrateVectorResponse,
+from grinding_force_torque.srv import (
+    WrenchStatistics,
+    WrenchStatisticsResponse,
 )
 
 # Global variables
@@ -24,33 +24,33 @@ def handle_start_stop(req):
         forces_x.clear()
         forces_y.clear()
         forces_z.clear()
-        return PositionCalibrateVectorResponse(True, 0, 0, 0, 0, 0, 0)
+        return WrenchStatisticsResponse(True, 0, 0, 0, 0, 0, 0)
     elif req.command == "stop":
         is_recording = False
-        # Compute the integrals and return
-        integral_x, integral_y, integral_z, var_x, var_y, var_z = compute_statistics()
+        # Compute the averages and return
+        average_x, average_y, average_z, var_x, var_y, var_z = compute_statistics()
 
-        return PositionCalibrateVectorResponse(
-            True, integral_x, integral_y, integral_z, var_x, var_y, var_z
+        return WrenchStatisticsResponse(
+            True, average_x, average_y, average_z, var_x, var_y, var_z
         )
 
 
 def compute_statistics():
     global forces_x, forces_y
-    integral_x = sum(forces_x)
-    integral_y = sum(forces_y)
-    integral_z = sum(forces_z)
+    average_x = np.average(forces_x)
+    average_y = np.average(forces_y)
+    average_z = np.average(forces_z)
     var_x = np.var(forces_x)
     var_y = np.var(forces_y)
     var_z = np.var(forces_z)
-    rospy.loginfo(f"Integral x: {integral_x}")
-    rospy.loginfo(f"Integral y: {integral_y}")
-    rospy.loginfo(f"Integral z: {integral_z}")
+    rospy.loginfo(f"average x: {average_x}")
+    rospy.loginfo(f"average y: {average_y}")
+    rospy.loginfo(f"average z: {average_z}")
     rospy.loginfo(f"Variance x: {var_x}")
     rospy.loginfo(f"Variance y: {var_y}")
     rospy.loginfo(f"Variance z: {var_z}")
 
-    return integral_x, integral_y, integral_z, var_x, var_y, var_z
+    return average_x, average_y, average_z, var_x, var_y, var_z
 
 
 def wrench_callback(wrench_msg):
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # Create a service server
     service_name=rospy.get_param("~wrench_statistics_service")
     service = rospy.Service(
-        service_name, PositionCalibrateVector, handle_start_stop
+        service_name, WrenchStatistics, handle_start_stop
     )
 
     # Create subscriber for WrenchStamped

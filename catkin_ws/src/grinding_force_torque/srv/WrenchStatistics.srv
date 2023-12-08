@@ -1,9 +1,9 @@
 string command
 ---
 bool success
-float32 integral_force_x
-float32 integral_force_y
-float32 integral_force_z
+float32 average_force_x
+float32 average_force_y
+float32 average_force_z
 float32 variance_force_x
 float32 variance_force_y
 float32 variance_force_z
