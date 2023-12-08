@@ -69,7 +69,7 @@ def wrench_callback(wrench_msg):
         ) as e:
             rospy.logwarn(f"TF error: {e}")
             return  
-        print(f"Force : {wrench_msg.wrench.force}")
+        # print(f"Force : {wrench_msg.wrench.force}")
 
 
 if __name__ == "__main__":
