@@ -4,8 +4,10 @@
 
 from scipy.spatial.transform import Rotation
 from threading import Event
+
 import rospy
 import tf2_ros
+import rosparam
 
 from std_srvs.srv import Empty
 from geometry_msgs.msg import WrenchStamped
@@ -34,11 +36,14 @@ class MortarPositionFineTuning:
         self.grinding_eef_link = rospy.get_param("~grinding_eef_link")
 
         self.scene = PlanningScene(self.moveit.move_group)
+        
 
         self.mortar_position = rospy.get_param("~mortar_top_position")
         self.mortar_scale = rospy.get_param("~mortar_inner_scale")
         self.force_threshold = rospy.get_param("~force_threshold")
         self.caliblate_log_dir_path = rospy.get_param("~caliblate_log_dir_path")
+        self.date = time.strftime("%Y%m%d_%H%M%S_")
+        rosparam.dump_params(self.caliblate_log_dir_path + self.date + "calibration_result.txt", "/mortar_position_fine_tuning")
 
         self.filterd_mortar_wrench_topic = rospy.get_param("~FT_sensor_under_mortar_topic")
         self.filterd_UR_wrench_topic = rospy.get_param("~UR_FT_sensor_topic")
@@ -213,7 +218,6 @@ class MortarPositionFineTuning:
         self.scene.init_planning_scene()
 
     def fine_tuning_mortar_position(self):
-        date = time.strftime("%Y%m%d_%H%M%S_")
         average_force_threshold = rospy.get_param("~calibration_average_force_threshold")
         variance_force_threshold = rospy.get_param("~calibration_variance_force_threshold")
         force_x_calibrated = False
@@ -289,7 +293,7 @@ class MortarPositionFineTuning:
             rospy.loginfo("New mortar position: %s", new_mortar_position)
             writer = open(
                 self.caliblate_log_dir_path
-                + date
+                + self.date
                 + "calibration_result.txt",
                 "a",
             )

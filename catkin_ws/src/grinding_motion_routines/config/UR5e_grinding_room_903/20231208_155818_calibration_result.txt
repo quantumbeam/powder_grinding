@@ -1,0 +1,346 @@
+FT_sensor_under_mortar_topic: /leptrino/force_torque/filtered
+MasterSizer_position:
+  x: 0.073414
+  y: -0.5184
+  z: 0
+MasterSizer_relay_position:
+  x: 0.073414
+  y: -0.5184
+  z: 0
+MasterSizer_scale:
+  x: 0.1
+  y: 0.1
+  z: 0.3
+UR_FT_sensor_topic: /wrench/filtered
+XY_calibration_step: 0.0001
+Z_calibration_step: 0.001
+caliblate_log_dir_path: /home/ubuntu/onolab/catkin_ws/src/grinding_motion_routines/config/UR5e_grinding_room_903/
+calibrated_variance_of_force: 0.2
+calibration_average_force_threshold: 0.1
+calibration_variance_force_threshold: 1
+force_threshold: 3
+funnel_position:
+  x: 0.06693
+  y: 0.323
+  z: 0
+funnel_scale:
+  x: 0.015
+  y: 0.015
+  z: 0.15
+grinding_acc_scale: 1
+grinding_angle_param: 0.3
+grinding_center_pos:
+- 0
+- 0
+grinding_eef_link: pestle_tip
+grinding_number_of_rotation: 5
+grinding_number_of_waypoints_per_circle: 10
+grinding_pos_begining:
+- -8
+- 0
+grinding_pos_end:
+- -8
+- 0.0001
+grinding_rz_begining: 36
+grinding_rz_end: 36
+grinding_vel_scale: 1
+grinding_yaw_angle: 3.141592653589793
+mortar_inner_scale:
+  x: 0.04
+  y: 0.04
+  z: 0.035
+mortar_top_position:
+  x: 0.3602445236410515
+  y: -0.15848215723154233
+  z: 0.08906167917333031
+move_group_name: manipulator
+robot_base_palte_tickness: 0.015
+table_position:
+  x: 0
+  y: 0
+  z: -0.015
+table_scale:
+  x: 0.9
+  y: 1.5
+  z: 0.1
+zero_wrench_UR_service: /wrench/filtered/zero_ftsensor
+zero_wrench_under_mortar_service: /leptrino/force_torque/filtered/zero_ftsensor
+Current mortar position: {'x': 0.3602445236410515, 'y': -0.15848215723154233, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3601445236410515, 'y': -0.15838215723154234, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.916559100151062
+average_force_y: -1.3774019479751587
+average_force_z: -5.147521018981934
+variance_force_x: 8.268081665039062
+variance_force_y: 6.673073768615723
+variance_force_z: 24.12735939025879
+
+Current mortar position: {'x': 0.3601445236410515, 'y': -0.15838215723154234, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3600445236410515, 'y': -0.15828215723154235, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.7172399759292603
+average_force_y: -1.3757290840148926
+average_force_z: -4.9410295486450195
+variance_force_x: 7.337188720703125
+variance_force_y: 6.101158618927002
+variance_force_z: 21.1793270111084
+
+Current mortar position: {'x': 0.3600445236410515, 'y': -0.15828215723154235, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3599445236410515, 'y': -0.15818215723154236, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.5435943603515625
+average_force_y: -1.3241889476776123
+average_force_z: -4.7669219970703125
+variance_force_x: 6.578731536865234
+variance_force_y: 5.495138168334961
+variance_force_z: 19.502241134643555
+
+Current mortar position: {'x': 0.3599445236410515, 'y': -0.15818215723154236, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3598445236410515, 'y': -0.15808215723154237, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.4221367835998535
+average_force_y: -1.3143292665481567
+average_force_z: -4.584951400756836
+variance_force_x: 6.058506965637207
+variance_force_y: 5.075910568237305
+variance_force_z: 18.001693725585938
+
+Current mortar position: {'x': 0.3598445236410515, 'y': -0.15808215723154237, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35974452364105153, 'y': -0.15798215723154238, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.3534022569656372
+average_force_y: -1.2960734367370605
+average_force_z: -4.469715595245361
+variance_force_x: 5.600308418273926
+variance_force_y: 4.72514533996582
+variance_force_z: 16.89466667175293
+
+Current mortar position: {'x': 0.35974452364105153, 'y': -0.15798215723154238, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35964452364105154, 'y': -0.1578821572315424, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.2127201557159424
+average_force_y: -1.2550243139266968
+average_force_z: -4.314628601074219
+variance_force_x: 5.121127605438232
+variance_force_y: 4.492140769958496
+variance_force_z: 15.316021919250488
+
+Current mortar position: {'x': 0.35964452364105154, 'y': -0.1578821572315424, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35954452364105155, 'y': -0.1577821572315424, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.125840425491333
+average_force_y: -1.1598858833312988
+average_force_z: -4.161620140075684
+variance_force_x: 4.800722599029541
+variance_force_y: 4.072793006896973
+variance_force_z: 13.617761611938477
+
+Current mortar position: {'x': 0.35954452364105155, 'y': -0.1577821572315424, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35944452364105156, 'y': -0.1576821572315424, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 1.0442955493927002
+average_force_y: -1.1615921258926392
+average_force_z: -4.001351833343506
+variance_force_x: 4.2729291915893555
+variance_force_y: 3.9617362022399902
+variance_force_z: 12.691814422607422
+
+Current mortar position: {'x': 0.35944452364105156, 'y': -0.1576821572315424, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35934452364105157, 'y': -0.15758215723154242, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.9060821533203125
+average_force_y: -1.1463862657546997
+average_force_z: -3.911687135696411
+variance_force_x: 4.009848117828369
+variance_force_y: 3.6488022804260254
+variance_force_z: 11.620813369750977
+
+Current mortar position: {'x': 0.35934452364105157, 'y': -0.15758215723154242, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3592445236410516, 'y': -0.15748215723154244, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.8288448452949524
+average_force_y: -1.0846331119537354
+average_force_z: -3.8019015789031982
+variance_force_x: 3.7127676010131836
+variance_force_y: 3.4486446380615234
+variance_force_z: 10.391356468200684
+
+Current mortar position: {'x': 0.3592445236410516, 'y': -0.15748215723154244, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3591445236410516, 'y': -0.15738215723154245, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.6772326827049255
+average_force_y: -1.0333507061004639
+average_force_z: -3.591094493865967
+variance_force_x: 3.224294662475586
+variance_force_y: 3.066988229751587
+variance_force_z: 9.201154708862305
+
+Current mortar position: {'x': 0.3591445236410516, 'y': -0.15738215723154245, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3590445236410516, 'y': -0.15728215723154246, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.5599706768989563
+average_force_y: -1.019680380821228
+average_force_z: -3.5203282833099365
+variance_force_x: 2.991278886795044
+variance_force_y: 2.866457462310791
+variance_force_z: 8.599620819091797
+
+Current mortar position: {'x': 0.3590445236410516, 'y': -0.15728215723154246, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3589445236410516, 'y': -0.15718215723154247, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.46700698137283325
+average_force_y: -0.9888863563537598
+average_force_z: -3.4304287433624268
+variance_force_x: 2.7993898391723633
+variance_force_y: 2.6317670345306396
+variance_force_z: 7.527355194091797
+
+Current mortar position: {'x': 0.3589445236410516, 'y': -0.15718215723154247, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3588445236410516, 'y': -0.15708215723154248, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.33972272276878357
+average_force_y: -0.9337709546089172
+average_force_z: -3.3674709796905518
+variance_force_x: 2.582261323928833
+variance_force_y: 2.4890615940093994
+variance_force_z: 6.737162113189697
+
+Current mortar position: {'x': 0.3588445236410516, 'y': -0.15708215723154248, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35874452364105164, 'y': -0.1569821572315425, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.23059499263763428
+average_force_y: -0.8886436820030212
+average_force_z: -3.2921903133392334
+variance_force_x: 2.3474109172821045
+variance_force_y: 2.3740148544311523
+variance_force_z: 6.388728618621826
+
+Current mortar position: {'x': 0.35874452364105164, 'y': -0.1569821572315425, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35864452364105165, 'y': -0.1568821572315425, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.1373567283153534
+average_force_y: -0.8652678728103638
+average_force_z: -3.2407138347625732
+variance_force_x: 2.222985029220581
+variance_force_y: 2.3222289085388184
+variance_force_z: 5.825773239135742
+
+Current mortar position: {'x': 0.35864452364105165, 'y': -0.1568821572315425, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35864452364105165, 'y': -0.1567821572315425, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: 0.014475947245955467
+average_force_y: -0.8288717865943909
+average_force_z: -3.1556460857391357
+variance_force_x: 2.1130611896514893
+variance_force_y: 2.1217591762542725
+variance_force_z: 5.245611190795898
+
+Current mortar position: {'x': 0.35864452364105165, 'y': -0.1567821572315425, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35864452364105165, 'y': -0.15668215723154252, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.0030794134363532066
+average_force_y: -0.767572283744812
+average_force_z: -3.1368567943573
+variance_force_x: 2.0613327026367188
+variance_force_y: 2.063667058944702
+variance_force_z: 4.972346782684326
+
+Current mortar position: {'x': 0.35864452364105165, 'y': -0.15668215723154252, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35864452364105165, 'y': -0.15658215723154253, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.08724308013916016
+average_force_y: -0.6870373487472534
+average_force_z: -3.102461576461792
+variance_force_x: 1.9714882373809814
+variance_force_y: 1.9529086351394653
+variance_force_z: 4.271637439727783
+
+Current mortar position: {'x': 0.35864452364105165, 'y': -0.15658215723154253, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.35874452364105164, 'y': -0.15648215723154255, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.1257033795118332
+average_force_y: -0.6512171626091003
+average_force_z: -3.0116708278656006
+variance_force_x: 1.8944059610366821
+variance_force_y: 1.7944773435592651
+variance_force_z: 3.732457399368286
+
+Current mortar position: {'x': 0.35874452364105164, 'y': -0.15648215723154255, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3588445236410516, 'y': -0.15638215723154256, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.11994750797748566
+average_force_y: -0.5505067110061646
+average_force_z: -2.9527642726898193
+variance_force_x: 1.7511985301971436
+variance_force_y: 1.7365449666976929
+variance_force_z: 3.113755702972412
+
+Current mortar position: {'x': 0.3588445236410516, 'y': -0.15638215723154256, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3588445236410516, 'y': -0.15628215723154257, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.04946745187044144
+average_force_y: -0.45142316818237305
+average_force_z: -2.860858678817749
+variance_force_x: 1.6816494464874268
+variance_force_y: 1.5579971075057983
+variance_force_z: 2.344184637069702
+
+Current mortar position: {'x': 0.3588445236410516, 'y': -0.15628215723154257, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3589445236410516, 'y': -0.15618215723154258, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.10869716852903366
+average_force_y: -0.38515812158584595
+average_force_z: -2.846482276916504
+variance_force_x: 1.644065260887146
+variance_force_y: 1.4727697372436523
+variance_force_z: 1.9642940759658813
+
+Current mortar position: {'x': 0.3589445236410516, 'y': -0.15618215723154258, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3589445236410516, 'y': -0.1560821572315426, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.06990242004394531
+average_force_y: -0.2886201739311218
+average_force_z: -2.7181291580200195
+variance_force_x: 1.4917696714401245
+variance_force_y: 1.3478580713272095
+variance_force_z: 1.382779836654663
+
+Current mortar position: {'x': 0.3589445236410516, 'y': -0.1560821572315426, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3590445236410516, 'y': -0.1559821572315426, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.126344233751297
+average_force_y: -0.214931920170784
+average_force_z: -2.743299722671509
+variance_force_x: 1.473786473274231
+variance_force_y: 1.3229140043258667
+variance_force_z: 1.1098029613494873
+
+Current mortar position: {'x': 0.3590445236410516, 'y': -0.1559821572315426, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3590445236410516, 'y': -0.1558821572315426, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.08480298519134521
+average_force_y: -0.14315074682235718
+average_force_z: -2.7166712284088135
+variance_force_x: 1.4581767320632935
+variance_force_y: 1.2972831726074219
+variance_force_z: 0.7984142899513245
+
+Current mortar position: {'x': 0.3590445236410516, 'y': -0.1558821572315426, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3591445236410516, 'y': -0.1558821572315426, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.16294002532958984
+average_force_y: -0.03032940812408924
+average_force_z: -2.6579627990722656
+variance_force_x: 1.3964775800704956
+variance_force_y: 1.2244685888290405
+variance_force_z: 0.5312936305999756
+
+Current mortar position: {'x': 0.3591445236410516, 'y': -0.1558821572315426, 'z': 0.08906167917333031},
+ New mortar position: {'x': 0.3591445236410516, 'y': -0.1558821572315426, 'z': 0.08906167917333031},
+ response: success: True
+average_force_x: -0.03906174749135971
+average_force_y: -0.014770569279789925
+average_force_z: -2.6391148567199707
+variance_force_x: 1.3564690351486206
+variance_force_y: 1.214551329612732
+variance_force_z: 0.4302341341972351
