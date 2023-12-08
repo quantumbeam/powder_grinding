@@ -1,12 +1,16 @@
 <launch>
     <arg name="planning_scene_config"
-        default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/planning_scene_config.yaml" />
     <arg name="motion_config"
-        default="$(find grinding_motion_routines)/config/UR_grinding_demo/motion_config.yaml" />
+        default="$(find grinding_motion_routines)/config/UR5e_grinding_room_903/motion_config.yaml" />
 
     <arg name="abs_force" default="false" />
     <arg name="rosbag_record" default="false" />
     <arg name="rosbag_name" default="$(find grinding_motion_routines)/bag/" />
+
+    <node name="UR_ft_filter" pkg="grinding_force_torque" type="ft_filter.py"
+    args="-z -t 'wrench'"
+    output="screen" />
 
     <node name="mechano_grinding" pkg="grinding_motion_routines" type="grinding_fast.py"
         output="screen">
