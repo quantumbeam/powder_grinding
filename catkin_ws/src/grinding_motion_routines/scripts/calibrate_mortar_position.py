@@ -220,7 +220,7 @@ class MortarPositionFineTuning:
     def fine_tuning_mortar_position(self):
         date = time.strftime("%Y%m%d_%H%M%S_")
         while not rospy.is_shutdown():
-            variance_threshold = rospy.get_param("~calibrated_variance_of_force")
+            average_force_threshold = rospy.get_param("~calibration_average_force_threshold")
 
             self.move_to_position_above_mortar()
             self._zero_mortar_ft_sensor()
@@ -266,14 +266,14 @@ class MortarPositionFineTuning:
             # direction of y axis of end-effector is opposite from force sensor
             step = rospy.get_param("~XY_calibration_step")
             new_mortar_position = self.mortar_position.copy()
-            if abs(response.variance_force_x) < variance_threshold:
+            if abs(response.average_force_x) < average_force_threshold:
                 rospy.loginfo("No movement in x direction")
             elif response.average_force_x > 0:
                 new_mortar_position["x"] -= step
             elif response.average_force_x < 0:
                 new_mortar_position["x"] += step
     
-            if abs(response.variance_force_y) < variance_threshold:
+            if abs(response.average_force_y) < average_force_threshold:
                 rospy.loginfo("No movement in y direction")
             elif response.average_force_y > 0:
                 new_mortar_position["y"] -= step
@@ -299,7 +299,7 @@ class MortarPositionFineTuning:
             self.mortar_position = new_mortar_position
 
             # Check variance of force
-            if abs(response.variance_force_z) < variance_threshold*2:
+            if (abs(response.average_force_x) < average_force_threshold) and (abs(response.average_force_y) < average_force_threshold):
                 rospy.loginfo("Calibration finished")
                 break
 
