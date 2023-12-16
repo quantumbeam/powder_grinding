@@ -29,7 +29,6 @@ This repository focuses on the ROS environment for robot control.
 
 ### Supported Robots
 - UR5e
-- UR3e (confirmed in simulation only)
 - Cobotta
 
 ### Quick Start Guide
