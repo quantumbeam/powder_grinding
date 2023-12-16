@@ -3,8 +3,8 @@ version: "3.8"
 ################################################################################
 
 services:
-  onolab-ros:
-    hostname: onolab_ros
+  powder-grinding-ros:
+    hostname: ppowder_grinding_ros
     runtime: ${DOCKER_RUNTIME}
     privileged: true
     image: onolab_ros_noetic
