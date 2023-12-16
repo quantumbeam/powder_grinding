@@ -4,7 +4,7 @@ version: "3.8"
 
 services:
   powder-grinding-ros:
-    hostname: ppowder_grinding_ros
+    hostname: powder_grinding_ros
     runtime: ${DOCKER_RUNTIME}
     privileged: true
     image: onolab_ros_noetic
@@ -28,16 +28,12 @@ services:
       - /dev/:/dev/
     network_mode: "host"
     extra_hosts:
-      - "onolab:127.0.0.1" # Seems that this might be needed for ROS networking
-      - "onolab:192.168.56.5" # The host PC
-      - "ur5e_ono:192.168.56.42" # UR5e
-      - "cobotta:192.168.56.11" # cobotta
-      - "sound_sensor:192.168.56.100" #
+      - "host:127.0.0.1" # Seems that this might be needed for ROS networking
+      - "host:192.168.56.5" # The host PC
+      - "ur:192.168.56.42" # UR IP
     expose:
-      - "50000" # sound sensor
       - "50001" # send commnad to UR
       - "50002" # external control of UR
       - "50003" # recerve commnad from UR
       - "50004" # script_command_port of UR
-      - "5007" # cobotta
     tty: true
