@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  grinding_force_torque
 )
 
 # Need to import the python modules from the package setup.py
