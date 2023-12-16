@@ -1,5 +1,0 @@
-mortar_detector:
-  image_topic: "/camera/color/image_raw"
-  closing_kernel_size: 10
-  binary_threshold: 150
-  distance_to_mortar_from_camera: 0.15
