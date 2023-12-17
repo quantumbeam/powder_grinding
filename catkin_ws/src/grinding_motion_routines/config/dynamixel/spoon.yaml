@@ -1,8 +1,0 @@
-# Operating_Mode
-# 0: Current Control, 1: Velocity Control, 3: Position Control, 
-# 4: Extended Position Control (multi-turn), 5: Current-based Position Control, 16: PWM Control
-
-spoon:
-  ID: 10
-  Return_Delay_Time: 0
-  Operating_Mode: 1
