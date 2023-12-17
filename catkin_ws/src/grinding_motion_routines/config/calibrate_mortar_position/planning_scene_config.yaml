@@ -7,13 +7,3 @@ table_scale  :  {x: 0.9, y: 1.5, z: 0.1}
 
 mortar_top_position  :  {x: 0.3667597025251792, y: 0.1702378218510508, z: 0.08952612996948098}
 mortar_inner_scale:  {x:  0.04, y: 0.04, z: 0.035} # official infomation says 0.04 * 0.04 * 0.032 but z is more deep actually 
-
-
-# test funnel
-funnel_position  :  {x:  0.06693, y: 0.323, z: 0}
-funnel_scale  :  {x:  0.015, y: 0.015, z: 0.15}
-
-# Master Sizer 3000E
-MasterSizer_position  :  {x:  0.073414, y: -0.5184, z: 0}
-MasterSizer_scale  :  {x:  0.1, y: 0.1, z: 0.3}
-MasterSizer_relay_position  :  {x:  0.073414, y: -0.5184, z: 0}

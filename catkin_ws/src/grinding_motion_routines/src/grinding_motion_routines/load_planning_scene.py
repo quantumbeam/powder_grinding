@@ -16,8 +16,7 @@ class PlanningScene:
         self.scene.remove_world_object("table")
         self.scene.remove_world_object("mortar")
         self.scene.remove_world_object("funnel")
-        self.scene.remove_world_object("MasterSizer")
-
+       
     def init_planning_scene(self):
         mortar_mesh_file_path = (
             roslib.packages.get_pkg_dir("grinding_descriptions")
@@ -26,12 +25,9 @@ class PlanningScene:
         table_pos = rospy.get_param("~table_position", None)
         table_scale = rospy.get_param("~table_scale", None)
         mortar_pos = rospy.get_param("~mortar_top_position", None)
-        print("Loading mortar pos:", mortar_pos)
         funnel_pos = rospy.get_param("~funnel_position", None)
         funnel_scale = rospy.get_param("~funnel_scale", None)
-        MasterSizer_pos = rospy.get_param("~MasterSizer_position", None)
-        MasterSizer_scale = rospy.get_param("~MasterSizer_scale", None)
-
+    
         # Add table if parameters are provided
         if table_pos and table_scale:
             self._add_table(table_scale, table_pos)
@@ -43,10 +39,6 @@ class PlanningScene:
         # Add funnel if parameters are provided
         if funnel_pos and funnel_scale:
             self._add_funnel(funnel_pos, funnel_scale)
-
-        # Add MasterSizer if parameters are provided
-        if MasterSizer_pos and MasterSizer_scale:
-            self._add_MasterSizer(MasterSizer_pos, MasterSizer_scale)
 
     def _add_table(self, table_scale, table_pos):
         table_pose = geometry_msgs.msg.PoseStamped()
@@ -82,21 +74,7 @@ class PlanningScene:
             funnel_scale["x"],
         )
 
-    def _add_MasterSizer(self, MasterSizer_pos, MasterSizer_scale):
-        MasterSizer_pose = geometry_msgs.msg.PoseStamped()
-        MasterSizer_pose.header.frame_id = self.planning_frame
-        MasterSizer_pose.pose.orientation.w = 1.0
-        MasterSizer_pose.pose.position.x = MasterSizer_pos["x"]
-        MasterSizer_pose.pose.position.y = MasterSizer_pos["y"]
-        MasterSizer_pose.pose.position.z = MasterSizer_scale["z"] / 2
-        self.scene.add_cylinder(
-            "MasterSizer",
-            MasterSizer_pose,
-            MasterSizer_scale["z"],
-            MasterSizer_scale["x"],
-        )
-
-
+    
 if __name__ == "__main__":
     roscpp_initialize(sys.argv)
     rospy.init_node("load_planning_scene")
