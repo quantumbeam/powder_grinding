@@ -23,5 +23,6 @@ fi
 docker compose -p ${DOCKER_PROJECT} -f compose.yaml build
 
 # Initialize environments in the container
+echo "Finished building docker image."
 echo "You should run RUN-DOCKER-CONTAINER.sh at home directory and INITIAL_SETUP_ROS_ENVIROMENTS.sh in docker container at first."
 echo "After that, you can run ROS commands and use packages in docker container."

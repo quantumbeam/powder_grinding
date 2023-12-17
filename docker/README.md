@@ -3,7 +3,7 @@
 
 1. Install software
 - Install terminator
-```sudo apt install terminator```
+  - ```sudo apt install terminator```
 - Install Docker
   - https://docs.docker.com/engine/install/ubuntu/
 - Install VSCode, and Remote-Containers extension(recomended).
@@ -11,24 +11,33 @@
 
 2. Port forwarding
 - Port forwarding is required to use real robots and sensors on docker container.
-```sudo ufw allow 50000:50004```
+  - UR ports.
+    - ```sudo ufw allow 50001:50004```
+  - Cobotta port.
+    - ```sudo ufw allow 5007```
 
 3. Network setting
-- Set static IP address
-  ex) ```192.168.56.2```
+- Set static IP address on LAN adaptor
+  - This package default : ```192.168.56.5```
 
 # Setting up robot environments
 ## Common
-- Set static IP address
-  ex) ```192.168.56.3```
+- Set static IP address on robot LAN adaptor
+  - This package default of UR :  ```192.168.56.42```
+  - This package default of cobotta : ```192.168.56.11```
 
 ## Cobotta
 
 ## Universal Robot
+- Install ```external control.urcap``` and setting LAN info on UR tablet
+  - https://github.com/UniversalRobots/Universal_Robots_ExternalControl_URCap/releases
 
-# Quick setup of ROS environment on Docker container
-1. Build docker image
-```cd ./docker && ./BUILD-DOCKER-IMAGE.sh```
+# Build docker image of ROS environment on Docker container
+- Build docker image.
+  - ```cd ./docker && ./BUILD-DOCKER-IMAGE.sh```
+- Return main directry after build.
+  - ```cd ../```
+- You can run docker container, see "Running Docker Container" on [README.md](../README.md).
 
 
 

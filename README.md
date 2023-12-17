@@ -1,15 +1,10 @@
-### Powder Grinding Package for ROS noetic
+### Powder Grinding Package on ROS noetic
 
 **Repository for Robotic Powder Grinding in Material Science**
 
 #### **Related Publications**
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
 - [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
-
-#### Todo
-- Update pestle tip to URDF?
-- Update planning scene congig yaml from pos z, rough pos x and y, finetuned x and y
-- Add TF of FT sensor to decide calibrate direction
 
 
 #### **Table of Contents**
@@ -37,20 +32,18 @@ This repository focuses on the ROS environment for robot control.
 - [Setup Instructions](./docker/README.md)
 
 #### Running Docker Container
-- Execute: `./RUN-DOCKER-CONTAINER.sh`
-- With Terminator: `./LAUNCH-TERMINATOR-TERMINAL.sh`
+- Runing docker container on terminal: `./RUN-DOCKER-CONTAINER.sh`
+- Launch Terminator and running docker container: `./LAUNCH-TERMINATOR-TERMINAL.sh`
 
 #### Building ROS Packages in Docker Container
-- Inside `catkin_ws`: `./BUILD_ROS_WORKSPACE.sh`
+- Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` on docker conatner.  
+- Execute `./BUILD_ROS_WORKSPACE.sh` in `catkin_ws` on docker conatner.
 
 ### Known Issues
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
-- Build failure in **moveit_calibration_plugins** due to missing `numpy/arrayobject.h`. Solution: Add the numpy path to `CMakeLists.txt`'s `include_directories`.
-  - Example path: `/usr/local/lib/python3.8/dist-packages/numpy/core/include`
 
 ### Future Work
-- Automated detection of mortar X,Y positions using a camera.
-- Automated detection of mortar Z position using a force sensor.
+- Automated calibration of mortar position using a force sensor.
 
 ### License
 This repository is under the MIT license. See [LICENSE](./LICENSE) for details.

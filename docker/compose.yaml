@@ -31,9 +31,12 @@ services:
       - "host:127.0.0.1" # Seems that this might be needed for ROS networking
       - "host:192.168.56.5" # The host PC
       - "ur:192.168.56.42" # UR IP
+      - "cobotta:192.168.56.11" # cobotta IP
     expose:
       - "50001" # send commnad to UR
       - "50002" # external control of UR
       - "50003" # recerve commnad from UR
       - "50004" # script_command_port of UR
+      - "5007" # cobotta
+
     tty: true
