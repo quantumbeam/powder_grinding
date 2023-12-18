@@ -53,10 +53,10 @@
   <!-- run the real robot or simulator (gazebo) -->
   <!-- The controllers are fixed real or sim, you can change controllers for your app -->
   <group if="$(arg sim)">
-    <include file="$(find ur_gazebo)/launch/ur5e_bringup.launch" pass_all_args="true">
-      <arg name="controller_config_file" value="$(find ur_gazebo)/config/ur5e_controllers.yaml" />
+    <include file="$(find ur_gazebo)/launch/ur5e_bringup.launch">
+      <!-- <arg name="controller_config_file" value="$(find ur_gazebo)/config/ur5e_controllers.yaml" />
       <arg name="controllers" value="joint_state_controller eff_joint_traj_controller" />
-      <arg name="stopped_controllers" value="joint_group_eff_controller" />
+      <arg name="stopped_controllers" value="joint_group_eff_controller" /> -->
     </include>
   </group>
   <group unless="$(arg sim)">
@@ -69,9 +69,10 @@
     </include>
   </group>
 
+  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/eff_joint_traj_controller/follow_joint_trajectory"/>
+
   <!-- Launch moveit -->
-  <include file="$(find ur5e_moveit_config)/launch/moveit_planning_execution.launch">
-    <arg name="sim" default="$(arg sim)" />
+  <include file="$(find ur5e_moveit_config)/launch/move_group.launch">
     <arg name="debug" default="$(arg debug)" />
   </include>
 
@@ -81,11 +82,12 @@
   </include>
 
   <!-- load planning scene -->
-  <arg name="planning_scene_config"
-    default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config.yaml" />
-  <node name="ur5e_planning_scene" pkg="grinding_motion_routines" type="load_planning_scene.py"
-    output="screen">
-    <rosparam command="load" file="$(arg planning_scene_config)" />
-  </node>
+    <arg name="planning_scene_config"
+        default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config.yaml" />
+
+    <node name="loading_planning_scene" pkg="grinding_motion_routines" type="load_planning_scene.py"
+        output="screen">
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+    </node>
 
 </launch>
