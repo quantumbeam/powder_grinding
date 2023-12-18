@@ -34,29 +34,22 @@ def main():
     debug_tf = tf_publisher.TFPublisher()
     pi = np.pi
 
-    mortar_base_position = rospy.get_param("/loading_planning_scene/mortar_position")
-    MasterSizer_position = rospy.get_param(
-        "/loading_planning_scene/MasterSizer_position"
-    )
 
-    moveit = moveit_executor.MoveitExecutor("manipulator", "spoon_tip")
+    moveit = moveit_executor.MoveitExecutor("manipulator", "tool0")
     r = Rotation.from_euler("xyz", [pi, pi / 2, pi / 2], degrees=False)
     quat = r.as_quat()
-    MasterSizer_base_pose = list(MasterSizer_position.values()) + list(quat)
-    pouring_pose = copy.deepcopy(MasterSizer_base_pose)
-    pouring_pose[2] += 0.32
 
     tmp_pose = [0.16, 0, 0.35] + list(quat)
 
-    waypoints = [tmp_pose, pouring_pose]
+    waypoints = [tmp_pose]
     debug_tf.broadcast_tf_with_waypoints(waypoints, "base_link")
-    # moveit.execute_to_goal_pose(
-    #     tmp_pose,
-    #     ee_link="spoon_tip",
-    #     vel_scale=0.2,
-    #     acc_scale=0.2,
-    #     execute=False,
-    # )
+    moveit.execute_to_goal_pose(
+        tmp_pose,
+        ee_link="tool0",
+        vel_scale=0.2,
+        acc_scale=0.2,
+        execute=True,
+    )
     # moveit.execute_to_goal_pose(
     #     pouring_pose,
     #     ee_link="spoon_tip",
@@ -65,26 +58,6 @@ def main():
     #     execute=True,
     # )
 
-    # execute pouring
-    pose_list = []
-    current_pose = _pose_stamped_to_list(
-        moveit.move_group.get_current_pose("spoon_tip")
-    )
-    for i in range(10):
-        delta_rot = Rotation.from_euler("xyz", np.array([0, 0, pi / 3 * 2]) / 10)
-        current_rot = Rotation.from_quat(current_pose[3:])
-        next_rot = current_rot * delta_rot
-        current_position = current_pose[:3]
-        next_pose = current_position + list(next_rot.as_quat())
-        pose_list.append(next_pose)
-        current_pose = next_pose
-    moveit.execute_cartesian_path_by_waypoints(
-        pose_list,
-        "spoon_tip",
-        vel_scale=0.2,
-        acc_scale=0.2,
-        execute=False,
-    )
 
 
 if __name__ == "__main__":
