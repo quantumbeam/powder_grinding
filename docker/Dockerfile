@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install -y \
 
 # Create ROS workspace
 RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
-RUN echo "source /home/ubuntu/onolab/catkin_ws/devel/setup.bash" >> /root/.bashrc
+RUN echo "source /home/ubuntu/powder_grinding/catkin_ws/devel/setup.bash" >> /root/.bashrc
 RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> /root/.bashrc
 RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
 

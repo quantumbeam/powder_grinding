@@ -7,7 +7,7 @@ services:
     hostname: powder_grinding_ros
     runtime: ${DOCKER_RUNTIME}
     privileged: true
-    image: onolab_ros_noetic
+    image: powder_grinding_ros_noetic
     environment:
       # Pass host user information.
       - HOST_USER=${USER}
@@ -21,7 +21,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       # Map ROS workspace folders.
-      - ../:/home/ubuntu/onolab/
+      - ../:/home/ubuntu/powder_grinding/
       # Grant display access to X Server.
       - /tmp/.X11-unix:/tmp/.X11-unix
       # Grant access to usb ports
