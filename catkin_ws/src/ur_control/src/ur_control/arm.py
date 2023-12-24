@@ -54,6 +54,7 @@ from ur_control.controllers import (
     GripperController,
 )
 from trac_ik_python.trac_ik import IK as TRACK_IK_SOLVER
+from ur_pykdl import ur_kinematics
 
 cprint = utils.TextColors()
 
@@ -78,6 +79,7 @@ class Arm(object):
         gripper=False,
         joint_names_prefix=None,
         ft_topic=None,
+        ft_sensor=False,
         base_link=None,
         ee_link=None,
     ):
@@ -129,7 +131,7 @@ class Arm(object):
 
         self._init_ik_solver(self.base_link, self.ee_link)
         self._init_controllers(gripper, joint_names_prefix)
-        if ft_topic:
+        if ft_sensor:
             self._init_ft_sensor()
 
         self.controller_manager = ControllersConnection(namespace)
@@ -166,7 +168,13 @@ class Arm(object):
             )
 
     def _init_ik_solver(self, base_link, ee_link):
+        self.base_link = base_link
+        self.ee_link = ee_link
         # Instantiate Inverse kinematics solver
+        if rospy.has_param("robot_description"):
+            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link)
+        else:
+            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link, robot=self._robot_urdf, prefix=self.joint_names_prefix, rospackage=self._robot_urdf_package)
 
         if self.ik_solver == TRAC_IK:
             try:
