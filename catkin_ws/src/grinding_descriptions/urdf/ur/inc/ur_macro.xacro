@@ -51,8 +51,8 @@
      - Muhammad Asif Rana
   -->
 
-  <xacro:include filename="$(find grinding_descriptions)/urdf/ur5e/inc/ur_transmissions.xacro" />
-  <xacro:include filename="$(find grinding_descriptions)/urdf/ur5e/inc/ur_common.xacro" />
+  <xacro:include filename="$(find grinding_descriptions)/urdf/ur/inc/ur_transmissions.xacro" />
+  <xacro:include filename="$(find grinding_descriptions)/urdf/ur/inc/ur_common.xacro" />
 
   <xacro:macro name="ur_robot"
     params="

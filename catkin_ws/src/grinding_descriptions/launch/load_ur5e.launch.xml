@@ -18,7 +18,7 @@
 
   <!-- use common launch file and pass all arguments to it -->
   <param name="robot_description"
-    command="$(find xacro)/xacro '$(find grinding_descriptions)/urdf/ur5e/ur.xacro'
+    command="$(find xacro)/xacro '$(find grinding_descriptions)/urdf/ur/ur.xacro'
   joint_limit_params:=$(arg joint_limit_params)
   kinematics_params:=$(arg kinematics_params)
   physical_params:=$(arg physical_params)
