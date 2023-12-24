@@ -157,8 +157,13 @@ def main():
     rospy.loginfo("Goto init pose: " + str(init_pose))
 
     ################### motion primitive ###################
+    urdf_name=rospy.get_param("~urdf_name",None)
     primitive = motion_primitive.MotionPrimitive(
         init_pose=init_pose,
+        ns=None,
+        move_group_name=move_group_name,
+        ee_link=grinding_ee_link,
+        robot_urdf=urdf_name,
     )
     pouring_position = copy.deepcopy(list(funnel_position.values()))
     pouring_position[2] += pouring_hight

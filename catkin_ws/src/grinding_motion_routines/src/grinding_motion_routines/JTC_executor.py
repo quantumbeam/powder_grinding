@@ -23,7 +23,6 @@ class JointTrajectoryControllerExecutor(Arm):
             namespace=ns,
             joint_names_prefix=joint_names_prefix,
             robot_urdf=robot_urdf,
-            robot_urdf_package=robot_urdf,
             ee_link=tcp_link,
             ft_topic=ft_topic,
         )

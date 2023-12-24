@@ -1,8 +1,8 @@
 <launch>
     <arg name="planning_scene_config"
-        default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config.yaml" />
+        default="$(find grinding_motion_routines)/config/ur5e_grinding_demo/planning_scene_config.yaml" />
     <arg name="motion_config"
-        default="$(find grinding_motion_routines)/config/UR_grinding_demo/motion_config.yaml" />
+        default="$(find grinding_motion_routines)/config/ur5e_grinding_demo/motion_config.yaml" />
 
     <arg name="abs_force" default="false" />
     <arg name="rosbag_record" default="false" />
