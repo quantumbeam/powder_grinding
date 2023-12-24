@@ -2,18 +2,23 @@
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
 Custum ROS packages for robotic powder grinding.
+This package can operate both in simulation (Gazebo) and on the actual robot.
 
 
 #### **Table of Contents**
-1. [Overview](#overview)
-2. [Supported Robots](#supported-robot)
-3. [Quick Start Guide](#quick-start)
-   - [Environment Setup](#setting-up-environments-of-host-pc-robot-and-docker)
-   - [Running Docker Container](#running-docker-container)
-   - [Building ROS Packages](#build-ros-packages-on-docker-container)
-4. [Known Issues](#known-issues)
-5. [Future Work](#tuture-work)
-6. [License](#license)
+- [Robotic Powder Grinding for Laboratory Automation in Material Science](#robotic-powder-grinding-for-laboratory-automation-in-material-science)
+  - [**Table of Contents**](#table-of-contents)
+- [Overview](#overview)
+- [Supported Robots](#supported-robots)
+- [Quick Start Guide](#quick-start-guide)
+  - [Setting up Environments of Host PC, Robot, and Docker](#setting-up-environments-of-host-pc-robot-and-docker)
+  - [Running Docker Container](#running-docker-container)
+  - [Building ROS Packages in Docker Container](#building-ros-packages-in-docker-container)
+  - [Demonstration](#demonstration)
+- [Known Issues](#known-issues)
+- [Future Work](#future-work)
+- [Citation](#citation)
+- [License](#license)
 
 ### Overview
 **Last Updated:** 2023/10/24  
@@ -38,6 +43,25 @@ This repository focuses on the ROS environment for robot control.
 #### Building ROS Packages in Docker Container
 - Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` on docker conatner.  
 - Execute `./BUILD_ROS_WORKSPACE.sh` in `catkin_ws` on docker conatner.
+
+
+#### Demonstration
+- We have prepared demo files for launching and performing grinding motions.
+- Robot Launch:
+   ```
+   roslaunch grinding_robot_bringup ur5e_bringup.launch
+   roslaunch grinding_robot_bringup ur3e_bringup.launch
+   roslaunch grinding_robot_bringup cobotta_bringup.launch
+   ```
+  - If you want to use simulation, please launch with sim:=true.
+- Launching Grinding Motion:
+   ```
+   roslaunch grinding_motion_routines ur5e_grinding_demo.launch
+   ```
+   - Use the command g to prepare for grinding (g=grinding), and then use y to execute the grinding.
+   - Use the command G to prepare for powder collection with a spatula (G=grinding), and then use y to execute the powder collection.
+- Grinding Parameters Configuration:
+   - The configuration settings are located in the config directory within the grinding_motion_routines package.
 
 ### Known Issues
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).

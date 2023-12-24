@@ -1,11 +1,8 @@
 # Powder Grinding Package on ROS noetic
+<img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
-**Repository for Robotic Powder Grinding in Material Science**
-
-## 関連論文
-- [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
-- [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
-
+Robotic powder grinding用のカスタムROSパッケージです。
+シミュレーション(Gazebo)上での動作とロボット実機での動作ができます。
 
 ## 目次
 1. [概要](#概要)
@@ -14,6 +11,7 @@
    - [PCとロボットとDocker環境のセットアップ](#PCとロボットとDocker環境のセットアップ)
    - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
    - [Dockerコンテナ内でのros環境のビルド](#dockerコンテナ内でのros環境のビルド)
+   - [モーションのデモ](#モーションのデモ)
 4. [既知の課題](#既知の課題)
 5. [Future Work](#tuture-work)
 6. [License](#license)
@@ -24,6 +22,7 @@ This repository focuses on the ROS environment for robot control.
 
 ## 対応ロボット
 - UR5e
+- UR3e
 - Cobotta
 
 ## クイックスタート
@@ -45,17 +44,18 @@ This repository focuses on the ROS environment for robot control.
    - `./BUILD_ROS_WORKSPACE.sh`
 -  以上のコマンドは`catkin_ws` のディレクトリ内で実行すること(`./RUN-DOCKER-CONTAINER.sh`実行時はデフォルトで`catkin_ws`に入っている。)
 
-### 粉砕の実行
-**現時点でシミュレータは動かず、ロボット実機しか動かせない点に注意してください。**
+### モーションのデモ
 - UR5e、cobottaの立ち上げと粉砕モーションのデモファイルを用意しています。
 - ロボットの立ち上げ
    - `roslaunch grinding_robot_bringup ur5e_bringup.launch `
    - `roslaunch grinding_robot_bringup cobotta_bringup.launch ` 
+   - シミュレーション使う場合は`sim:=true`で立ち上げてください。
 - 粉砕モーションの立ち上げ
    - `roslaunch grinding_motion_routines ur5e_grinding_demo.launch`
+   - コマンド`g`で粉砕の実行準備(g=grinding)、続けて`y`で粉砕実行します。
+   - コマンド`G`でヘラによる粉集めの実行準備(g=grinding)、続けて`y`で粉集め実行します。
 - 粉砕パラメータの設定
-   -  grinding_motion_routinesパッケージ内のconfig内に設定があります。URとcobottaの
-   デモで使っています。
+   -  grinding_motion_routinesパッケージ内のconfig内に設定があります。
 
 ## 既知の課題
 - 通常版Cobottaの3Dモデルファイルの .deaファイルはROSで読めない形式になっています。
@@ -66,6 +66,20 @@ This repository focuses on the ROS environment for robot control.
    - 現時点で製作途中です。
 - UR内部もしくは外部の力センサを用いて、乳鉢位置の自動調整を行いたいです。
    - grinding_motion_routinesパッケージの`calibrate_mortar_position.launch`に途中まで作ったものがありますが、まだ完成していないので使う場合はスクリプトを読んで書き換えながら使ってください。
+
+### Citation
+- [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
+```
+@InProceedings{RoboticPowderGrinding,
+  Title                    = {Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science},
+  Author                   = {Yusaku Nakajima, Masashi Hamaya, Yuta Suzuki, Takafumi Hawai, Felix Von Drigalski, Kazutoshi Tanaka, Yoshitaka Ushiku and Kanta Ono.},
+  Booktitle                = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  Year                     = {2022},
+  Doi                      = {10.1109/IROS47612.2022.9981081}
+}
+- [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
+```
+- Related article: [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
 
 ## License
 This repository is under the MIT license. See [LICENSE](./LICENSE) for details.
