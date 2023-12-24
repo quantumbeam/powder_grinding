@@ -24,7 +24,7 @@
   <arg name="headless_mode" default="false" />
   <arg name="ur_hardware_interface_node_required" default="true" />
   
-  <!-- Configrations Common-->
+  <!-- Common Configrations-->
   <arg name="joint_limit_params" default="$(find grinding_descriptions)/config/ur5e/joint_limits.yaml" />
   <arg name="physical_params" default="$(find grinding_descriptions)/config/ur5e/physical_parameters.yaml" />
   <arg name="visual_params" default="$(find grinding_descriptions)/config/ur5e/visual_parameters.yaml" />
@@ -38,8 +38,8 @@
   <!-- Configrations for Gazebo -->
   <arg name="robot_description_file" if="$(arg sim)" default="$(find grinding_descriptions)/launch/load_ur5e_gazebo.launch.xml" doc="Robot description launch file." />
   <arg name="controller_config_file" if="$(arg sim)" default="$(find grinding_robot_bringup)/config/ur5e_controllers_gazebo.yaml" />
-  <arg name="controllers" if="$(arg sim)" default="joint_state_controller eff_joint_traj_controller" />
-  <arg name="stopped_controllers" if="$(arg sim)" default="joint_group_eff_controller" />
+  <arg name="controllers" if="$(arg sim)" default="joint_state_controller scaled_pos_joint_traj_controller" />
+  <arg name="stopped_controllers" if="$(arg sim)" default="pos_joint_traj_controller" />
   
   <arg name="kinematics_params" default="$(find grinding_descriptions)/config/ur5e/default_kinematics.yaml" />
   <arg name="tf_pub_rate" default="500"/>
@@ -59,8 +59,8 @@
     <include file="$(find ur_robot_driver)/launch/ur_common.launch" pass_all_args="true"/>
   </group>
 
-  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory"
-    to="/eff_joint_traj_controller/follow_joint_trajectory" />
+  <!-- <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory"
+    to="/eff_joint_traj_controller/follow_joint_trajectory" /> -->
 
   <!-- Launch moveit -->
   <include file="$(find ur5e_moveit_config)/launch/move_group.launch">
