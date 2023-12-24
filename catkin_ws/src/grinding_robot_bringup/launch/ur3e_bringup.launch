@@ -47,7 +47,7 @@
   <arg name="gui" default="true" doc="Starts Gazebo gui" />
 
   <!-- User Configrations-->
-  <arg name="planning_scene_config" default="$(find grinding_motion_routines)/config/UR_grinding_demo/planning_scene_config.yaml" />
+  <arg name="planning_scene_config" default="$(find grinding_motion_routines)/config/ur3e_grinding_demo/planning_scene_config.yaml" />
 
   <!-- run the real robot or simulator (gazebo) -->
   <!-- The controllers are fixed real or sim, you can change controllers for your app -->
@@ -81,7 +81,7 @@
     <!-- Spawn model -->
     <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
     args="-urdf -param robot_description -model ur3e 
-          -x 0.11 -z 0.69 -Y -1.5707
+          -x 0.11 -z 0.8 -Y -1.5707
           -unpause"
     output="screen" />
   </group>
