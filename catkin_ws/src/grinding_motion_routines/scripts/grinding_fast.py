@@ -123,22 +123,22 @@ def command_to_execute(cmd):
 def main():
     ################### init node ###################
     rospy.init_node("mechano_grinding", anonymous=True)
-    experimental_time = rospy.get_param("~experimental_time")
+    experimental_time = rospy.get_param("~experimental_time",None)
 
     ################### motion generator ###################
-    mortar_base_pos = rospy.get_param("~mortar_top_position")
-    mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
-    funnel_position = rospy.get_param("~funnel_position")
-    pouring_hight = rospy.get_param("~pouring_hight_at_funnel")
+    mortar_base_pos = rospy.get_param("~mortar_top_position",None)
+    mortar_inner_scale = rospy.get_param("~mortar_inner_scale",None)
+    funnel_position = rospy.get_param("~funnel_position",None)
+    pouring_hight = rospy.get_param("~pouring_hight_at_funnel",None)
     motion_gen = motion_generator.MotionGenerator(mortar_base_pos, mortar_inner_scale)
 
     ################### motion executor ###################
-    move_group_name = rospy.get_param("~move_group_name")
-    grinding_ee_link = rospy.get_param("~grinding_eef_link")
-    gathering_ee_link = rospy.get_param("~gathering_eef_link")
-    scooping_ee_link = rospy.get_param("~scooping_eef_link")
+    move_group_name = rospy.get_param("~move_group_name",None)
+    grinding_ee_link = rospy.get_param("~grinding_eef_link",None)
+    gathering_ee_link = rospy.get_param("~gathering_eef_link",None)
+    scooping_ee_link = rospy.get_param("~scooping_eef_link",None)
     grinding_total_joint_diffence_for_planning = rospy.get_param(
-        "~grinding_total_joint_diffence_for_planning"
+        "~grinding_total_joint_diffence_for_planning",None
     )
     rospy.loginfo(grinding_total_joint_diffence_for_planning)
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
