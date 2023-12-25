@@ -1,20 +1,22 @@
-# Powder Grinding Package on ROS noetic
+### Robotic Powder Grinding for Laboratory Automation
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
-Robotic powder grinding用のカスタムROSパッケージです。
+乳棒と乳鉢用いたロボット粉体粉砕のためのROSパッケージです。
 シミュレーション(Gazebo)上での動作とロボット実機での動作ができます。
 
 ## 目次
-1. [概要](#概要)
-2. [対応ロボット](#対応ロボット)
-3. [クイックスタート](#クイックスタート)
-   - [PCとロボットとDocker環境のセットアップ](#PCとロボットとDocker環境のセットアップ)
-   - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
-   - [Dockerコンテナ内でのros環境のビルド](#dockerコンテナ内でのros環境のビルド)
-   - [モーションのデモ](#モーションのデモ)
-4. [既知の課題](#既知の課題)
-5. [Future Work](#tuture-work)
-6. [License](#license)
+- [目次](#目次)
+- [概要](#概要)
+- [対応ロボット](#対応ロボット)
+- [クイックスタート](#クイックスタート)
+  - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
+  - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
+  - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
+  - [モーションのデモ](#モーションのデモ)
+- [既知の課題](#既知の課題)
+- [Future Work](#future-work)
+  - [Citation](#citation)
+- [License](#license)
 
 ## 概要
 **Last Updated:** 2023/10/24  
