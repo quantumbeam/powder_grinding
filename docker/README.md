@@ -34,9 +34,7 @@
 
 # Build docker image of ROS environment on Docker container
 - Build docker image.
-  - ```cd ./docker && ./BUILD-DOCKER-IMAGE.sh```
-- Return main directry after build.
-  - ```cd ../```
+  - ```./BUILD-DOCKER-IMAGE.sh```
 - You can run docker container, see "Running Docker Container" on [README.md](../README.md).
 
 

@@ -38,13 +38,13 @@ case "$3" in
   ( "" )
   case "$2" in
     ( "" )
-    docker exec -it -w /home/ubuntu/powder_grinding/catkin_ws ${CONTAINER} bash -i
+    docker exec -it -w /root/powder_grinding/catkin_ws ${CONTAINER} bash -i
   esac
   ;;
   ( *".launch")
-  docker exec -it -w /home/ubuntu/powder_grinding/catkin_ws ${CONTAINER} bash -i -c "../terminator/run-roslaunch-repeatedly.sh $2 $3"
+  docker exec -it -w /root/powder_grinding/catkin_ws ${CONTAINER} bash -i -c "../terminator/run-roslaunch-repeatedly.sh $2 $3"
   ;;
   ( * )
-  docker exec -it -w /home/ubuntu/powder_grinding/catkin_ws ${CONTAINER} bash -i -c "../terminator/run-command-repeatedly.sh $2 $3"
+  docker exec -it -w /root/powder_grinding/catkin_ws ${CONTAINER} bash -i -c "../terminator/run-command-repeatedly.sh $2 $3"
   ;;
 esac

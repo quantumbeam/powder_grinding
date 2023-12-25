@@ -20,7 +20,7 @@ if [ ! -z "${EXISTING_DOCKER_CONTAINER_ID}" ]; then
 fi
 
 # Build docker image
-docker compose -p ${DOCKER_PROJECT} -f compose.yaml build
+docker compose -p ${DOCKER_PROJECT} -f docker/compose.yaml build
 
 # Initialize environments in the container
 echo "Finished building docker image."

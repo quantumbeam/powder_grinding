@@ -21,7 +21,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       # Map ROS workspace folders.
-      - ../:/home/ubuntu/powder_grinding/
+      - ../:/root/powder_grinding/
       # Grant display access to X Server.
       - /tmp/.X11-unix:/tmp/.X11-unix
       # Grant access to usb ports

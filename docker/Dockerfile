@@ -50,10 +50,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /root/powder_grinding/
 
 # Create ROS workspace
 RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
-RUN echo "source /home/ubuntu/powder_grinding/catkin_ws/devel/setup.bash" >> /root/.bashrc
+RUN echo "source /root/powder_grinding/catkin_ws/devel/setup.bash" >> /root/.bashrc
 RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> /root/.bashrc
 RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
 
