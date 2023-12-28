@@ -147,7 +147,8 @@ def main():
     init_pos = copy.deepcopy(mortar_base_pos)
     rospy.loginfo("Mortar pos: " + str(init_pos))
     init_pos["z"] += 0.05
-    r = Rotation.from_euler("xyz", [pi, 0, pi], degrees=False)
+    yaw=rospy.get_param("~grinding_yaw_angle",None)
+    r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
     quat = r.as_quat()
     init_pose = list(init_pos.values()) + list(quat)
     moveit.execute_to_goal_pose(
