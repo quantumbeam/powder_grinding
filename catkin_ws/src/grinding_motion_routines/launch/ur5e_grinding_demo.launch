@@ -9,11 +9,8 @@
     <arg name="rosbag_name" default="$(find grinding_motion_routines)/bag/" />
     <arg name="sim" default="false" />
 
-    <group unless="$(arg sim)">
-        <node name="UR_ft_filter" pkg="grinding_force_torque" type="ft_filter.py"
-        args="-z -t 'wrench'"
+    <node name="ur_ft_filter" pkg="grinding_force_torque" type="ft_filter.py" args="-z -t 'wrench'"
         output="screen" />
-    </group>
     
     <node name="mechano_grinding" pkg="grinding_motion_routines" type="grinding_fast.py"
         output="screen">

@@ -94,6 +94,19 @@
     <gazebo reference="${prefix}ee_link">
       <selfCollide>true</selfCollide>
     </gazebo>
+  
+    <!-- Gazebo Force/Torque sensor plugin -->
+  <gazebo reference="wrist_3_joint">
+    <provideFeedback>true</provideFeedback>
+  </gazebo>
+    <gazebo>
+      <plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+        <updateRate>500.0</updateRate>
+        <topicName>wrench</topicName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <jointName>wrist_3_joint</jointName>
+      </plugin>
+    </gazebo>
 
     <!--
       Inject Gazebo ROS Control plugin, which allows us to use ros_control
