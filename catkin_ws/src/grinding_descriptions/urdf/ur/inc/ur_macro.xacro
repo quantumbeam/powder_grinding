@@ -234,14 +234,14 @@
         <origin xyz="0 0 0.0001" rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://grinding_descriptions/mesh/Rviz/jig_pestle_spatula_spoon_UR5e.stl" />
+            filename="package://grinding_descriptions/mesh/end_effector/pestle_ur.stl" />
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0.0001" rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://grinding_descriptions/mesh/Rviz/jig_pestle_spatula_spoon_UR5e.stl" />
+            filename="package://grinding_descriptions/mesh/end_effector/pestle_ur.stl" />
         </geometry>
       </collision>
     </link>
@@ -256,20 +256,17 @@
 
     <link name="spatula">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0 0 0.0001" rpy="0 0 0" />
         <geometry>
-          <box size="0 0 0" />
-          <!-- <mesh filename="package://grinding_descriptions/mesh/spatula_short_for_Rviz.stl" /> -->
+          <mesh filename="package://grinding_descriptions/mesh/end_effector/spatula.stl" />
         </geometry>
       </visual>
-      <!-- comment out collision because to avoid collision check between spatula and pestle in
-      MoveIt -->
-      <!-- <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+      <collision>
+        <origin xyz="0 0 0.0001" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://grinding_descriptions/mesh/spatula_short_for_Rviz.stl" />
+          <mesh filename="package://grinding_descriptions/mesh/end_effector/spatula.stl" />
         </geometry>
-      </collision> -->
+      </collision>
     </link>
     <link name="spatula_tip">
       <visual>
@@ -498,7 +495,7 @@
       <child link="spatula" />
     </joint>
     <joint name="joint_spatula_tip" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0.092" />
+      <origin rpy="0 0 0" xyz="0 0 0.081" />
       <parent link="spatula" />
       <child link="spatula_tip" />
     </joint>
