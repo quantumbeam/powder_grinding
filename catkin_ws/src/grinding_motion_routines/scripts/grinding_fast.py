@@ -140,8 +140,12 @@ def main():
     grinding_total_joint_diffence_for_planning = rospy.get_param(
         "~grinding_total_joint_diffence_for_planning",None
     )
+    gathering_total_joint_diffence_for_planning = rospy.get_param(
+        "~circular_gathering_total_joint_diffence_for_planning",None
+    )
+    motion_planner_id = rospy.get_param("~motion_planner_id",None)
     rospy.loginfo(grinding_total_joint_diffence_for_planning)
-    moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
+    moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link,motion_planner_id)
 
     ################### init pose ###################
     init_pos = copy.deepcopy(mortar_base_pos)
@@ -160,11 +164,12 @@ def main():
     ################### motion primitive ###################
     urdf_name=rospy.get_param("~urdf_name",None)
     primitive = motion_primitive.MotionPrimitive(
-        init_pose=init_pose,
+        init_position=init_pos,
         ns=None,
         move_group_name=move_group_name,
         ee_link=grinding_ee_link,
         robot_urdf=urdf_name,
+        planner_id=motion_planner_id,
     )
     pouring_position = copy.deepcopy(list(funnel_position.values()))
     pouring_position[2] += pouring_hight
@@ -176,6 +181,9 @@ def main():
     grinding_sec = rospy.get_param("~grinding_sec_per_rotation") * rospy.get_param(
         "~grinding_number_of_rotation"
     )
+    gathering_sec=rospy.get_param("~circular_gathering_sec_per_rotation") * rospy.get_param(
+        "~circular_gathering_number_of_rotation"
+    )
     try:
         while not rospy.is_shutdown():
             motion_command = input(
@@ -185,7 +193,6 @@ def main():
                 + "G \t= circular gathering demo.\n"
                 + "sc \t= scooping demo.\n"
                 + "po \t= powder pouring demo.\n"
-                + "all \t= demo of grinding, gathering, scooping and pouring.\n"
                 + "Rg \t= repeate grinding motion during the experiment time.\n"
                 + "RGG \t= repeate grinding and circular motion during the experiment time.\n"
                 + "\n"
@@ -204,16 +211,12 @@ def main():
                 )
                 exec = command_to_execute(key)
                 if exec:
-                    grinding_joint_trajectory = primitive.JTC_executor.generate_joint_trajectory(
-                        compute_grinding_waypoints(motion_gen),
-                        total_joint_limit=grinding_total_joint_diffence_for_planning,
-                        ee_link=grinding_ee_link,
-                        trial_number=20,
-                    )
                     primitive.execute_grinding(
-                        grinding_joint_trajectory,
-                        ee_link=grinding_ee_link,
+                        compute_grinding_waypoints(motion_gen),
                         grinding_sec=grinding_sec,
+                        total_joint_limit=grinding_total_joint_diffence_for_planning,
+                        trial_number=10,
+                        ee_link=grinding_ee_link,
                     )
                 elif exec == False:
                     compute_grinding_waypoints(motion_gen, debug_type=key)
@@ -225,6 +228,9 @@ def main():
                 if exec:
                     primitive.execute_gathering(
                         compute_gathering_waypoints(motion_gen),
+                        gathering_sec=gathering_sec,
+                        total_joint_limit=gathering_total_joint_diffence_for_planning,
+                        trial_number=10,
                         ee_link=gathering_ee_link,
                     )
                 elif exec == False:
@@ -248,28 +254,7 @@ def main():
                 exec = command_to_execute(key)
                 if exec:
                     primitive.execute_powder_pouring(pouring_position)
-            elif motion_command == "all":
-                key = input(
-                    "Start demo of grinding, gathering, scooring and pouring.\n execute = 'y', canncel = other\n"
-                )
-                if command_to_execute(key):
-                    grinding_joint_trajectory = primitive.JTC_executor.generate_joint_trajectory(
-                        compute_grinding_waypoints(motion_gen),
-                        total_joint_limit=grinding_total_joint_diffence_for_planning,
-                        ee_link=grinding_ee_link,
-                        trial_number=20,
-                    )
-                    primitive.execute_grinding(
-                        grinding_joint_trajectory,
-                        ee_link=grinding_ee_link,
-                        grinding_sec=grinding_sec,
-                    )
-                    primitive.execute_gathering(
-                        compute_gathering_waypoints(motion_gen),
-                        ee_link=gathering_ee_link,
-                    )
-                    primitive.execute_scooping(compute_scooping_waypoints(motion_gen))
-                    primitive.execute_powder_pouring(pouring_position)
+           
 
             elif motion_command == "Rg" or motion_command == "RGG":
                 motion_counts = 0

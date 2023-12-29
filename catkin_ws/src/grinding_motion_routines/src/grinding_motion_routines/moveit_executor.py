@@ -16,7 +16,7 @@ from scipy.spatial.transform import Slerp
 class MoveitExecutor(object):
     """Executor including MoveItCommander . This class can command moving manipurator with single pose or way points."""
 
-    def __init__(self, move_group_name, ee_link):
+    def __init__(self, move_group_name, ee_link,planner_id="RRTConnectkConfigDefault"):
         # initialize
         moveit_commander.roscpp_initialize(sys.argv)
         robot = moveit_commander.RobotCommander()
@@ -53,6 +53,10 @@ class MoveitExecutor(object):
         rospy.loginfo(
             "============ Available Planning Groups: %s" % robot.get_group_names()
         )
+        
+        # set planner
+        move_group.set_planner_id(planner_id)
+        rospy.loginfo("============ Planner ID: %s" % planner_id)
 
         rospy.loginfo("============ Rospy.loginfoing robot state")
         rospy.loginfo(robot.get_current_state())
@@ -97,6 +101,9 @@ class MoveitExecutor(object):
         pose_msg.orientation.w = pose_list[6]
 
         return pose_msg
+    def change_planner_id(self, planner_id):
+        self.move_group.set_planner_id(planner_id)
+        rospy.loginfo("============ Planner ID: %s" % planner_id)
 
     def execute_to_goal_pose(
         self,

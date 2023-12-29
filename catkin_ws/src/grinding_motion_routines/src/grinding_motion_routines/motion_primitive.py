@@ -13,17 +13,27 @@ from numpy import pi
 class MotionPrimitive:
     def __init__(
         self,
-        init_pose,
+        init_position,
+        ee_link,
         ns=None,
         move_group_name="manipulator",
-        ee_link="pestle_tip",
         robot_urdf="ur5e",
+        planner_id="RRTConnectkConfigDefault",
     ):
-        self.init_pose = init_pose
-        self.moveit_executor = MoveitExecutor(move_group_name, ee_link)
+        self.moveit_executor = MoveitExecutor(move_group_name, ee_link,planner_id)
         self.JTC_executor = JointTrajectoryControllerExecutor(
             ns=ns, robot_urdf=robot_urdf, tcp_link=ee_link
         )
+
+        #  init pose
+        yaw_grinding=rospy.get_param("~grinding_yaw_angle",None)
+        r = Rotation.from_euler("xyz", [pi, 0, yaw_grinding], degrees=False)
+        self.grinding_init_pose = list(init_position.values()) + list(r.as_quat())
+
+        yaw_gathering=rospy.get_param("~circular_gathering_yaw_angle",None)
+        r = Rotation.from_euler("xyz", [pi, 0, yaw_gathering], degrees=False)
+        self.gathering_init_pose = list(init_position.values()) + list(r.as_quat())
+        
 
     def _pose_stamped_to_list(self, pose_msg):
         return [
@@ -38,9 +48,11 @@ class MotionPrimitive:
 
     def execute_grinding(
         self,
-        joint_trajectory,
+        waypoints,
+        total_joint_limit,
+        trial_number,
+        grinding_sec,
         ee_link="pestle_tip",
-        grinding_sec=10,
         moving_velocity_scale=0.1,
         moving_acceleration_scale=0.1,
         pre_motion=True,
@@ -48,13 +60,21 @@ class MotionPrimitive:
     ):
         if pre_motion:
             self.moveit_executor.execute_to_goal_pose(
-                self.init_pose,
+                self.grinding_init_pose,
                 ee_link=ee_link,
                 vel_scale=moving_velocity_scale,
                 acc_scale=moving_acceleration_scale,
                 execute=True,
             )
-
+        joint_trajectory=self.JTC_executor.generate_joint_trajectory(
+                        waypoints,
+                        total_joint_limit=total_joint_limit,
+                        ee_link=ee_link,
+                        trial_number=trial_number,
+                    )
+        if joint_trajectory == None:
+            rospy.logerr("No joint trajectory is generated")
+            return False
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
             time_to_reach=2,
@@ -74,17 +94,19 @@ class MotionPrimitive:
                 ee_link=ee_link,
                 time_to_reach=3,
             )
-            self.moveit_executor.execute_to_goal_pose(
-                self.init_pose,
+            self.JTC_executor.execute_to_goal_pose(
+                self.grinding_init_pose,
                 ee_link=ee_link,
-                vel_scale=moving_velocity_scale,
-                acc_scale=moving_acceleration_scale,
-                execute=True,
+                time_to_reach=5,
             )
+        return True
 
     def execute_gathering(
         self,
         waypoints,
+        total_joint_limit,
+        trial_number,
+        gathering_sec,
         ee_link="spatula_tip",
         grinding_velocity_scale=0.1,
         grinding_acceleration_scale=0.1,
@@ -92,40 +114,46 @@ class MotionPrimitive:
         moving_acceleration_scale=0.3,
     ):
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.gathering_init_pose,
             ee_link=ee_link,
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
         )
 
-        success = self.moveit_executor.execute_cartesian_path_by_waypoints(
-            waypoints=waypoints,
-            jump_threshold=0.0,
-            ee_link=ee_link,
-            vel_scale=grinding_velocity_scale,
-            acc_scale=grinding_acceleration_scale,
-            avoid_collisions=False,
+        joint_trajectory=self.JTC_executor.generate_joint_trajectory(
+                        waypoints,
+                        total_joint_limit=total_joint_limit,
+                        ee_link=ee_link,
+                        trial_number=trial_number,
+                    )
+        if joint_trajectory == None:
+            rospy.logerr("No joint trajectory is generated")
+            return False
+        self.JTC_executor.execute_to_joint_goal(
+            joint_trajectory[0],
+            time_to_reach=2,
+            wait=True,
         )
-        if success == True:
-            exit_mortar_pose = waypoints[0]
-            exit_mortar_pose[2] += 0.05
-            self.moveit_executor.execute_cartesian_path_to_goal_pose(
+        self.JTC_executor.execute_by_joint_trajectory(
+            joint_trajectory,
+            time_to_reach=gathering_sec,
+        )
+
+        exit_mortar_pose = waypoints[0]
+        exit_mortar_pose[2] += 0.05
+        self.JTC_executor.execute_to_goal_pose(
                 exit_mortar_pose,
                 ee_link=ee_link,
-                vel_scale=grinding_velocity_scale,
-                acc_scale=grinding_acceleration_scale,
-                avoid_collisions=False,
-            )
-        self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
-            ee_link="pestle_tip",
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+                time_to_reach=3,
         )
-
-        return success
+        self.JTC_executor.execute_to_goal_pose(
+                self.grinding_init_pose,
+                ee_link="pestle_tip",
+                time_to_reach=5,
+        )
+      
+        return True
 
     def execute_scooping(
         self,
@@ -137,7 +165,7 @@ class MotionPrimitive:
         moving_acceleration_scale=0.3,
     ):
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.grinding_init_pose,
             ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
@@ -187,7 +215,7 @@ class MotionPrimitive:
             execute=True,
         )
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.grinding_init_pose,
             ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
@@ -208,7 +236,7 @@ class MotionPrimitive:
         number_of_motion_steps=10,
     ):
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.grinding_init_pose,
             ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
@@ -254,7 +282,7 @@ class MotionPrimitive:
         )
 
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.grinding_init_pose,
             ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
@@ -275,7 +303,7 @@ class MotionPrimitive:
     ):
         # move to initial pose
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.grinding_init_pose,
             ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
@@ -335,7 +363,7 @@ class MotionPrimitive:
         )
 
         self.moveit_executor.execute_to_goal_pose(
-            self.init_pose,
+            self.grinding_init_pose,
             ee_link="pestle_tip",
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
