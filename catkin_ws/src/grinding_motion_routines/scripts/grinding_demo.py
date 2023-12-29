@@ -60,15 +60,15 @@ def compute_grinding_waypoints(motion_generator):
 
 def compute_gathering_waypoints(motion_generator):
     waypoints = motion_generator.create_circular_waypoints(
-        begining_position=rospy.get_param("~circular_gathering_pos_begining"),
-        end_position=rospy.get_param("~circular_gathering_pos_end"),
-        begining_radious_z=rospy.get_param("~circular_gathering_rz_begining"),
-        end_radious_z=rospy.get_param("~circular_gathering_rz_end"),
-        angle_param=rospy.get_param("~circular_gathering_angle_param"),
-        yaw_angle=rospy.get_param("~circular_gathering_yaw_angle"),
-        number_of_rotations=rospy.get_param("~circular_gathering_number_of_rotation"),
+        begining_position=rospy.get_param("~gathering_pos_begining"),
+        end_position=rospy.get_param("~gathering_pos_end"),
+        begining_radious_z=rospy.get_param("~gathering_rz_begining"),
+        end_radious_z=rospy.get_param("~gathering_rz_end"),
+        angle_param=rospy.get_param("~gathering_angle_param"),
+        yaw_angle=rospy.get_param("~gathering_yaw_angle"),
+        number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
-            "~circular_gathering_number_of_waypoints_per_circle"
+            "~gathering_number_of_waypoints_per_circle"
         ),
     )
     # display_debug_waypoints(waypoints)

@@ -30,7 +30,7 @@ class MotionPrimitive:
         r = Rotation.from_euler("xyz", [pi, 0, yaw_grinding], degrees=False)
         self.grinding_init_pose = list(init_position.values()) + list(r.as_quat())
 
-        yaw_gathering=rospy.get_param("~circular_gathering_yaw_angle",None)
+        yaw_gathering=rospy.get_param("~gathering_yaw_angle",None)
         r = Rotation.from_euler("xyz", [pi, 0, yaw_gathering], degrees=False)
         self.gathering_init_pose = list(init_position.values()) + list(r.as_quat())
         

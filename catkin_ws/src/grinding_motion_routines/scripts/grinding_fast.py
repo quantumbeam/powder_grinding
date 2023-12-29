@@ -68,15 +68,15 @@ def compute_grinding_waypoints(motion_generator, debug_type=False):
 
 def compute_gathering_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
-        begining_position=rospy.get_param("~circular_gathering_pos_begining"),
-        end_position=rospy.get_param("~circular_gathering_pos_end"),
-        begining_radious_z=rospy.get_param("~circular_gathering_rz_begining"),
-        end_radious_z=rospy.get_param("~circular_gathering_rz_end"),
-        angle_param=rospy.get_param("~circular_gathering_angle_param"),
-        yaw_angle=rospy.get_param("~circular_gathering_yaw_angle"),
-        number_of_rotations=rospy.get_param("~circular_gathering_number_of_rotation"),
+        begining_position=rospy.get_param("~gathering_pos_begining"),
+        end_position=rospy.get_param("~gathering_pos_end"),
+        begining_radious_z=rospy.get_param("~gathering_rz_begining"),
+        end_radious_z=rospy.get_param("~gathering_rz_end"),
+        angle_param=rospy.get_param("~gathering_angle_param"),
+        yaw_angle=rospy.get_param("~gathering_yaw_angle"),
+        number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
-            "~circular_gathering_number_of_waypoints_per_circle"
+            "~gathering_number_of_waypoints_per_circle"
         ),
     )
     if debug_type != False:
@@ -141,7 +141,7 @@ def main():
         "~grinding_total_joint_diffence_for_planning",None
     )
     gathering_total_joint_diffence_for_planning = rospy.get_param(
-        "~circular_gathering_total_joint_diffence_for_planning",None
+        "~gathering_total_joint_diffence_for_planning",None
     )
     motion_planner_id = rospy.get_param("~motion_planner_id",None)
     rospy.loginfo(grinding_total_joint_diffence_for_planning)
@@ -181,8 +181,8 @@ def main():
     grinding_sec = rospy.get_param("~grinding_sec_per_rotation") * rospy.get_param(
         "~grinding_number_of_rotation"
     )
-    gathering_sec=rospy.get_param("~circular_gathering_sec_per_rotation") * rospy.get_param(
-        "~circular_gathering_number_of_rotation"
+    gathering_sec=rospy.get_param("~gathering_sec_per_rotation") * rospy.get_param(
+        "~gathering_number_of_rotation"
     )
     try:
         while not rospy.is_shutdown():
