@@ -11,7 +11,7 @@
     <node name="ur_ft_filter" pkg="grinding_force_torque" type="ft_filter.py" args="-z -t 'wrench'"
         output="screen" />
 
-    <node name="mechano_grinding" pkg="grinding_motion_routines" type="grinding_fast.py"
+    <node name="mechano_grinding" pkg="grinding_motion_routines" type="ur_grinding_demo.py"
         output="screen">
         <rosparam command="load" file="$(arg planning_scene_config)" />
         <rosparam command="load" file="$(arg motion_config)" />
