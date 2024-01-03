@@ -50,11 +50,16 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /root/powder_grinding/
+# Setup catkin workspace
+RUN mkdir -p ~/catkin_ws/src
+COPY BUILD_ROS_WORKSPACE.sh /root/catkin_ws
+RUN chmod +x ~/catkin_ws/BUILD_ROS_WORKSPACE.sh
+COPY INITIAL_SETUP_ROS_ENVIROMENTS.sh /root/catkin_ws
+RUN chmod +x ~/catkin_ws/INITIAL_SETUP_ROS_ENVIROMENTS.sh
 
 # Create ROS workspace
 RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
-RUN echo "source /root/powder_grinding/catkin_ws/devel/setup.bash" >> /root/.bashrc
+RUN echo "source /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
 RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> /root/.bashrc
 RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
 

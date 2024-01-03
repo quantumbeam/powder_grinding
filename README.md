@@ -34,11 +34,11 @@ This repository focuses on the ROS environment for robot control.
 ### Quick Start Guide
 
 #### Setting up Environments of Host PC, Robot, and Docker
-- [Setup Instructions](./docker/README.md)
+- [Setup Instructions](./env/docker/README.md)
 
 #### Running Docker Container
-- Runing docker container on terminal: `./RUN-DOCKER-CONTAINER.sh`
-- Launch Terminator and running docker container: `./LAUNCH-TERMINATOR-TERMINAL.sh`
+- Runing docker container on terminal: `./env/RUN-DOCKER-CONTAINER.sh`
+- Launch Terminator and running docker container: `./env/LAUNCH-TERMINATOR-TERMINAL.sh`
 
 #### Building ROS Packages in Docker Container
 - Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` on docker conatner.  

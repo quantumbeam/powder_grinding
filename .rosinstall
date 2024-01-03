@@ -11,5 +11,3 @@ version: master}
 - git: {local-name: third_party/Universal_Robots_MoveIt_and_Gazebo, uri: 'https://github.com/ros-industrial/universal_robot.git',
 version: noetic-devel}
 
-
-

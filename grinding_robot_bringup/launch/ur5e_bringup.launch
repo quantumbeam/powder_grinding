@@ -112,5 +112,4 @@
     output="screen">
     <rosparam command="load" file="$(arg planning_scene_config)" />
   </node>
-
 </launch>
