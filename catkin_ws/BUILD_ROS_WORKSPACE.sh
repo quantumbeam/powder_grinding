@@ -9,6 +9,7 @@ rosdep update
 # Updating ROSDEP and installing dependencies
 vcs import src < src/.rosinstall
 rosdep install --from-paths src --ignore-src --rosdistro=$ROS_DISTRO -y
+vcs pull src
 
 # Build
 catkin build
