@@ -102,7 +102,7 @@
   </include>
 
   <!-- load planning scene -->
-  <node name="loading_planning_scene" pkg="grinding_motion_routines" type="load_planning_scene.py"
+  <node name="loading_planning_scene" pkg="grinding_descriptions" type="load_planning_scene.py"
     output="screen">
     <rosparam command="load" file="$(arg planning_scene_config)" />
   </node>

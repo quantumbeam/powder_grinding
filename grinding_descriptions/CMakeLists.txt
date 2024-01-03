@@ -6,8 +6,10 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
 )
 
-catkin_package(
-)
+# Need to import the python modules from the package setup.py
+catkin_python_setup()
+
+catkin_package()
 
 include_directories(
   ${catkin_INCLUDE_DIRS}

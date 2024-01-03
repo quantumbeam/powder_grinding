@@ -18,9 +18,9 @@ from grinding_motion_routines import (
     motion_primitive,
     marker_display,
     tf_publisher,
-    load_planning_scene,
 )
 
+from load_planning_scene import load_planning_scene
 
 ################### Fixed params ###################
 
