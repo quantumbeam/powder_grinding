@@ -403,7 +403,6 @@ class MotionGenerator:
             #################### calculate position
             begining_position = [begining_x, begining_y]
             end_position = [end_x, end_y]
-            print(begining_position, end_position)
             x, y = self._lerp_in_cartesian(
                 begining_position, end_position, number_of_waypoints
             )

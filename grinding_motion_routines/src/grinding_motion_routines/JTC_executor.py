@@ -69,8 +69,6 @@ class JointTrajectoryControllerExecutor(Arm):
             total_joint_difference = np.sum(
                 np.max(joint_trajectory, axis=0) - np.min(joint_trajectory, axis=0)
             )
-            print(total_joint_difference)
-            print(total_joint_limit)
             if total_joint_difference > total_joint_limit:
                 rospy.logerr("Trajectory is out of joint limit")
                 rospy.logerr(f"Total joints difference: {total_joint_difference}")
