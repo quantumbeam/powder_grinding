@@ -61,12 +61,13 @@ class JointTrajectoryControllerExecutor(Arm):
             joint_trajectory = []
             for pose in waypoints:
                 joints = self._solve_ik(pose)
-
-                if joints == "ik_not_found":
+                if np.any(joints == "ik_not_found") or joints is None:
                     rospy.logerr("IK not found")
                 else:
-                    joint_trajectory.append(joints)
-
+                    joint_trajectory.append(list(joints))
+            if len(joint_trajectory) == 0:
+                rospy.logerr("Skip this trajectory")
+                continue
             total_joint_difference = np.sum(
                 np.max(joint_trajectory, axis=0) - np.min(joint_trajectory, axis=0)
             )
@@ -79,7 +80,7 @@ class JointTrajectoryControllerExecutor(Arm):
                     f"Trajectory is in total joint limit:{total_joint_difference}"
                 )
                 return joint_trajectory
-        rospy.loginfo("Failed to find trajectory")
+        rospy.logerr("Failed to find trajectory")
         return None
 
     def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
