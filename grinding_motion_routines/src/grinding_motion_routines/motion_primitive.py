@@ -115,13 +115,7 @@ class MotionPrimitive:
                 ee_link=ee_link,
                 time_to_reach=3,
             )
-            self.moveit_executor.execute_to_goal_pose(
-                self.grinding_init_pose,
-                ee_link=ee_link,
-                vel_scale=moving_velocity_scale,
-                acc_scale=moving_acceleration_scale,
-                execute=True,
-            )
+           
             
         return True
 
@@ -137,7 +131,7 @@ class MotionPrimitive:
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
     ):
-        result=self.moveit_executor.execute_to_goal_pose(
+        self.moveit_executor.execute_to_goal_pose(
             self.gathering_init_pose,
             ee_link=self.grinding_ee_link,
             vel_scale=moving_velocity_scale,
@@ -181,11 +175,7 @@ class MotionPrimitive:
                 ee_link=ee_link,
                 time_to_reach=3,
         )
-        self.JTC_executor.execute_to_goal_pose(
-                self.grinding_init_pose,
-                ee_link="pestle_tip",
-                time_to_reach=5,
-        )
+       
       
         return True
 
