@@ -1,6 +1,4 @@
 
-move_group_name: "manipulator"
-urdf_name: "ur5e"
 
 table_position  :  {x: 0, y: 0, z: -0.015} # 0.015 is hight of UR5e base plate
 table_scale  :  {x: 0.9, y: 1.5, z: 0.1}

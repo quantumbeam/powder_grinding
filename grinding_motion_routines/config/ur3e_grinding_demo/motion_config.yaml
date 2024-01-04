@@ -1,11 +1,16 @@
 experimental_time : 90
 
+# end effector params
 grinding_eef_link: "pestle_tip"
 gathering_eef_link: "spatula_tip"
 scooping_eef_link: "spoon_tip"
-motion_planner_id: "TRRT"
-planning_time : 20
+
+# ik and motion planner params
+move_group_name: "manipulator"
+urdf_name: "ur3e" # support "ur3e" and "ur5e"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
+motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
+planning_time : 20 # timeout for motion planning
 
 # grinding params
 grinding_pos_begining : 
