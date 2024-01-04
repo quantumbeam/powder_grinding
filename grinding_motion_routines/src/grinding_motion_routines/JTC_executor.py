@@ -16,7 +16,7 @@ from ur_control.arm import Arm
 class JointTrajectoryControllerExecutor(Arm):
     """Motion Executor including IK and JointTrajectoryController(JTC) ."""
 
-    def __init__(self, ns, robot_urdf, tcp_link, ft_topic="wrench"):
+    def __init__(self, ns, robot_urdf, tcp_link, ft_topic="wrench",ik_solver='trac_ik'):
         joint_names_prefix = ns + "_" if ns else ""
         super().__init__(
             gripper=False,
@@ -25,6 +25,7 @@ class JointTrajectoryControllerExecutor(Arm):
             robot_urdf=robot_urdf,
             ee_link=tcp_link,
             ft_topic=ft_topic,
+            ik_solver=ik_solver,
         )
         self.joint_names_prefix = joint_names_prefix
         self.init_end_effector_link = tcp_link

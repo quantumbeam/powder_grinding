@@ -22,10 +22,11 @@ class MotionPrimitive:
         robot_urdf="ur5e",
         planner_id="RRTConnectkConfigDefault",
         planning_time =20,
+        ik_solver='trac_ik'
     ):
         self.moveit_executor = MoveitExecutor(move_group_name, ee_link,planner_id,planning_time )
         self.JTC_executor = JointTrajectoryControllerExecutor(
-            ns=ns, robot_urdf=robot_urdf, tcp_link=ee_link
+            ns=ns, robot_urdf=robot_urdf, tcp_link=ee_link,ik_solver=ik_solver
         )
 
         debug_tf_pub = TFPublisher()
