@@ -63,5 +63,5 @@ class TFPublisher:
             tf2_ros.ConnectivityException,
             tf2_ros.ExtrapolationException,
         ) as err:
-            print("tf listen error%s" % err)
+            rospy.loginfo("tf listen error%s" % err)
             return err
