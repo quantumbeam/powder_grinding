@@ -7,9 +7,10 @@ import time
 
 from inputimeout import inputimeout, TimeoutOccurred
 
-from math import pi, tau, dist, fabs, cos, sin, sqrt
+from math import pi
 import copy
 from scipy.spatial.transform import Rotation
+import numpy as np
 
 from grinding_motion_routines import (
     motion_generator,
@@ -20,7 +21,7 @@ from grinding_motion_routines import (
     tf_publisher,
 )
 
-from load_planning_scene import load_planning_scene
+from grinding_descriptions import load_planning_scene
 
 ################### Fixed params ###################
 
@@ -54,7 +55,7 @@ def compute_grinding_waypoints(motion_generator, debug_type=False):
         begining_radious_z=rospy.get_param("~grinding_rz_begining"),
         end_radious_z=rospy.get_param("~grinding_rz_end"),
         angle_param=rospy.get_param("~grinding_angle_param"),
-        yaw_angle=rospy.get_param("~grinding_yaw_angle"),
+        yaw_bias=rospy.get_param("~grinding_yaw_bias"),
         number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
             "~grinding_number_of_waypoints_per_circle"
@@ -73,7 +74,7 @@ def compute_gathering_waypoints(motion_generator, debug_type=False):
         begining_radious_z=rospy.get_param("~gathering_rz_begining"),
         end_radious_z=rospy.get_param("~gathering_rz_end"),
         angle_param=rospy.get_param("~gathering_angle_param"),
-        yaw_angle=rospy.get_param("~gathering_yaw_angle"),
+        yaw_bias=rospy.get_param("~gathering_yaw_bias"),
         number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
             "~gathering_number_of_waypoints_per_circle"
@@ -91,7 +92,7 @@ def compute_scooping_waypoints(motion_generator, debug_type=False):
         begining_radius_z=rospy.get_param("~scooping_rz_begining"),
         end_radius_z=rospy.get_param("~scooping_rz_end"),
         angle_param=rospy.get_param("~scooping_angle_param"),
-        yaw_angle=rospy.get_param("~scooping_yaw_angle"),
+        yaw_bias=rospy.get_param("~scooping_yaw_bias"),
         number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
     )
     if debug_type != False:
@@ -126,11 +127,11 @@ def main():
     experimental_time = rospy.get_param("~experimental_time",None)
 
     ################### motion generator ###################
-    mortar_base_pos = rospy.get_param("~mortar_top_position",None)
+    mortar_top_pos = rospy.get_param("~mortar_top_position",None)
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale",None)
     funnel_position = rospy.get_param("~funnel_position",None)
     pouring_hight = rospy.get_param("~pouring_hight_at_funnel",None)
-    motion_gen = motion_generator.MotionGenerator(mortar_base_pos, mortar_inner_scale)
+    motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_scale)
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name",None)
@@ -144,32 +145,36 @@ def main():
         "~gathering_total_joint_diffence_for_planning",None
     )
     motion_planner_id = rospy.get_param("~motion_planner_id",None)
+    planning_time = rospy.get_param("~planning_time",None)
     rospy.loginfo(grinding_total_joint_diffence_for_planning)
-    moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link,motion_planner_id)
+    moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link,motion_planner_id,planning_time)
 
     ################### init pose ###################
-    init_pos = copy.deepcopy(mortar_base_pos)
+    init_pos = copy.deepcopy(mortar_top_pos)
     rospy.loginfo("Mortar pos: " + str(init_pos))
     init_pos["z"] += 0.05
-    yaw=rospy.get_param("~grinding_yaw_angle",None)
+    yaw=np.arctan2(mortar_top_pos["y"],mortar_top_pos["x"])
+    euler = [pi, 0, yaw]
     r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
     quat = r.as_quat()
-    init_pose = list(init_pos.values()) + list(quat)
+    init_pose = list(init_pos.values()) + list(euler)
+    init_pose_quat = list(init_pos.values()) + list(quat)
     moveit.execute_to_goal_pose(
-        init_pose, ee_link=grinding_ee_link, vel_scale=0.5, acc_scale=0.5
+        init_pose_quat, ee_link=grinding_ee_link, vel_scale=0.5, acc_scale=0.5
     )
-    debug_tf.broadcast_tf_with_pose(init_pose, "base_link", "init_pose")
-    rospy.loginfo("Goto init pose: " + str(init_pose))
+    debug_tf.broadcast_tf_with_pose(init_pose_quat, "base_link", "init_pose")
+    rospy.loginfo("Goto init pose")
 
     ################### motion primitive ###################
     urdf_name=rospy.get_param("~urdf_name",None)
     primitive = motion_primitive.MotionPrimitive(
-        init_position=init_pos,
+        init_pose=init_pose,
         ns=None,
         move_group_name=move_group_name,
         ee_link=grinding_ee_link,
         robot_urdf=urdf_name,
         planner_id=motion_planner_id,
+        planning_time=planning_time,
     )
     pouring_position = copy.deepcopy(list(funnel_position.values()))
     pouring_position[2] += pouring_hight

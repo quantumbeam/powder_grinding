@@ -26,7 +26,7 @@ grinding_rz_end : 34
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
-grinding_yaw_angle : 0
+grinding_yaw_bias : 0
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -42,4 +42,4 @@ gathering_rz_end : 38
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
-gathering_yaw_angle : 0
+gathering_yaw_bias : 0

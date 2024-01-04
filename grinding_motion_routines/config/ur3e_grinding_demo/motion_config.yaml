@@ -3,7 +3,8 @@ experimental_time : 90
 grinding_eef_link: "pestle_tip"
 gathering_eef_link: "spatula_tip"
 scooping_eef_link: "spoon_tip"
-motion_planner_id: "RRTstar"
+motion_planner_id: "TRRT"
+planning_time : 20
 
 # grinding params
 grinding_pos_begining : 
@@ -23,8 +24,8 @@ grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
-grinding_yaw_angle : 0
-grinding_total_joint_diffence_for_planning : 1.0
+grinding_yaw_bias : 0
+grinding_total_joint_diffence_for_planning : 1.5
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -41,7 +42,7 @@ gathering_rz_end : 35
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
-gathering_yaw_angle :  rad(pi)
+gathering_yaw_bias :  0
 gathering_total_joint_diffence_for_planning : 2.0
 
 # scooping params 
@@ -66,7 +67,7 @@ scooping_angle_param : 1
 scooping_vel_scale : 0.1
 scooping_acc_scale : 0.1
 scooping_number_of_waypoints : 20
-scooping_yaw_angle : rad(-pi/2)
+scooping_yaw_bias : rad(-pi/2)
 
 
 pouring_hight_at_funnel : 0.2

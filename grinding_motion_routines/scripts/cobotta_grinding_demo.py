@@ -18,7 +18,7 @@ from grinding_motion_routines import (
     marker_display,
     tf_publisher,
 )
-from load_planning_scene import load_planning_scene
+from grinding_descriptions import load_planning_scene
 
 
 ################### Fixed params ###################
@@ -47,7 +47,7 @@ def compute_grinding_waypoints(motion_generator):
         begining_radious_z=rospy.get_param("~grinding_rz_begining"),
         end_radious_z=rospy.get_param("~grinding_rz_end"),
         angle_param=rospy.get_param("~grinding_angle_param"),
-        yaw_angle=rospy.get_param("~grinding_yaw_angle"),
+        yaw_bias=rospy.get_param("~grinding_yaw_bias"),
         number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
             "~grinding_number_of_waypoints_per_circle"
@@ -65,7 +65,7 @@ def compute_gathering_waypoints(motion_generator):
         begining_radious_z=rospy.get_param("~gathering_rz_begining"),
         end_radious_z=rospy.get_param("~gathering_rz_end"),
         angle_param=rospy.get_param("~gathering_angle_param"),
-        yaw_angle=rospy.get_param("~gathering_yaw_angle"),
+        yaw_bias=rospy.get_param("~gathering_yaw_bias"),
         number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
             "~gathering_number_of_waypoints_per_circle"
@@ -82,7 +82,7 @@ def compute_scooping_waypoints(motion_generator):
         begining_radius_z=rospy.get_param("~scooping_rz_begining"),
         end_radius_z=rospy.get_param("~scooping_rz_end"),
         angle_param=rospy.get_param("~scooping_angle_param"),
-        yaw_angle=rospy.get_param("~scooping_yaw_angle"),
+        yaw_bias=rospy.get_param("~scooping_yaw_bias"),
         number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
     )
     # display_debug_waypoints(waypoints)

@@ -5,35 +5,52 @@ import tf.transformations as tf
 from scipy.spatial.transform import Rotation
 from grinding_motion_routines.moveit_executor import MoveitExecutor
 from grinding_motion_routines.JTC_executor import JointTrajectoryControllerExecutor
+from grinding_motion_routines.tf_publisher import TFPublisher
 
 import numpy as np
 from numpy import pi
+from copy import deepcopy
 
 
 class MotionPrimitive:
     def __init__(
         self,
-        init_position,
+        init_pose,
         ee_link,
         ns=None,
         move_group_name="manipulator",
         robot_urdf="ur5e",
         planner_id="RRTConnectkConfigDefault",
+        planning_time =20,
     ):
-        self.moveit_executor = MoveitExecutor(move_group_name, ee_link,planner_id)
+        self.moveit_executor = MoveitExecutor(move_group_name, ee_link,planner_id,planning_time )
         self.JTC_executor = JointTrajectoryControllerExecutor(
             ns=ns, robot_urdf=robot_urdf, tcp_link=ee_link
         )
 
-        #  init pose
-        yaw_grinding=rospy.get_param("~grinding_yaw_angle",None)
-        r = Rotation.from_euler("xyz", [pi, 0, yaw_grinding], degrees=False)
-        self.grinding_init_pose = list(init_position.values()) + list(r.as_quat())
+        debug_tf_pub = TFPublisher()
 
-        yaw_gathering=rospy.get_param("~gathering_yaw_angle",None)
-        r = Rotation.from_euler("xyz", [pi, 0, yaw_gathering], degrees=False)
-        self.gathering_init_pose = list(init_position.values()) + list(r.as_quat())
-        
+        #  init pose
+        init_pos=init_pose[0:3]
+        grinding_init_euler=init_pose[3:6]
+        yaw_bias=rospy.get_param("~grinding_yaw_bias",None)
+        grinding_init_euler[2] += yaw_bias
+        r = Rotation.from_euler("xyz", grinding_init_euler, degrees=False)
+        quat = r.as_quat()
+        grinding_init_pose = init_pos + list(quat)
+        self.grinding_init_pose = grinding_init_pose
+        # debug_tf_pub.broadcast_tf_with_pose(grinding_init_pose, "base_link", "g_init_pose")
+        gathering_init_euler=init_pose[3:6]
+        yaw_bias=rospy.get_param("~gathering_yaw_bias",None)
+        gathering_init_euler[2] += yaw_bias
+        r = Rotation.from_euler("xyz", gathering_init_euler, degrees=False)
+        quat = r.as_quat()
+        gathering_init_pose = init_pos + list(quat)
+        self.gathering_init_pose = gathering_init_pose
+        # debug_tf_pub.broadcast_tf_with_pose(gathering_init_pose, "base_link", "G_init_pose")
+
+        self.grinding_ee_link = rospy.get_param("~grinding_eef_link", "pestle_tip")
+        self.gathering_ee_link = rospy.get_param("~gathering_eef_link", "spatula_tip")
 
     def _pose_stamped_to_list(self, pose_msg):
         return [
@@ -59,13 +76,17 @@ class MotionPrimitive:
         post_motion=True,
     ):
         if pre_motion:
-            self.moveit_executor.execute_to_goal_pose(
+            result=self.moveit_executor.execute_to_goal_pose(
                 self.grinding_init_pose,
                 ee_link=ee_link,
                 vel_scale=moving_velocity_scale,
                 acc_scale=moving_acceleration_scale,
                 execute=True,
             )
+            if result == False:
+                rospy.logerr("Failed to move to Grinding init pose")
+                return False
+            
         joint_trajectory=self.JTC_executor.generate_joint_trajectory(
                         waypoints,
                         total_joint_limit=total_joint_limit,
@@ -94,11 +115,14 @@ class MotionPrimitive:
                 ee_link=ee_link,
                 time_to_reach=3,
             )
-            self.JTC_executor.execute_to_goal_pose(
+            self.moveit_executor.execute_to_goal_pose(
                 self.grinding_init_pose,
                 ee_link=ee_link,
-                time_to_reach=5,
+                vel_scale=moving_velocity_scale,
+                acc_scale=moving_acceleration_scale,
+                execute=True,
             )
+            
         return True
 
     def execute_gathering(
@@ -113,13 +137,23 @@ class MotionPrimitive:
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
     ):
-        self.moveit_executor.execute_to_goal_pose(
+        result=self.moveit_executor.execute_to_goal_pose(
+            self.gathering_init_pose,
+            ee_link=self.grinding_ee_link,
+            vel_scale=moving_velocity_scale,
+            acc_scale=moving_acceleration_scale,
+            execute=True,
+        )
+        result=self.moveit_executor.execute_to_goal_pose(
             self.gathering_init_pose,
             ee_link=ee_link,
             vel_scale=moving_velocity_scale,
             acc_scale=moving_acceleration_scale,
             execute=True,
         )
+        if result == False:
+                rospy.logerr("Failed to move to Gathering init pose")
+                return False
 
         joint_trajectory=self.JTC_executor.generate_joint_trajectory(
                         waypoints,
