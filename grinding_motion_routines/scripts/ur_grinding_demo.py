@@ -167,6 +167,7 @@ def main():
 
     ################### motion primitive ###################
     urdf_name=rospy.get_param("~urdf_name",None)
+    ik_solver=rospy.get_param("~ik_solver",None)
     primitive = motion_primitive.MotionPrimitive(
         init_pose=init_pose,
         ns=None,
@@ -175,6 +176,7 @@ def main():
         robot_urdf=urdf_name,
         planner_id=motion_planner_id,
         planning_time=planning_time,
+        ik_solver=ik_solver,
     )
     pouring_position = copy.deepcopy(list(funnel_position.values()))
     pouring_position[2] += pouring_hight

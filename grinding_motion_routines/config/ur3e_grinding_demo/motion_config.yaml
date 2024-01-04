@@ -5,6 +5,7 @@ gathering_eef_link: "spatula_tip"
 scooping_eef_link: "spoon_tip"
 motion_planner_id: "TRRT"
 planning_time : 20
+ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 
 # grinding params
 grinding_pos_begining : 
