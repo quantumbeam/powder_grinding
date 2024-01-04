@@ -67,6 +67,8 @@ This repository focuses on the ROS environment for robot control.
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
 
 ### Future Work
+- Add IKFast for motion planning
+ - Need to load custom URDF for grinding on IKFast
 - Automated calibration of mortar position using a force sensor.
 
 ### Citation
