@@ -1,0 +1,42 @@
+version: "3.8"
+
+################################################################################
+
+services:
+  powder-grinding-ros:
+    hostname: powder_grinding_ros
+    runtime: ${DOCKER_RUNTIME}
+    privileged: true
+    image: powder_grinding_ros_noetic
+    environment:
+      # Pass host user information.
+      - HOST_USER=${USER}
+      - HOST_UID=1000
+      - HOST_GID=1000
+      # Display X Server GUI.
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      # Map ROS workspace folders.
+      - ../../:/root/catkin_ws/src/powder_grinding
+      # Grant display access to X Server.
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # Grant access to usb ports
+      - /dev/:/dev/
+    network_mode: "host"
+    extra_hosts:
+      - "host:127.0.0.1" # Seems that this might be needed for ROS networking
+      - "host:192.168.56.5" # The host PC
+      - "ur:192.168.56.42" # UR IP
+      - "cobotta:192.168.56.11" # cobotta IP
+    expose:
+      - "50001" # send commnad to UR
+      - "50002" # external control of UR
+      - "50003" # recerve commnad from UR
+      - "50004" # script_command_port of UR
+      - "5007" # cobotta
+
+    tty: true

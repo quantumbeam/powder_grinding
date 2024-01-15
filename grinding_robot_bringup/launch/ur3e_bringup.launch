@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="sim" default="false" doc="Simulation flag that launch gazebo or connect real robot." />
+  <arg name="debug" default="false" doc="Debug flag that will get passed on to ur_common.launch" />
+
+  <!-- Params for UR hardware -->
+  <arg name="robot_ip" default="192.168.56.42" />
+  <arg name="reverse_ip" default="" />
+  <arg name="reverse_port" default="50001" />
+  <arg name="script_sender_port" default="50002" />
+  <arg name="trajectory_port" default="50003" />
+  <arg name="script_command_port" default="50004" />
+  <arg name="tf_prefix" default="" />
+  <arg name="use_tool_communication" default="false" />
+  <arg name="tool_voltage" default="0" />
+  <arg name="tool_parity" default="0" />
+  <arg name="tool_baud_rate" default="115200" />
+  <arg name="tool_stop_bits" default="1" />
+  <arg name="tool_rx_idle_chars" default="1.5" />
+  <arg name="tool_tx_idle_chars" default="3.5" />
+  <arg name="tool_device_name" default="/tmp/ttyUR" />
+  <arg name="tool_tcp_port" default="54321" />
+  <arg name="headless_mode" default="false" />
+  <arg name="ur_hardware_interface_node_required" default="true" />
+  
+  <!-- Common Configrations-->
+  <arg name="joint_limit_params" default="$(find grinding_descriptions)/config/ur3e/joint_limits.yaml" />
+  <arg name="physical_params" default="$(find grinding_descriptions)/config/ur3e/physical_parameters.yaml" />
+  <arg name="visual_params" default="$(find grinding_descriptions)/config/ur3e/visual_parameters.yaml" />
+  <arg name="kinematics_params" if="$(arg sim)" default="$(find grinding_descriptions)/config/ur3e/default_kinematics.yaml" />
+  <arg name="kinematics_params" unless="$(arg sim)" default="$(find grinding_descriptions)/config/ur3e/default_kinematics.yaml" />
+  
+  <!-- Configrations for  UR hardware -->
+  <arg name="robot_description_file" unless="$(arg sim)" default="$(find grinding_descriptions)/launch/load_ur3e.launch.xml" doc="Robot description launch file." />
+  <arg name="controller_config_file" unless="$(arg sim)" default="$(find grinding_robot_bringup)/config/ur3e_controllers.yaml" />
+  <arg name="controllers" unless="$(arg sim)" default="joint_state_controller scaled_pos_joint_traj_controller speed_scaling_state_controller force_torque_sensor_controller robot_status_controller" />
+  
+  <!-- Configrations for Gazebo -->
+  <!-- Controllers -->
+  <arg name="robot_description_file" if="$(arg sim)" default="$(find grinding_descriptions)/launch/load_ur3e_gazebo.launch.xml" doc="Robot description launch file." />
+  <arg name="controller_config_file" if="$(arg sim)" default="$(find grinding_robot_bringup)/config/ur3e_controllers_gazebo.yaml" />
+  <arg name="controllers" if="$(arg sim)" default="joint_state_controller scaled_pos_joint_traj_controller" />
+
+  <!-- Gazebo world -->
+  <arg name="world_name" default="$(find grinding_gazebo)/worlds/cubes_task.world" />
+  <arg name="paused" default="false" doc="Starts Gazebo in paused mode" />
+  <arg name="gui" default="true" doc="Starts Gazebo gui" />
+
+  <!-- User Configrations-->
+  <arg name="planning_scene_config" default="$(find grinding_motion_routines)/config/ur3e_grinding_demo/planning_scene_config.yaml" />
+
+  <!-- run the real robot or simulator (gazebo) -->
+  <!-- The controllers are fixed real or sim, you can change controllers for your app -->
+  <group if="$(arg sim)">
+    <!-- Export env variable so that gazebo finds our models -->
+    <env name="GAZEBO_MODEL_PATH" value="$(find grinding_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)" />
+    <!-- Ignore online database -->
+    <env name="GAZEBO_MODEL_DATABASE_URI" value="/" />
+    <!-- Start up simulated world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(arg world_name)"/>
+      <arg name="paused"     value="$(arg paused)"/>
+      <arg name="debug"      value="$(arg debug)"/>
+      <arg name="gui"        value="$(arg gui)"/>
+    </include>
+
+    <!-- Load controller -->
+    <include file="$(find grinding_robot_bringup)/launch/inc/load_contoller.launch" >
+      <arg name="controller_config_file" value="$(arg controller_config_file)" />
+      <arg name="controllers" value="$(arg controllers)" />
+    </include>
+
+    <!-- Load URDF -->
+    <include file="$(arg robot_description_file)">
+      <arg name="joint_limit_params" value="$(arg joint_limit_params)"/>
+      <arg name="kinematics_params" value="$(arg kinematics_params)"/>
+      <arg name="physical_params" value="$(arg physical_params)"/>
+      <arg name="visual_params" value="$(arg visual_params)"/>
+    </include>
+
+    <!-- Spawn model -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param robot_description -model ur3e 
+          -x 0.11 -z 0.8 -Y -1.5707
+          -unpause"
+    output="screen" />
+  </group>
+  <group unless="$(arg sim)">
+    <include file="$(find ur_robot_driver)/launch/ur_common.launch" pass_all_args="true">
+      <arg name="kinematics_config" value="$(arg kinematics_params)"/>
+    </include>
+  </group>
+
+  <!-- Launch moveit -->
+  <include file="$(find ur3e_moveit_config)/launch/move_group.launch">
+    <arg name="debug" default="$(arg debug)" />
+  </include>
+
+  <!-- launch rviz -->
+  <include file="$(find ur3e_moveit_config)/launch/moveit_rviz.launch">
+    <param name="config" value="true" />
+  </include>
+
+  <!-- load planning scene -->
+  <node name="loading_planning_scene" pkg="grinding_descriptions" type="load_planning_scene.py"
+    output="screen">
+    <rosparam command="load" file="$(arg planning_scene_config)" />
+  </node>
+
+</launch>

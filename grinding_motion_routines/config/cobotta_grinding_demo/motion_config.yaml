@@ -1,0 +1,45 @@
+experimental_time : 90
+
+# grinding params
+
+pestle_radius : 10
+minimum_grinding_radius: 5
+fixed_grinding: True
+arm_moving_at_vision: True
+fixed_vision_threshold: True
+vision_threshold: 25
+
+grinding_pos_begining : 
+  - -15
+  - 0
+grinding_pos_end :
+  - -15
+  - 0.0001
+grinding_center_pos:
+  - 0
+  - 0
+grinding_number_of_rotation : 10
+grinding_sec_per_rotation : 0.5
+grinding_angle_param : 0.5
+grinding_rz_begining : 34
+grinding_rz_end : 34
+grinding_vel_scale : 1
+grinding_acc_scale : 1
+grinding_number_of_waypoints_per_circle : 10
+grinding_yaw_bias : 0
+
+# circular gathering params 
+gathering_pos_begining : 
+  - -35
+  - 0
+gathering_pos_end :
+  - -25 
+  - 0.0001
+gathering_number_of_rotation : 5
+gathering_angle_param : 0
+gathering_rz_begining : 38
+gathering_rz_end : 38
+gathering_vel_scale : 0.1
+gathering_acc_scale : 0.1
+gathering_number_of_waypoints_per_circle : 20
+gathering_yaw_bias : 0

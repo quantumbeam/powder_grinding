@@ -34,11 +34,11 @@ This repository focuses on the ROS environment for robot control.
 ### Quick Start Guide
 
 #### Setting up Environments of Host PC, Robot, and Docker
-- [Setup Instructions](./docker/README.md)
+- [Setup Instructions](./env/docker/README.md)
 
 #### Running Docker Container
-- Runing docker container on terminal: `./RUN-DOCKER-CONTAINER.sh`
-- Launch Terminator and running docker container: `./LAUNCH-TERMINATOR-TERMINAL.sh`
+- Runing docker container on terminal: `./env/RUN-DOCKER-CONTAINER.sh`
+- Launch Terminator and running docker container: `./env/LAUNCH-TERMINATOR-TERMINAL.sh`
 
 #### Building ROS Packages in Docker Container
 - Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` on docker conatner.  
@@ -67,6 +67,8 @@ This repository focuses on the ROS environment for robot control.
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
 
 ### Future Work
+- Add IKFast for motion planning
+ - Need to load custom URDF for grinding on IKFast
 - Automated calibration of mortar position using a force sensor.
 
 ### Citation

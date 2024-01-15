@@ -1,0 +1,81 @@
+experimental_time : 90
+
+# end effector params
+grinding_eef_link: "pestle_tip"
+gathering_eef_link: "spatula_tip"
+scooping_eef_link: "spoon_tip"
+
+# ik and motion planner params 
+urdf_name: "ur5e" # support "ur3e" and "ur5e"
+ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
+motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
+planning_time : 20 # timeout for motion planning
+
+# grinding params
+grinding_pos_begining : 
+  - -8
+  - 0
+grinding_pos_end :
+  - -8
+  - 0.0001
+grinding_center_pos:
+  - 0
+  - 0
+grinding_number_of_rotation : 30
+grinding_sec_per_rotation : 0.5 # 0.5 >
+grinding_angle_param : 0.3 #0 - 0.3
+grinding_rz_begining : 35
+grinding_rz_end : 35
+grinding_vel_scale : 1
+grinding_acc_scale : 1
+grinding_number_of_waypoints_per_circle : 10
+grinding_yaw_bias : 0
+grinding_total_joint_diffence_for_planning : 10
+
+# circular gathering params 
+gathering_pos_begining : 
+  - -30
+  - 0
+gathering_pos_end :
+  - -18
+  - 0.0001
+gathering_number_of_rotation : 8
+gathering_sec_per_rotation : 2
+gathering_angle_param : 0
+gathering_rz_begining : 31.3
+gathering_rz_end : 31.3
+gathering_vel_scale : 0.1
+gathering_acc_scale : 0.1
+gathering_number_of_waypoints_per_circle : 20
+gathering_yaw_bias : 0
+gathering_total_joint_diffence_for_planning : 20
+
+# scooping params 
+# scooping_pos_begining : 
+#   - -20
+#   - 0
+# scooping_pos_end :
+#   - 20
+#   - 0
+# scooping_rz_begining : 32.3
+# scooping_rz_end : 32.3
+
+scooping_pos_begining : 
+  - -20
+  - 0
+scooping_pos_end :
+  - 25
+  - 0
+scooping_rz_begining : 35
+scooping_rz_end : 35
+scooping_angle_param : 1
+scooping_vel_scale : 0.1
+scooping_acc_scale : 0.1
+scooping_number_of_waypoints : 20
+scooping_yaw_bias : 0
+
+
+pouring_hight_at_funnel : 0.2
+
+# sound param
+sound_RMS_threshold : 0.03

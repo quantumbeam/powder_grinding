@@ -1,0 +1,11 @@
+<launch>
+    <arg name="planning_scene_config"
+        default="$(find grinding_motion_routines)/config/ur5e_grinding_demo/planning_scene_config.yaml" />
+
+    <node name="loading_planning_scene" pkg="grinding_descriptions" type="load_planning_scene.py"
+        output="screen">
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+    </node>
+
+
+</launch>

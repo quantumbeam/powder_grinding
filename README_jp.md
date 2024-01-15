@@ -30,21 +30,21 @@ This repository focuses on the ROS environment for robot control.
 ## クイックスタート
 
 ### PCとロボットとDocker環境のセットアップ
-- [環境セットアップの資料](./docker/README_jp.md)を読んで環境セットアップし、終わったらこちらに戻ってきて以下の続きを実行してください。
+- [環境セットアップの資料](./env/docker/README_jp.md)を読んで環境セットアップし、終わったらこちらに戻ってきて以下の続きを実行してください。
 
 ### Dockerコンテナの立ち上げ
 - ターミナル内でのDockerコンテナの立ち上げ
-   - `./RUN-DOCKER-CONTAINER.sh`
+   - `cd ./env && ./env/RUN-DOCKER-CONTAINER.sh`
 - Terminatorによる複数ターミナルの起動とDockerコンテナの立ち上げ
-   - `./LAUNCH-TERMINATOR-TERMINAL.sh`
-      - 立ち上げられた複数ターミナルでは`./RUN-DOCKER-CONTAINER.sh`が自動実行されている。
+   - `cd ./env && ./env/LAUNCH-TERMINATOR-TERMINAL.sh`
+      - 立ち上げられた複数ターミナルでは`RUN-DOCKER-CONTAINER.sh`が自動実行されている。
 
 ### Dockerコンテナ内でのROS環境のビルド
 - 初回のみ実行
    - `./INITIAL_SETUP_ROS_ENVIROMENTS.sh`  
 - 通常時のビルド
    - `./BUILD_ROS_WORKSPACE.sh`
--  以上のコマンドは`catkin_ws` のディレクトリ内で実行すること(`./RUN-DOCKER-CONTAINER.sh`実行時はデフォルトで`catkin_ws`に入っている。)
+-  以上のコマンドは`catkin_ws` のディレクトリ内で実行すること(`RUN-DOCKER-CONTAINER.sh`実行時はデフォルトで`catkin_ws`に入っている。)
 
 ### モーションのデモ
 - UR5e、cobottaの立ち上げと粉砕モーションのデモファイルを用意しています。
