@@ -124,36 +124,38 @@ def command_to_execute(cmd):
 def main():
     ################### init node ###################
     rospy.init_node("mechano_grinding", anonymous=True)
-    experimental_time = rospy.get_param("~experimental_time",None)
+    experimental_time = rospy.get_param("~experimental_time", None)
 
     ################### motion generator ###################
-    mortar_top_pos = rospy.get_param("~mortar_top_position",None)
-    mortar_inner_scale = rospy.get_param("~mortar_inner_scale",None)
-    funnel_position = rospy.get_param("~funnel_position",None)
-    pouring_hight = rospy.get_param("~pouring_hight_at_funnel",None)
+    mortar_top_pos = rospy.get_param("~mortar_top_position", None)
+    mortar_inner_scale = rospy.get_param("~mortar_inner_scale", None)
+    funnel_position = rospy.get_param("~funnel_position", None)
+    pouring_hight = rospy.get_param("~pouring_hight_at_funnel", None)
     motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_scale)
 
     ################### motion executor ###################
-    move_group_name = rospy.get_param("~move_group_name",None)
-    grinding_ee_link = rospy.get_param("~grinding_eef_link",None)
-    gathering_ee_link = rospy.get_param("~gathering_eef_link",None)
-    scooping_ee_link = rospy.get_param("~scooping_eef_link",None)
+    move_group_name = rospy.get_param("~move_group_name", None)
+    grinding_ee_link = rospy.get_param("~grinding_eef_link", None)
+    gathering_ee_link = rospy.get_param("~gathering_eef_link", None)
+    scooping_ee_link = rospy.get_param("~scooping_eef_link", None)
     grinding_total_joint_diffence_for_planning = rospy.get_param(
-        "~grinding_total_joint_diffence_for_planning",None
+        "~grinding_total_joint_diffence_for_planning", None
     )
     gathering_total_joint_diffence_for_planning = rospy.get_param(
-        "~gathering_total_joint_diffence_for_planning",None
+        "~gathering_total_joint_diffence_for_planning", None
     )
-    motion_planner_id = rospy.get_param("~motion_planner_id",None)
-    planning_time = rospy.get_param("~planning_time",None)
+    motion_planner_id = rospy.get_param("~motion_planner_id", None)
+    planning_time = rospy.get_param("~planning_time", None)
     rospy.loginfo(grinding_total_joint_diffence_for_planning)
-    moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link,motion_planner_id,planning_time)
+    moveit = moveit_executor.MoveitExecutor(
+        move_group_name, grinding_ee_link, motion_planner_id, planning_time
+    )
 
     ################### init pose ###################
     init_pos = copy.deepcopy(mortar_top_pos)
     rospy.loginfo("Mortar pos: " + str(init_pos))
     init_pos["z"] += 0.05
-    yaw=np.arctan2(mortar_top_pos["y"],mortar_top_pos["x"])
+    yaw = np.arctan2(mortar_top_pos["y"], mortar_top_pos["x"])
     euler = [pi, 0, yaw]
     r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
     quat = r.as_quat()
@@ -166,8 +168,8 @@ def main():
     rospy.loginfo("Goto init pose")
 
     ################### motion primitive ###################
-    urdf_name=rospy.get_param("~urdf_name",None)
-    ik_solver=rospy.get_param("~ik_solver",None)
+    urdf_name = rospy.get_param("~urdf_name", None)
+    ik_solver = rospy.get_param("~ik_solver", None)
     primitive = motion_primitive.MotionPrimitive(
         init_pose=init_pose,
         ns=None,
@@ -188,7 +190,7 @@ def main():
     grinding_sec = rospy.get_param("~grinding_sec_per_rotation") * rospy.get_param(
         "~grinding_number_of_rotation"
     )
-    gathering_sec=rospy.get_param("~gathering_sec_per_rotation") * rospy.get_param(
+    gathering_sec = rospy.get_param("~gathering_sec_per_rotation") * rospy.get_param(
         "~gathering_number_of_rotation"
     )
     try:
@@ -261,21 +263,11 @@ def main():
                 exec = command_to_execute(key)
                 if exec:
                     primitive.execute_powder_pouring(pouring_position)
-           
 
             elif motion_command == "Rg" or motion_command == "RGG":
                 motion_counts = 0
                 pouse_list_number = 0
                 experiment_time = initial_experiment_time
-                grinding_waypoints = compute_grinding_waypoints(motion_gen)
-                grinding_joint_trajectory = (
-                    primitive.JTC_executor.generate_joint_trajectory(
-                        grinding_waypoints,
-                        total_joint_limit=1,
-                        ee_link=grinding_ee_link,
-                        trial_number=20,
-                    )
-                )
                 while True:
                     try:
                         key = inputimeout(
@@ -291,18 +283,25 @@ def main():
                         st = time.time()
                         if motion_command == "Rg":
                             primitive.execute_grinding(
-                                grinding_joint_trajectory,
-                                ee_link=grinding_ee_link,
+                                compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
+                                total_joint_limit=grinding_total_joint_diffence_for_planning,
+                                trial_number=10,
+                                ee_link=grinding_ee_link,
                             )
                         elif motion_command == "RGG":
                             primitive.execute_grinding(
-                                grinding_joint_trajectory,
-                                ee_link=grinding_ee_link,
+                                compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
+                                total_joint_limit=grinding_total_joint_diffence_for_planning,
+                                trial_number=10,
+                                ee_link=grinding_ee_link,
                             )
                             primitive.execute_gathering(
                                 compute_gathering_waypoints(motion_gen),
+                                gathering_sec=gathering_sec,
+                                total_joint_limit=gathering_total_joint_diffence_for_planning,
+                                trial_number=10,
                                 ee_link=gathering_ee_link,
                             )
                         motion_counts += 1
