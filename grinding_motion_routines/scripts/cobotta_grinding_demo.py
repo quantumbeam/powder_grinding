@@ -74,22 +74,6 @@ def compute_gathering_waypoints(motion_generator):
     # display_debug_waypoints(waypoints)
     return waypoints
 
-
-def compute_scooping_waypoints(motion_generator):
-    waypoints = motion_generator.create_cartesian_waypoints(
-        begining_position=rospy.get_param("~scooping_pos_begining"),
-        end_position=rospy.get_param("~scooping_pos_end"),
-        begining_radius_z=rospy.get_param("~scooping_rz_begining"),
-        end_radius_z=rospy.get_param("~scooping_rz_end"),
-        angle_param=rospy.get_param("~scooping_angle_param"),
-        yaw_bias=rospy.get_param("~scooping_yaw_bias"),
-        number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
-    )
-    # display_debug_waypoints(waypoints)
-
-    return waypoints
-
-
 def exit_process(msg=""):
     if msg != "":
         rospy.loginfo(msg)
@@ -110,8 +94,7 @@ def input_command(msg):
 
 def main():
     ################### init node ###################
-    rospy.init_node("mechano_grinding", anonymous=True)
-    experimental_time = rospy.get_param("~experimental_time")
+    rospy.init_node("cobotta_grinding_demo", anonymous=True)
 
     ################### motion generator ###################
     mortar_base_pos = rospy.get_param("~mortar_top_position")
@@ -126,19 +109,6 @@ def main():
     gathering_ee_link = rospy.get_param("~gathering_eef_link")
     # scooping_ee_link = rospy.get_param("~scooping_eef_link")
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
-
-    ################### motion primitive ###################
-    start_joint_angle = rospy.get_param("~start_joint_angles")
-    grinding_ready_joint_angle = rospy.get_param("~grinding_ready_joint_angles")
-    gathering_ready_joint_angle = rospy.get_param("~gathering_ready_joint_angles")
-    scooping_ready_joint_angle = rospy.get_param("~scooping_ready_joint_angles")
-    # primitive = motion_primitive.MotionPrimitive(
-    #     start_joint_angle,
-    #     grinding_ready_joint_angle,
-    #     gathering_ready_joint_angle,
-    #     scooping_ready_joint_angle,
-    #     move_group_name=move_group_name,
-    # )
 
     ################### init planning scene ###################
     planning_scene = load_planning_scene.PlanningScene(moveit.move_group)
