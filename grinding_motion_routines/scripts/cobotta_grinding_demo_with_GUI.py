@@ -12,8 +12,6 @@ from scipy.spatial.transform import Rotation
 from grinding_motion_routines import (
     motion_generator,
     moveit_executor,
-    JTC_executor,
-    motion_primitive,
     marker_display,
     tf_publisher,
 )
@@ -55,7 +53,6 @@ def compute_grinding_waypoints(motion_generator):
     # display_debug_waypoints(waypoints)
     return waypoints
 
-
 def compute_gathering_waypoints(motion_generator):
     waypoints = motion_generator.create_circular_waypoints(
         begining_position=rospy.get_param("~gathering_pos_begining"),
@@ -95,7 +92,6 @@ def main():
     move_group_name = rospy.get_param("~move_group_name")
     grinding_ee_link = rospy.get_param("~grinding_eef_link")
     gathering_ee_link = rospy.get_param("~gathering_eef_link")
-    # scooping_ee_link = rospy.get_param("~scooping_eef_link")
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
     ################### init planning scene ###################
@@ -192,21 +188,19 @@ def main():
         pass
 
     root = tk.Tk()
+    font = ("Meiryo", 20)
     root.title("ROS Commands")
 
-    grinding_button = tk.Button(root, text="Grinding", command=send_grinding_command)
+    grinding_button = tk.Button(root, text="Grinding", command=send_grinding_command, font=font)
     grinding_button.pack(pady=5)
 
-    gathering_button = tk.Button(root, text="Gathering", command=send_gathering_command)
+    gathering_button = tk.Button(root, text="Gathering", command=send_gathering_command, font=font)
     gathering_button.pack(pady=5)
 
-    grinding_and_gathering_button = tk.Button(root, text="Grinding and Gathering", command=send_grinding_and_gathering_command)
+    grinding_and_gathering_button = tk.Button(root, text="Grinding & Gathering", command=send_grinding_and_gathering_command, font=font)
     grinding_and_gathering_button.pack(pady=5)
 
-    grinding_button = tk.Button(root, text="Exit demo", command=exit_process)
-    grinding_button.pack(pady=5)
-
-    grinding_button = tk.Button(root, text="Update  scene", command=planning_scene.init_planning_scene)
+    grinding_button = tk.Button(root, text="Exit demo", command=exit_process, font=font)
     grinding_button.pack(pady=5)
 
     root.mainloop()

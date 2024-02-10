@@ -21,8 +21,7 @@ grinding_center_pos:
   - 0
   - 0
 grinding_number_of_rotation : 10
-grinding_sec_per_rotation : 0.5
-grinding_angle_param : 0.5
+grinding_angle_param : 0
 grinding_rz_begining : 34
 grinding_rz_end : 34
 grinding_vel_scale : 1

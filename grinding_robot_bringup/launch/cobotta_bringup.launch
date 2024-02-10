@@ -11,6 +11,9 @@
 
   <arg name="bcap_slave_control_cycle_msec" default="8" />
 
+  <!-- User Configrations-->
+  <arg name="planning_scene_config" default="$(find grinding_motion_routines)/config/cobotta_grinding_demo/planning_scene_config.yaml" />
+
   <include file="$(find denso_robot_bringup)/launch/denso_robot_bringup.launch">
     <arg name="robot_name" value="cobotta"/>
     <arg name="sim" value="$(arg sim)"/>
@@ -18,4 +21,9 @@
     <arg name="send_format" value="$(arg send_format)" />
     <arg name="recv_format" value="$(arg recv_format)" />
   </include>
+
+  <!-- load planning scene -->
+  <node name="loading_planning_scene" pkg="grinding_descriptions" type="load_planning_scene.py" output="screen">
+    <rosparam command="load" file="$(arg planning_scene_config)" />
+  </node>
 </launch>
