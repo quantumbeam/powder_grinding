@@ -58,7 +58,7 @@
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.108000"/>
     <axis xyz="-0.000000 -0.000000 1.000000"/>
     <limit effort="1" lower="-2.617994" upper="2.617994" velocity="0.383012504350156"/>
-    <dynamics damping="0" friction="0"/>
+    <dynamics damping="0.001" friction="0.61"/>
   </joint>
   <transmission name="trans_1">
     <type>transmission_interface/SimpleTransmission</type>
@@ -95,7 +95,7 @@
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.072000"/>
     <axis xyz="-0.000000 1.000000 -0.000000"/>
     <limit effort="1" lower="-1.047198" upper="1.745329" velocity="0.37256670877697"/>
-    <dynamics damping="0" friction="0"/>
+    <dynamics damping="0.001" friction="0.61"/>
   </joint>
   <transmission name="trans_2">
     <type>transmission_interface/SimpleTransmission</type>
@@ -132,7 +132,7 @@
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.165000"/>
     <axis xyz="-0.000000 1.000000 -0.000000"/>
     <limit effort="1" lower="0.3141593" upper="2.443461" velocity="0.68942250783028"/>
-    <dynamics damping="0" friction="0"/>
+    <dynamics damping="0.001" friction="0.61"/>
   </joint>
   <transmission name="trans_3">
     <type>transmission_interface/SimpleTransmission</type>
@@ -169,7 +169,7 @@
     <origin rpy="0.000000 0.000000 0.000000" xyz="-0.012000 0.020000 0.088000"/>
     <axis xyz="-0.000000 -0.000000 1.000000"/>
     <limit effort="1" lower="-2.96706" upper="2.96706" velocity="0.702189591308619"/>
-    <dynamics damping="0" friction="0"/>
+    <dynamics damping="0.001" friction="0.61"/>
   </joint>
   <transmission name="trans_4">
     <type>transmission_interface/SimpleTransmission</type>
@@ -206,7 +206,7 @@
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.020000 0.089500"/>
     <axis xyz="-0.000000 1.000000 -0.000000"/>
     <limit effort="1" lower="-1.658063" upper="2.356194" velocity="0.702189591308619"/>
-    <dynamics damping="0" friction="0"/>
+    <dynamics damping="0.001" friction="0.61"/>
   </joint>
   <transmission name="trans_5">
     <type>transmission_interface/SimpleTransmission</type>
@@ -243,7 +243,7 @@
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 -0.044500 0.042000"/>
     <axis xyz="-0.000000 -0.000000 1.000000"/>
     <limit effort="1" lower="-2.96706" upper="2.96706" velocity="1.05386470893922"/>
-    <dynamics damping="0" friction="0"/>
+    <dynamics damping="0.001" friction="0.61"/>
   </joint>
   <transmission name="trans_6">
     <type>transmission_interface/SimpleTransmission</type>
