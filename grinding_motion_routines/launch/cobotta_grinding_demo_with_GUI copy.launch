@@ -1,0 +1,11 @@
+<launch>
+    <arg name="planning_scene_config"
+        default="$(find grinding_motion_routines)/config/cobotta_grinding_demo/planning_scene_config.yaml" />
+    <arg name="motion_config"
+        default="$(find grinding_motion_routines)/config/cobotta_grinding_demo/motion_config.yaml" />
+    <node name="cobotta_grinding_demo" pkg="grinding_motion_routines" type="cobotta_grinding_demo_with_GUI.py"
+        output="screen">
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+        <rosparam command="load" file="$(arg motion_config)" />
+    </node>
+</launch>
