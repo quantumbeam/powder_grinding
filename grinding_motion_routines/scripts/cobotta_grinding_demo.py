@@ -97,10 +97,10 @@ def main():
     rospy.init_node("cobotta_grinding_demo", anonymous=True)
 
     ################### motion generator ###################
-    mortar_base_pos = rospy.get_param("~mortar_top_position")
+    mortar_top_pos = rospy.get_param("~mortar_top_position")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
     motion_gen = motion_generator.MotionGenerator(
-        mortar_base_pos, mortar_inner_scale
+        mortar_top_pos, mortar_inner_scale
     )
 
     ################### motion executor ###################
@@ -116,7 +116,7 @@ def main():
 
     ################### init pose ###################
     rospy.loginfo("goto init pose")
-    init_pos = copy.deepcopy(mortar_base_pos)
+    init_pos = copy.deepcopy(mortar_top_pos)
     init_pos["z"] += 0.1
     r = Rotation.from_euler("xyz", [pi, 0, 0], degrees=False)
     quat = r.as_quat()
@@ -144,9 +144,8 @@ def main():
                 planning_scene.init_planning_scene()
             elif motion_command == "hight":
                 rospy.loginfo("Go to caliblation pose of mortar hight")
-                pos = copy.deepcopy(mortar_base_pos)
-                pos["z"] += rospy.get_param("~mortar_hight")
-                quat = tf.quaternion_from_euler(0, -pi, 0)
+                pos = copy.deepcopy(mortar_top_pos)
+                quat = tf.quaternion_from_euler(pi, 0, 0)
                 calib_pose = list(pos.values()) + quat.tolist()
                 moveit.execute_cartesian_path_to_goal_pose(
                     calib_pose, ee_link=grinding_ee_link, vel_scale=0.9, acc_scale=0.9
