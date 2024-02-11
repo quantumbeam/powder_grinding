@@ -18,13 +18,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/base_link.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -37,13 +37,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J1.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J1.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J1.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J1.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -74,13 +74,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J2.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J2.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J2.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J2.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -111,13 +111,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J3.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J3.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J3.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J3.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -148,13 +148,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J4.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J4.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J4.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J4.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -185,13 +185,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J5.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J5.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J5.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J5.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -222,13 +222,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J6.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J6.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://grinding_descriptions/urdf/cobotta/J6.stl" scale="1 1 1"/>
+        <mesh filename="package://grinding_descriptions/urdf/cobotta/J6.dae" scale="1 1 1"/>
       </geometry>
     </collision>
     <inertial>
@@ -283,29 +283,29 @@
     <parent link="spatula"/>
     <child link="spatula_tip"/>
   </joint>
-  <link name="pestle">
+  <link name="pedaee">
     <visual>
       <geometry>
-        <mesh filename="package://grinding_descriptions/mesh/cobotta/jig_pestle_140.stl"/>
+        <mesh filename="package://grinding_descriptions/mesh/cobotta/jig_pedaee_140.stl"/>
       </geometry>
     </visual>
   </link>
-  <joint name="joint_pestle" type="fixed">
+  <joint name="joint_pedaee" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="J6"/>
-    <child link="pestle"/>
+    <child link="pedaee"/>
   </joint>
-  <link name="pestle_tip">
+  <link name="pedaee_tip">
     <visual>
       <geometry>
         <box size="0 0 0"/>
       </geometry>
     </visual>
   </link>
-  <joint name="joint_pestle_tip" type="fixed">
-    <!-- for pestle -->
+  <joint name="joint_pedaee_tip" type="fixed">
+    <!-- for pedaee -->
     <origin rpy="0 0 0" xyz="0 0 0.160"/>
-    <parent link="pestle"/>
-    <child link="pestle_tip"/>
+    <parent link="pedaee"/>
+    <child link="pedaee_tip"/>
   </joint>
 </robot>

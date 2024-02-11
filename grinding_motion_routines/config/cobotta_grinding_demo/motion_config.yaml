@@ -12,16 +12,16 @@ planning_time : 20 # timeout for motion planning
 
 # grinding params
 grinding_pos_begining : 
-  - -5
+  - -10
   - 0
 grinding_pos_end :
-  - -5
+  - -10
   - 0.0001
 grinding_center_pos:
   - 0
   - 0
 grinding_number_of_rotation : 10
-grinding_angle_param : 0
+grinding_angle_param : 0.5
 grinding_rz_begining : 34
 grinding_rz_end : 34
 grinding_vel_scale : 1
