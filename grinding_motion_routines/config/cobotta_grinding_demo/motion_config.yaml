@@ -12,10 +12,10 @@ planning_time : 20 # timeout for motion planning
 
 # grinding params
 grinding_pos_begining : 
-  - -15
+  - -5
   - 0
 grinding_pos_end :
-  - -15
+  - -5
   - 0.0001
 grinding_center_pos:
   - 0
@@ -27,7 +27,7 @@ grinding_rz_end : 34
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
-grinding_yaw_bias : 0
+grinding_yaw_bias : rad(pi)
 
 # circular gathering params 
 gathering_pos_begining : 
