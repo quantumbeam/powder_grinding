@@ -72,7 +72,7 @@
 	</link>
 	<joint name="joint_1" type="revolute">
 		<parent link="base_link" />
-		<child link="J1" />grinding_descriptions/urdf/cobotta/setup_files/cobotta.urdf
+		<child link="J1" />
 		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000  0.108000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
 		<limit effort="10" lower="-2.617994" upper="2.617994" velocity="0.383012504350156" />
