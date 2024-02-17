@@ -8,10 +8,8 @@ import time
 from inputimeout import inputimeout, TimeoutOccurred
 
 from math import pi
-from math import pi
 import copy
 from scipy.spatial.transform import Rotation
-import numpy as np
 import numpy as np
 
 from grinding_motion_routines import (
@@ -23,7 +21,6 @@ from grinding_motion_routines import (
     tf_publisher,
 )
 
-from grinding_descriptions import load_planning_scene
 from grinding_descriptions import load_planning_scene
 
 ################### Fixed params ###################
@@ -180,8 +177,6 @@ def main():
         ee_link=grinding_ee_link,
         robot_urdf=urdf_name,
         planner_id=motion_planner_id,
-        planning_time=planning_time,
-        ik_solver=ik_solver,
         planning_time=planning_time,
         ik_solver=ik_solver,
     )
