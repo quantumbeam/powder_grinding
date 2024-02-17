@@ -59,7 +59,6 @@ def compute_grinding_waypoints(motion_generator, debug_type=False):
         end_radious_z=rospy.get_param("~grinding_rz_end"),
         angle_param=rospy.get_param("~grinding_angle_param"),
         yaw_bias=rospy.get_param("~grinding_yaw_bias"),
-        yaw_bias=rospy.get_param("~grinding_yaw_bias"),
         number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
             "~grinding_number_of_waypoints_per_circle"
@@ -79,7 +78,6 @@ def compute_gathering_waypoints(motion_generator, debug_type=False):
         end_radious_z=rospy.get_param("~gathering_rz_end"),
         angle_param=rospy.get_param("~gathering_angle_param"),
         yaw_bias=rospy.get_param("~gathering_yaw_bias"),
-        yaw_bias=rospy.get_param("~gathering_yaw_bias"),
         number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
             "~gathering_number_of_waypoints_per_circle"
@@ -97,7 +95,6 @@ def compute_scooping_waypoints(motion_generator, debug_type=False):
         begining_radius_z=rospy.get_param("~scooping_rz_begining"),
         end_radius_z=rospy.get_param("~scooping_rz_end"),
         angle_param=rospy.get_param("~scooping_angle_param"),
-        yaw_bias=rospy.get_param("~scooping_yaw_bias"),
         yaw_bias=rospy.get_param("~scooping_yaw_bias"),
         number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
     )
@@ -159,7 +156,6 @@ def main():
 
     ################### init pose ###################
     init_pos = copy.deepcopy(mortar_top_pos)
-    init_pos = copy.deepcopy(mortar_top_pos)
     rospy.loginfo("Mortar pos: " + str(init_pos))
     init_pos["z"] += 0.05
     yaw = np.arctan2(mortar_top_pos["y"], mortar_top_pos["x"])
@@ -168,13 +164,9 @@ def main():
     quat = r.as_quat()
     init_pose = list(init_pos.values()) + list(euler)
     init_pose_quat = list(init_pos.values()) + list(quat)
-    init_pose = list(init_pos.values()) + list(euler)
-    init_pose_quat = list(init_pos.values()) + list(quat)
     moveit.execute_to_goal_pose(
         init_pose_quat, ee_link=grinding_ee_link, vel_scale=0.5, acc_scale=0.5
     )
-    debug_tf.broadcast_tf_with_pose(init_pose_quat, "base_link", "init_pose")
-    rospy.loginfo("Goto init pose")
     debug_tf.broadcast_tf_with_pose(init_pose_quat, "base_link", "init_pose")
     rospy.loginfo("Goto init pose")
 
@@ -182,7 +174,6 @@ def main():
     urdf_name = rospy.get_param("~urdf_name", None)
     ik_solver = rospy.get_param("~ik_solver", None)
     primitive = motion_primitive.MotionPrimitive(
-        init_pose=init_pose,
         init_pose=init_pose,
         ns=None,
         move_group_name=move_group_name,
