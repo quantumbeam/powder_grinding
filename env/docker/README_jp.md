@@ -41,7 +41,7 @@
 
 # Dockerイメージのビルドとコンテナの立ち上げ
 - Dockerイメージのビルドは以下のコマンドで行ってください。
-  - ```cd ./env && ./BUILD-DOCKER-IMAGE.sh```
+  - ```cd ./env/docker && ./BUILD-DOCKER-IMAGE.sh```
 - メインディレクトリでDockerコンテナの立ち上げができます。詳細はリポジトリの[README.md](../README.md)内の"Dockerコンテナの立ち上げ"の項目を読んでください。
 
 
