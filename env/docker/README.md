@@ -12,7 +12,10 @@
 2. Port forwarding
 - Port forwarding is required to use real robots and sensors on docker container.
   - UR ports.
-    - ```sudo ufw allow 50001:50004```
+    - ```sudo ufw allow 50001```
+    - ```sudo ufw allow 50002```
+    - ```sudo ufw allow 50003```
+    - ```sudo ufw allow 50004```
   - Cobotta port.
     - ```sudo ufw allow 5007```
 
