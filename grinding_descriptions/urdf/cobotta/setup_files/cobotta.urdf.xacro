@@ -73,7 +73,7 @@
 	<joint name="joint_1" type="revolute">
 		<parent link="base_link" />
 		<child link="J1" />
-		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000" />
+		<origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000  0.108000" />
 		<axis xyz="-0.000000 -0.000000 1.000000" />
 		<limit effort="10" lower="-2.617994" upper="2.617994" velocity="0.383012504350156" />
 		<dynamics damping="${joint_damping}" friction="${joint_friction}" />
@@ -295,31 +295,31 @@
 	</joint>
 
 
-	<link name="pedaee">
+	<link name="pestle">
 		<visual>
 			<geometry>
-				<mesh filename="package://grinding_descriptions/mesh/cobotta/jig_pedaee_140.stl" />
+				<mesh filename="package://grinding_descriptions/mesh/cobotta/jig_pestle_140.stl" />
 			</geometry>
 		</visual>
 	</link>
-	<joint name="joint_pedaee" type="fixed">
+	<joint name="joint_pestle" type="fixed">
 		<origin rpy="0 0 0" xyz="0 0 0" />
 		<parent link="J6" />
-		<child link="pedaee" />
+		<child link="pestle" />
 	</joint>
 
-	<link name="pedaee_tip">
+	<link name="pestle_tip">
 		<visual>
 			<geometry>
 				<box size="0 0 0" />
 			</geometry>
 		</visual>
 	</link>
-	<joint name="joint_pedaee_tip" type="fixed">
-		<!-- for pedaee -->
+	<joint name="joint_pestle_tip" type="fixed">
+		<!-- for pestle -->
 		<origin rpy="0 0 0" xyz="0 0 0.160" />
-		<parent link="pedaee" />
-		<child link="pedaee_tip" />
+		<parent link="pestle" />
+		<child link="pestle_tip" />
 	</joint>
 
 </robot>

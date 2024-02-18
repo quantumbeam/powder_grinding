@@ -126,12 +126,6 @@ def main():
 
     def send_gathering_command():
         waypoints = compute_gathering_waypoints(motion_gen)
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=gathering_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
-        )
         moveit.execute_cartesian_path_by_waypoints(
             waypoints,
             ee_link=gathering_ee_link,
@@ -146,46 +140,8 @@ def main():
         )
 
     def send_grinding_and_gathering_command():
-        waypoints = compute_grinding_waypoints(motion_gen)
-        moveit.execute_cartesian_path_by_waypoints(
-            waypoints,
-            ee_link=grinding_ee_link,
-            vel_scale=1,
-            acc_scale=1,
-        )
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=grinding_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
-        )
-
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=gathering_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
-        )
-        waypoints = compute_gathering_waypoints(motion_gen)
-        moveit.execute_cartesian_path_by_waypoints(
-            waypoints,
-            ee_link=gathering_ee_link,
-            vel_scale=0.8,
-            acc_scale=0.8,
-        )
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=gathering_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
-        )
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=grinding_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
-        )
-        pass
+        send_grinding_command()
+        send_gathering_command()
 
     root = tk.Tk()
     font = ("Meiryo", 20)
