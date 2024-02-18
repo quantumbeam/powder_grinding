@@ -32,9 +32,11 @@ This repository focuses on the ROS environment for robot control.
 - Cobotta
 
 ### Quick Start Guide
+You can also view the Japanese version of the [README_jp](./README_jp.md).
 
 #### Setting up Environments of Host PC, Robot, and Docker
 - [Setup Instructions](./env/docker/README.md)
+- [Setup Instructions (Japanese version)](./env/docker/README_jp.md)
 
 #### Running Docker Container
 - Runing docker container on terminal: `cd ./env && ./RUN-DOCKER-CONTAINER.sh`
