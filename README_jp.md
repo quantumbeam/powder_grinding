@@ -34,9 +34,9 @@ This repository focuses on the ROS environment for robot control.
 
 ### Dockerコンテナの立ち上げ
 - ターミナル内でのDockerコンテナの立ち上げ
-   - `cd ./env && ./env/RUN-DOCKER-CONTAINER.sh`
+   - `cd ./env && ./RUN-DOCKER-CONTAINER.sh`
 - Terminatorによる複数ターミナルの起動とDockerコンテナの立ち上げ
-   - `cd ./env && ./env/LAUNCH-TERMINATOR-TERMINAL.sh`
+   - `cd ./env && ./LAUNCH-TERMINATOR-TERMINAL.sh`
       - 立ち上げられた複数ターミナルでは`RUN-DOCKER-CONTAINER.sh`が自動実行されている。
 
 ### Dockerコンテナ内でのROS環境のビルド
@@ -49,11 +49,18 @@ This repository focuses on the ROS environment for robot control.
 ### モーションのデモ
 - UR5e、cobottaの立ち上げと粉砕モーションのデモファイルを用意しています。
 - ロボットの立ち上げ
-   - `roslaunch grinding_robot_bringup ur5e_bringup.launch `
-   - `roslaunch grinding_robot_bringup cobotta_bringup.launch ` 
+   ```
+   roslaunch grinding_robot_bringup ur5e_bringup.launch
+   roslaunch grinding_robot_bringup ur3e_bringup.launch
+   roslaunch grinding_robot_bringup cobotta_bringup.launch
+   ```
    - シミュレーション使う場合は`sim:=true`で立ち上げてください。
 - 粉砕モーションの立ち上げ
-   - `roslaunch grinding_motion_routines ur5e_grinding_demo.launch`
+   ```
+   roslaunch grinding_motion_routines ur3e_grinding_demo.launch
+   roslaunch grinding_motion_routines ur5e_grinding_demo.launch
+   roslaunch grinding_motion_routines cobotta_grinding_demo.launch
+   ```
    - コマンド`g`で粉砕の実行準備(g=grinding)、続けて`y`で粉砕実行します。
    - コマンド`G`でヘラによる粉集めの実行準備(g=grinding)、続けて`y`で粉集め実行します。
 - 粉砕パラメータの設定

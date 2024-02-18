@@ -37,12 +37,12 @@ This repository focuses on the ROS environment for robot control.
 - [Setup Instructions](./env/docker/README.md)
 
 #### Running Docker Container
-- Runing docker container on terminal: `./env/RUN-DOCKER-CONTAINER.sh`
-- Launch Terminator and running docker container: `./env/LAUNCH-TERMINATOR-TERMINAL.sh`
+- Runing docker container on terminal: `cd ./env && ./RUN-DOCKER-CONTAINER.sh`
+- Launch Terminator and running docker container: `cd ./env && ./LAUNCH-TERMINATOR-TERMINAL.sh`
 
 #### Building ROS Packages in Docker Container
-- Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` on docker conatner.  
-- Execute `./BUILD_ROS_WORKSPACE.sh` in `catkin_ws` on docker conatner.
+- Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` in docker conatner.  
+- Execute to build `./BUILD_ROS_WORKSPACE.sh` in `catkin_ws` in docker conatner.
 
 
 #### Demonstration
@@ -56,7 +56,9 @@ This repository focuses on the ROS environment for robot control.
   - If you want to use simulation, please launch with sim:=true.
 - Launching Grinding Motion:
    ```
+   roslaunch grinding_motion_routines ur3e_grinding_demo.launch
    roslaunch grinding_motion_routines ur5e_grinding_demo.launch
+   roslaunch grinding_motion_routines cobotta_grinding_demo.launch
    ```
    - Use the command g to prepare for grinding (g=grinding), and then use y to execute the grinding.
    - Use the command G to prepare for powder collection with a spatula (G=grinding), and then use y to execute the powder collection.
