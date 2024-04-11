@@ -198,6 +198,7 @@ def main():
             motion_command = input(
                 "q \t= exit.\n"
                 + "scene \t= init planning scene.\n"
+                + "pestle_calib \t= go to caliblation pose of pestle tip position.\n"
                 + "g \t= grinding demo.\n"
                 + "G \t= circular gathering demo.\n"
                 + "sc \t= scooping demo.\n"
@@ -213,6 +214,14 @@ def main():
             elif motion_command == "scene":
                 rospy.loginfo("Init planning scene")
                 planning_scene.init_planning_scene()
+            elif motion_command == "pestle_calib":
+                rospy.loginfo("Go to caliblation pose of pestle tip position")
+                pos = copy.deepcopy(mortar_top_pos)
+                quat = tf.quaternion_from_euler(pi, 0, 0)
+                calib_pose = list(pos.values()) + quat.tolist()
+                moveit.execute_cartesian_path_to_goal_pose(
+                    calib_pose, ee_link=grinding_ee_link, vel_scale=0.9, acc_scale=0.9
+                )
 
             elif motion_command == "g":
                 key = input(
