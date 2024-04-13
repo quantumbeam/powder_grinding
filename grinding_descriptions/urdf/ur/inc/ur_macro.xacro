@@ -483,7 +483,7 @@
       <child link="pestle" />
     </joint>
     <joint name="joint_pestle_tip" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0.12324" />
+      <origin rpy="0 0 0" xyz="0 0 0.12124" />
       <parent link="pestle" />
       <child link="pestle_tip" />
     </joint>
@@ -495,7 +495,7 @@
       <child link="spatula" />
     </joint>
     <joint name="joint_spatula_tip" type="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0.081" />
+      <origin rpy="0 0 0" xyz="0 0 0.091" />
       <parent link="spatula" />
       <child link="spatula_tip" />
     </joint>

@@ -1,28 +1,35 @@
 #!/usr/bin/env python3
 
-from pickle import FALSE
-import sys
-import rospy
-import moveit_commander
-import moveit_msgs.msg
-import geometry_msgs.msg
-import tf.transformations as tf
-
 import numpy as np
-
-from ur_control.arm import Arm
+import rospy
+from grinding_motion_routines.arm import Arm
 
 
 class JointTrajectoryControllerExecutor(Arm):
     """Motion Executor including IK and JointTrajectoryController(JTC) ."""
 
-    def __init__(self, ns, robot_urdf, tcp_link, ft_topic="wrench",ik_solver='trac_ik'):
-        joint_names_prefix = ns + "_" if ns else ""
+    def __init__(
+        self,
+        robot_urdf_pkg,
+        robot_urdf_file_name,
+        joint_trajectory_controller_name,
+        tcp_link,
+        ns=None,
+        joint_names_prefix=None,
+        ft_topic=None,
+        gripper=False,
+        ik_solver="trac_ik",
+    ):
+
+        if joint_names_prefix is None:
+            joint_names_prefix = ""
         super().__init__(
-            gripper=False,
+            robot_urdf_pkg,
+            robot_urdf_file_name,
+            joint_trajectory_controller_name,
+            gripper=gripper,
             namespace=ns,
             joint_names_prefix=joint_names_prefix,
-            robot_urdf=robot_urdf,
             ee_link=tcp_link,
             ft_topic=ft_topic,
             ik_solver=ik_solver,
@@ -59,11 +66,14 @@ class JointTrajectoryControllerExecutor(Arm):
 
         for i in range(trial_number):
             joint_trajectory = []
+            start_joint = self.joint_angles()
             for pose in waypoints:
-                joints = self._solve_ik(pose)
+                joints = self._solve_ik(pose, q_guess=start_joint)
                 if np.any(joints == "ik_not_found") or joints is None:
-                    rospy.logerr("IK not found")
+                    rospy.logerr("IK not found, Try again")
+                    break
                 else:
+                    start_joint = joints
                     joint_trajectory.append(list(joints))
             if len(joint_trajectory) == 0:
                 rospy.logerr("Skip this trajectory")

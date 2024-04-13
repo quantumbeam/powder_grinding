@@ -6,6 +6,7 @@ gathering_eef_link: "spatula_tip"
 scooping_eef_link: "spoon_tip"
 
 # ik and motion planner params
+joint_trajectory_controller_name: "scaled_pos_joint_traj_controller"
 urdf_name: "ur3e" # support "ur3e" and "ur5e"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)

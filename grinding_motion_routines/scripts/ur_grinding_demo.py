@@ -155,29 +155,32 @@ def main():
     init_pos = copy.deepcopy(mortar_top_pos)
     rospy.loginfo("Mortar pos: " + str(init_pos))
     init_pos["z"] += 0.05
-    yaw = np.arctan2(mortar_top_pos["y"], mortar_top_pos["x"])
+    yaw = np.arctan2(mortar_top_pos["y"], mortar_top_pos["x"]) + pi
     euler = [pi, 0, yaw]
-    r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
+    r = Rotation.from_euler("xyz", euler, degrees=False)
     quat = r.as_quat()
-    init_pose = list(init_pos.values()) + list(euler)
-    init_pose_quat = list(init_pos.values()) + list(quat)
+    init_pose = list(init_pos.values()) + list(quat)
     moveit.execute_to_goal_pose(
-        init_pose_quat, ee_link=grinding_ee_link, vel_scale=0.5, acc_scale=0.5
+        init_pose, ee_link=grinding_ee_link, vel_scale=0.5, acc_scale=0.5
     )
-    debug_tf.broadcast_tf_with_pose(init_pose_quat, "base_link", "init_pose")
     rospy.loginfo("Goto init pose")
 
     ################### motion primitive ###################
-    urdf_name = rospy.get_param("~urdf_name", None)
     ik_solver = rospy.get_param("~ik_solver", None)
     primitive = motion_primitive.MotionPrimitive(
         init_pose=init_pose,
-        ns=None,
-        move_group_name=move_group_name,
         ee_link=grinding_ee_link,
-        robot_urdf=urdf_name,
+        robot_urdf_pkg="grinding_description",
+        robot_urdf_file_name=rospy.get_param("~urdf_name"),
+        joint_trajectory_controller_name=rospy.get_param(
+            "~joint_trajectory_controller_name"
+        ),
+        move_group_name=move_group_name,
+        ns=None,
+        joint_names_prefix=None,
         planner_id=motion_planner_id,
         planning_time=planning_time,
+        ft_topic="/wrench",
         ik_solver=ik_solver,
     )
     pouring_position = copy.deepcopy(list(funnel_position.values()))

@@ -9,18 +9,20 @@ import rospy
 import rospkg
 import sys
 import inspect
-from ur_control import transformations, spalg
+from grinding_motion_routines import transformations, spalg
 from sensor_msgs.msg import JointState
 from pyquaternion import Quaternion
+
 
 def load_urdf_string(package, filename):
     rospack = rospkg.RosPack()
     package_dir = rospack.get_path(package)
-    urdf_file = package_dir + '/urdf/' + filename + '.urdf'
+    urdf_file = package_dir + "/urdf/" + filename + ".urdf"
     urdf = None
     with open(urdf_file) as f:
         urdf = f.read()
     return urdf
+
 
 class PDRotation:
     def __init__(self, kp, kd=None):
@@ -43,11 +45,15 @@ class PDRotation:
         if dt is None:
             dt = now - self.last_time
 
-        k_prime = 2 * quaternion_error.scalar*np.identity(3)-spalg.skew(quaternion_error.vector)
+        k_prime = 2 * quaternion_error.scalar * np.identity(3) - spalg.skew(
+            quaternion_error.vector
+        )
         p_term = np.dot(self.kp, k_prime)
 
         # delta_error = quaternion_error - self.last_error
-        w = transformations.angular_velocity_from_quaternions(quaternion_error, self.last_error, dt)
+        w = transformations.angular_velocity_from_quaternions(
+            quaternion_error, self.last_error, dt
+        )
         d_term = self.kd * w
 
         output = p_term + d_term
@@ -56,8 +62,11 @@ class PDRotation:
         self.last_time = now
         return output
 
+
 class PID:
-    def __init__(self, Kp, Ki=None, Kd=None, dynamic_pid=False, max_gain_multiplier=200.0):
+    def __init__(
+        self, Kp, Ki=None, Kd=None, dynamic_pid=False, max_gain_multiplier=200.0
+    ):
         # Proportional gain
         self.Kp = np.array(Kp)
         self.Ki = np.zeros_like(Kp)
@@ -95,10 +104,20 @@ class PID:
         # CAUTION: naive scaling of the Kp parameter based on the error
         # The main idea, the smaller the error the higher the gain
         if self.dynamic_pid:
-            kp = np.abs([self.Kp[i]/error[i] if error[i] != 0.0 else self.Kp[i] for i in range(6)])
-            kp = np.clip(kp, self.Kp, self.Kp*self.max_gain_multiplier)
-            kd = np.abs([self.Kd[i]*error[i] if error[i] != 0.0 else self.Kd[i] for i in range(6)])
-            kd = np.clip(kd, self.Kd/self.max_gain_multiplier, self.Kd)
+            kp = np.abs(
+                [
+                    self.Kp[i] / error[i] if error[i] != 0.0 else self.Kp[i]
+                    for i in range(6)
+                ]
+            )
+            kp = np.clip(kp, self.Kp, self.Kp * self.max_gain_multiplier)
+            kd = np.abs(
+                [
+                    self.Kd[i] * error[i] if error[i] != 0.0 else self.Kd[i]
+                    for i in range(6)
+                ]
+            )
+            kd = np.clip(kd, self.Kd / self.max_gain_multiplier, self.Kd)
             ki = self.Ki
         else:
             kp = self.Kp
@@ -114,7 +133,7 @@ class PID:
         p_term = kp * error
         i_term = ki * self.integral
         i_term = np.maximum(self.i_min, np.minimum(i_term, self.i_max))
-        
+
         # First delta error is huge since it was initialized at zero first, avoid considering
         if not np.allclose(self.last_error, np.zeros_like(self.last_error)):
             d_term = kd * delta_error / dt
@@ -133,24 +152,25 @@ class TextColors:
     The C{TextColors} class is used as alternative to the C{rospy} logger. It's useful to
     print messages when C{roscore} is not running.
     """
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
+
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
     log_level = rospy.INFO
 
     def disable(self):
         """
         Resets the coloring.
         """
-        self.HEADER = ''
-        self.OKBLUE = ''
-        self.OKGREEN = ''
-        self.WARNING = ''
-        self.FAIL = ''
-        self.ENDC = ''
+        self.HEADER = ""
+        self.OKBLUE = ""
+        self.OKGREEN = ""
+        self.WARNING = ""
+        self.FAIL = ""
+        self.ENDC = ""
 
     def blue(self, msg):
         """
@@ -200,7 +220,7 @@ class TextColors:
         @param msg: the message to be printed.
         """
         if self.log_level <= rospy.DEBUG:
-            print((self.OKGREEN + 'Debug ' + self.ENDC + str(msg)))
+            print((self.OKGREEN + "Debug " + self.ENDC + str(msg)))
 
     def loginfo(self, msg):
         """
@@ -210,7 +230,7 @@ class TextColors:
         @param msg: the message to be printed.
         """
         if self.log_level <= rospy.INFO:
-            print(('INFO ' + str(msg)))
+            print(("INFO " + str(msg)))
 
     def logwarn(self, msg):
         """
@@ -220,7 +240,7 @@ class TextColors:
         @param msg: the message to be printed.
         """
         if self.log_level <= rospy.WARN:
-            print((self.WARNING + 'Warning ' + self.ENDC + str(msg)))
+            print((self.WARNING + "Warning " + self.ENDC + str(msg)))
 
     def logerr(self, msg):
         """
@@ -230,7 +250,7 @@ class TextColors:
         @param msg: the message to be printed.
         """
         if self.log_level <= rospy.ERROR:
-            print((self.FAIL + 'Error ' + self.ENDC + str(msg)))
+            print((self.FAIL + "Error " + self.ENDC + str(msg)))
 
     def logfatal(self, msg):
         """
@@ -240,7 +260,7 @@ class TextColors:
         @param msg: the message to be printed.
         """
         if self.log_level <= rospy.FATAL:
-            print((self.FAIL + 'Fatal ' + self.ENDC + str(msg)))
+            print((self.FAIL + "Fatal " + self.ENDC + str(msg)))
 
     def set_log_level(self, level):
         """
@@ -267,7 +287,11 @@ def assert_shape(variable, name, shape):
     @type  shape: tuple
     @param ttype: expected shape of the np.array
     """
-    assert variable.shape == shape, '%s must have a shape %r: %r' % (name, shape, variable.shape)
+    assert variable.shape == shape, "%s must have a shape %r: %r" % (
+        name,
+        shape,
+        variable.shape,
+    )
 
 
 def assert_type(variable, name, ttype):
@@ -280,7 +304,11 @@ def assert_type(variable, name, ttype):
     @type  ttype: Type
     @param ttype: expected variable type
     """
-    assert type(variable) is ttype,  '%s must be of type %r: %r' % (name, ttype, type(variable))
+    assert type(variable) is ttype, "%s must be of type %r: %r" % (
+        name,
+        ttype,
+        type(variable),
+    )
 
 
 def db_error_msg(name, logger=TextColors()):
@@ -291,7 +319,10 @@ def db_error_msg(name, logger=TextColors()):
     @type  logger: Object
     @param logger: Logger instance. When used in ROS, the recommended C{logger=rospy}.
     """
-    msg = 'Database %s not found. Please generate it. [rosrun denso_openrave generate_databases.py]' % name
+    msg = (
+        "Database %s not found. Please generate it. [rosrun denso_openrave generate_databases.py]"
+        % name
+    )
     logger.logerr(msg)
 
 
@@ -363,10 +394,14 @@ def read_parameter(name, default):
     """
     if rospy.is_shutdown():
         logger = TextColors()
-        logger.logwarn('roscore not found, parameter [%s] using default: %s' % (name, default))
+        logger.logwarn(
+            "roscore not found, parameter [%s] using default: %s" % (name, default)
+        )
     else:
         if not rospy.has_param(name):
-            rospy.logwarn('Parameter [%s] not found, using default: %s' % (name, default))
+            rospy.logwarn(
+                "Parameter [%s] not found, using default: %s" % (name, default)
+            )
         return rospy.get_param(name, default)
     return default
 
@@ -383,7 +418,7 @@ def read_parameter_err(name):
     """
     if rospy.is_shutdown():
         logger = TextColors()
-        logger.logerr('roscore not found')
+        logger.logerr("roscore not found")
         has_param = False
     else:
         has_param = True
@@ -404,16 +439,16 @@ def read_parameter_fatal(name):
     """
     if rospy.is_shutdown():
         logger = TextColors()
-        logger.logfatal('roscore not found')
-        raise Exception('Required parameter {0} not found'.format(name))
+        logger.logfatal("roscore not found")
+        raise Exception("Required parameter {0} not found".format(name))
     else:
         if not rospy.has_param(name):
             rospy.logfatal("Parameter [%s] not found" % (name))
-            raise Exception('Required parameter {0} not found'.format(name))
+            raise Exception("Required parameter {0} not found".format(name))
     return rospy.get_param(name, None)
 
 
-def solve_namespace(namespace=''):
+def solve_namespace(namespace=""):
     """
     Appends neccessary slashes required for a proper ROS namespace.
     @type namespace: string
@@ -424,13 +459,13 @@ def solve_namespace(namespace=''):
     if len(namespace) == 0:
         namespace = rospy.get_namespace()
     elif len(namespace) == 1:
-        if namespace != '/':
-            namespace = '/' + namespace + '/'
+        if namespace != "/":
+            namespace = "/" + namespace + "/"
     else:
-        if namespace[0] != '/':
-            namespace = '/' + namespace
-        if namespace[-1] != '/':
-            namespace += '/'
+        if namespace[0] != "/":
+            namespace = "/" + namespace
+        if namespace[-1] != "/":
+            namespace += "/"
     return namespace
 
 
@@ -477,7 +512,7 @@ def unique(data):
     order = np.lexsort(data.T)
     data = data[order]
     diff = np.diff(data, axis=0)
-    ui = np.ones(len(data), 'bool')
+    ui = np.ones(len(data), "bool")
     ui[1:] = (diff != 0).any(axis=1)
     return data[ui]
 

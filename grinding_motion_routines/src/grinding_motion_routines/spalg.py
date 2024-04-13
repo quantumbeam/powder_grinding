@@ -2,12 +2,12 @@
 import rospy
 import numpy as np
 import scipy.optimize
-import ur_control.transformations as tr
+import grinding_motion_routines.transformations as tr
 from pyquaternion import Quaternion
 
-X_AXIS = np.array([1., 0., 0.])
-Y_AXIS = np.array([0., 1., 0.])
-Z_AXIS = np.array([0., 0., 1.])
+X_AXIS = np.array([1.0, 0.0, 0.0])
+Y_AXIS = np.array([0.0, 1.0, 0.0])
+Z_AXIS = np.array([0.0, 0.0, 1.0])
 
 
 class Plane(object):
@@ -22,14 +22,16 @@ class Plane(object):
             norm = tr.vector_norm(equation[:3])
             self.normal = tr.unit_vector(equation[:3])
             self.offset = equation[3] / norm
-            self.point = -self.offset*self.normal
+            self.point = -self.offset * self.normal
         # Plane origin
         self.origin = np.array(self.point)
 
     def __repr__(self):
         printoptions = np.get_printoptions()
         np.set_printoptions(precision=4, suppress=True)
-        text = '<Plane(equation: {0} origin: {1})>'.format(self.coefficients, self.origin)
+        text = "<Plane(equation: {0} origin: {1})>".format(
+            self.coefficients, self.origin
+        )
         np.set_printoptions(**printoptions)
         return text
 
@@ -96,7 +98,7 @@ class Plane(object):
         @return: vertices,faces of the mesh
         """
         grid = self.generate_grid(cells=2, side_length=side_length)
-        lower_point = self.origin - self.normal*thickness
+        lower_point = self.origin - self.normal * thickness
         lower_plane = Plane(normal=self.normal, point=lower_point)
         lower_grid = lower_plane.generate_grid(cells=2, side_length=side_length)
         vertices = np.vstack((grid, lower_grid))
@@ -145,7 +147,7 @@ class Plane(object):
         @return: The projected 3D point
         """
         distance = self.distance(point)
-        return (point - distance*self.normal)
+        return point - distance * self.normal
 
 
 def counterclockwise_hull(hull):
@@ -200,19 +202,20 @@ def fit_plane_optimize(points, seed=None):
     def f_min(X, p):
         normal = p[0:3]
         d = p[3]
-        result = ((normal*X.T).sum(axis=1) + d) / np.linalg.norm(normal)
+        result = ((normal * X.T).sum(axis=1) + d) / np.linalg.norm(normal)
         return result
 
     def residuals(params, signal, X):
         return f_min(X, params)
+
     # Optimize
     XYZ = np.array(points).T
     p0 = np.array(seed)
     sol = scipy.optimize.leastsq(residuals, p0, args=(None, XYZ))[0]
     nn = np.linalg.norm(sol[:3])
     sol /= nn
-    seed_error = (f_min(XYZ, p0)**2).sum()
-    fit_error = (f_min(XYZ, sol)**2).sum()
+    seed_error = (f_min(XYZ, p0) ** 2).sum()
+    fit_error = (f_min(XYZ, sol) ** 2).sum()
     return sol, seed_error, fit_error
 
 
@@ -228,10 +231,14 @@ def fit_plane_solve(XYZ):
     Y = XYZ[:, 1]
     Z = XYZ[:, 2]
     npts = len(X)
-    A = np.array([[sum(X*X), sum(X*Y), sum(X)],
-                  [sum(X*Y), sum(Y*Y), sum(Y)],
-                  [sum(X),   sum(Y), npts]])
-    B = np.array([[sum(X*Z), sum(Y*Z), sum(Z)]])
+    A = np.array(
+        [
+            [sum(X * X), sum(X * Y), sum(X)],
+            [sum(X * Y), sum(Y * Y), sum(Y)],
+            [sum(X), sum(Y), npts],
+        ]
+    )
+    B = np.array([[sum(X * Z), sum(Y * Z), sum(Z)]])
     normal = np.linalg.solve(A, B.T)
     nn = np.linalg.norm(normal)
     normal = normal / nn
@@ -250,10 +257,10 @@ def fit_plane_svd(XYZ):
     # Set up constraint equations of the form  AB = 0,
     # where B is a column vector of the plane coefficients
     # in the form b(1)*X + b(2)*Y +b(3)*Z + b(4) = 0.
-    p = (np.ones((rows, 1)))
+    p = np.ones((rows, 1))
     AB = np.hstack([XYZ, p])
     [u, d, v] = np.linalg.svd(AB, 0)
-    B = v[3, :]                    # Solution is last column of v.
+    B = v[3, :]  # Solution is last column of v.
     nn = np.linalg.norm(B[0:3])
     B = B / nn
     return B[0:3]
@@ -271,8 +278,8 @@ def force_frame_transform(bTa):
     @return: The coordinate transformation from M{A} to M{B} for force
     vectors
     """
-    aTb = tr.inverse_matrix(bTa) # is this necessary?
-    return motion_frame_transform(aTb).T # do we need to transpose here?
+    aTb = tr.inverse_matrix(bTa)  # is this necessary?
+    return motion_frame_transform(aTb).T  # do we need to transpose here?
 
 
 def inertia_matrix_from_vector(i):
@@ -289,9 +296,7 @@ def inertia_matrix_from_vector(i):
     I22 = i[3]
     I23 = i[4]
     I33 = i[5]
-    return np.array([[I11, I12, I13],
-                     [I11, I22, I23],
-                     [I13, I23, I33]])
+    return np.array([[I11, I12, I13], [I11, I22, I23], [I13, I23, I33]])
 
 
 def L_matrix(w):
@@ -340,9 +345,9 @@ def perpendicular_vector(v):
     """
     v = tr.unit_vector(v)
     if np.allclose(v[:2], np.zeros(2)):
-        if np.isclose(v[2], 0.):
+        if np.isclose(v[2], 0.0):
             # v is (0, 0, 0)
-            raise ValueError('zero vector')
+            raise ValueError("zero vector")
         # v is (0, 0, Z)
         return Y_AXIS
     return np.array([-v[1], v[0], 0])
@@ -355,14 +360,14 @@ def polygon_area(points, plane=None):
     total = np.zeros(3)
     for i in range(len(points)):
         vi1 = points[i]
-        if i is len(points)-1:
+        if i is len(points) - 1:
             vi2 = points[0]
         else:
-            vi2 = points[i+1]
+            vi2 = points[i + 1]
         prod = np.cross(vi1, vi2)
         total += prod
     result = np.dot(total, plane.normal)
-    return abs(result/2.)
+    return abs(result / 2.0)
 
 
 def rotation_matrix_from_axes(newaxis, oldaxis=Z_AXIS, point=None):
@@ -397,7 +402,7 @@ def skew(v):
     @return: The resulting skew matrix
     """
     skv = np.roll(np.roll(np.diag(np.asarray(v).flatten()), 1, 1), -1, 0)
-    return (skv - skv.T)
+    return skv - skv.T
 
 
 def transformation_estimation_svd(A, B):
@@ -487,8 +492,12 @@ def quaternions_orientation_error(Qd, Qc):
     return vector part
     """
     if isinstance(Qd, Quaternion) and isinstance(Qd, Quaternion):
-        ne = Qc.scalar*Qd.scalar + np.dot(np.array(Qc.vector).T, Qd.vector)
-        ee = Qc.scalar*np.array(Qd.vector) - Qd.scalar*np.array(Qc.vector) + np.dot(skew(Qc.vector), Qd.vector)
+        ne = Qc.scalar * Qd.scalar + np.dot(np.array(Qc.vector).T, Qd.vector)
+        ee = (
+            Qc.scalar * np.array(Qd.vector)
+            - Qd.scalar * np.array(Qc.vector)
+            + np.dot(skew(Qc.vector), Qd.vector)
+        )
         ee *= np.sign(ne)  # disambiguate the sign of the quaternion
         return ee
     else:
@@ -517,12 +526,12 @@ def convert_wrench(wrench_force, pose):
 
 def face_towards(target_position, current_pose, up_vector=[0, 0, 1]):
     """
-        Compute orientation to "face towards" a point in space 
-        given the current position and the initial vector representing "up"
-        default is z as is the outward direction from the end-effector
+    Compute orientation to "face towards" a point in space
+    given the current position and the initial vector representing "up"
+    default is z as is the outward direction from the end-effector
     """
     cposition = current_pose[:3]
-    direction = tr.unit_vector(target_position-cposition)
+    direction = tr.unit_vector(target_position - cposition)
 
     cmd_rot = look_rotation(direction, up=up_vector)
     target_quat = tr.vector_from_pyquaternion(cmd_rot)
@@ -546,7 +555,7 @@ def look_rotation(forward, up=[0, 0, 1]):
 
     num8 = (m00 + m11) + m22
     quaternion = Quaternion()
-    if (num8 > 0.0):
+    if num8 > 0.0:
 
         num = np.sqrt(num8 + 1)
         quaternion[0] = num * 0.5
@@ -556,7 +565,7 @@ def look_rotation(forward, up=[0, 0, 1]):
         quaternion[3] = (m01 - m10) * num
         return quaternion
 
-    if ((m00 >= m11) and (m00 >= m22)):
+    if (m00 >= m11) and (m00 >= m22):
 
         num7 = np.sqrt(((1 + m00) - m11) - m22)
         num4 = 0.5 / num7
@@ -566,7 +575,7 @@ def look_rotation(forward, up=[0, 0, 1]):
         quaternion[0] = (m12 - m21) * num4
         return quaternion
 
-    if (m11 > m22):
+    if m11 > m22:
 
         num6 = np.sqrt(((1 + m11) - m00) - m22)
         num3 = 0.5 / num6
@@ -596,10 +605,10 @@ def jump_threshold(trajectory, dt, threshold):
     # print("mean:", np.round(mean, 2))
     # print("std:", np.round(std, 2))
     for i, s in enumerate(speed[:-1]):
-        if np.any(s > mean + threshold*std):
+        if np.any(s > mean + threshold * std):
             # print("### spike:", i, np.round(s-mean,2))
-            # TODO(cambel): fix for cases where spikes are consecutive 
-            traj[i] = (traj[i-1] + traj[i+1]) / 2.0
+            # TODO(cambel): fix for cases where spikes are consecutive
+            traj[i] = (traj[i - 1] + traj[i + 1]) / 2.0
         # else:
         #     print("usual:", i, np.round(s-mean,2))
 
@@ -608,21 +617,21 @@ def jump_threshold(trajectory, dt, threshold):
 
 def sensor_torque_to_tcp_force(tcp_position, sensor_torques):
     """
-        Compute the force as perceive by a point of the TCP
-        Thus, torques registered by the sensor are converted to forces
+    Compute the force as perceive by a point of the TCP
+    Thus, torques registered by the sensor are converted to forces
 
-        tcp_position: list[3]. Define the position of point P relative to the sensor 
-        sensor_torques: list[3]. Define the torque registered by the sensor
+    tcp_position: list[3]. Define the position of point P relative to the sensor
+    sensor_torques: list[3]. Define the torque registered by the sensor
     """
     # Define the torque applied to frame A
-    T_A = np.array(sensor_torques) # in N.m
+    T_A = np.array(sensor_torques)  # in N.m
 
     # Define the position vector from the axis of rotation to the point of application of the force on frame A
-    r_AP = np.array(tcp_position) # in m
+    r_AP = np.array(tcp_position)  # in m
 
     # Define the position vector from the point of application on frame A to the corresponding point on frame B
-    r_BP =  - r_AP
+    r_BP = -r_AP
 
     # Compute the moment arm and the corresponding force on frame B
-    force_B = np.cross(T_A, r_AP) / np.linalg.norm(r_BP)**2
+    force_B = np.cross(T_A, r_AP) / np.linalg.norm(r_BP) ** 2
     return force_B

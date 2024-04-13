@@ -30,7 +30,7 @@ import collections
 import rospy
 
 import numpy as np
-from ur_control import spalg, utils, filters, conversions
+from grinding_motion_routines import spalg, utils, filters, conversions
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
 

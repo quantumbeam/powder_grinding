@@ -30,31 +30,26 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from geometry_msgs.msg import WrenchStamped
 
-from ur_control import utils, spalg, conversions, transformations
-from ur_control.constants import (
-    JOINT_ORDER,
-    JOINT_TRAJECTORY_CONTROLLER,
+from grinding_motion_routines import utils, spalg, conversions, transformations
+from grinding_motion_routines.constants import (
     FT_SUBSCRIBER,
-    IKFAST,
     TRAC_IK,
     DONE,
     SPEED_LIMIT_EXCEEDED,
     IK_NOT_FOUND,
-    get_arm_joint_names,
     BASE_LINK,
     EE_LINK,
 )
 
 from std_srvs.srv import Empty, SetBool, Trigger
 
-from ur_control.controllers_connection import ControllersConnection
-from ur_control.controllers import (
+from grinding_motion_routines.controllers_connection import ControllersConnection
+from grinding_motion_routines.controllers import (
     JointTrajectoryController,
     FTsensor,
     GripperController,
 )
 from trac_ik_python.trac_ik import IK as TRACK_IK_SOLVER
-from ur_pykdl import ur_kinematics
 
 cprint = utils.TextColors()
 
@@ -68,12 +63,13 @@ def resolve_parameter(value, default_value):
 
 
 class Arm(object):
-    """UR5e arm controller"""
+    """arm controller"""
 
     def __init__(
         self,
-        robot_urdf="ur5e",
-        robot_urdf_package=None,
+        robot_urdf_pkg,
+        robot_urdf_file_name,
+        joint_trajectory_controller_name,
         ik_solver=TRAC_IK,
         namespace=None,
         gripper=False,
@@ -90,11 +86,7 @@ class Arm(object):
         gripper bool: enable gripper control
         """
 
-        cprint.ok(
-            "ft_sensor: {}, ee_link: {}, \n robot_urdf: {}".format(
-                bool(ft_topic), ee_link, robot_urdf
-            )
-        )
+        cprint.ok("ft_sensor: {}, ee_link: {}".format(bool(ft_topic), ee_link))
 
         self._joint_angle = dict()
         self._joint_velocity = dict()
@@ -103,16 +95,13 @@ class Arm(object):
         self.current_ft_value = np.zeros(6)
         self.wrench_queue = collections.deque(maxlen=25)  # store history of FT data
 
-        self._robot_urdf = robot_urdf
-        self._robot_urdf_package = (
-            robot_urdf_package if robot_urdf_package is not None else "ur_pykdl"
-        )
-
         self.ft_topic = resolve_parameter(ft_topic, FT_SUBSCRIBER)
-
+        self.joint_trajectory_controller = joint_trajectory_controller_name
         self.ik_solver = ik_solver
 
         self.ns = namespace if namespace else ""
+        self._robot_urdf_package = robot_urdf_pkg
+        self._robot_urdf_file_name = robot_urdf_file_name
 
         base_link = resolve_parameter(base_link, BASE_LINK)
         ee_link = resolve_parameter(ee_link, EE_LINK)
@@ -139,11 +128,11 @@ class Arm(object):
     ### private methods ###
 
     def _init_controllers(self, gripper, joint_names_prefix=None):
-        traj_publisher = JOINT_TRAJECTORY_CONTROLLER
+        traj_publisher = self.joint_trajectory_controller
         self.joint_names = (
             None
             if joint_names_prefix is None
-            else get_arm_joint_names(joint_names_prefix)
+            else rospy.get_param(self.joint_trajectory_controller + "/joints")
         )
 
         # Flexible trajectory (point by point)
@@ -153,6 +142,7 @@ class Arm(object):
         self._flex_trajectory_pub = rospy.Publisher(
             traj_publisher_flex, JointTrajectory, queue_size=10
         )
+        print("Connected to: ", traj_publisher_flex)
 
         self.joint_traj_controller = JointTrajectoryController(
             publisher_name=traj_publisher,
@@ -170,12 +160,6 @@ class Arm(object):
     def _init_ik_solver(self, base_link, ee_link):
         self.base_link = base_link
         self.ee_link = ee_link
-        # Instantiate Inverse kinematics solver
-        if rospy.has_param("robot_description"):
-            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link)
-        else:
-            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link, robot=self._robot_urdf, prefix=self.joint_names_prefix, rospackage=self._robot_urdf_package)
-
         if self.ik_solver == TRAC_IK:
             try:
                 if not rospy.has_param("robot_description"):
@@ -186,7 +170,7 @@ class Arm(object):
                         timeout=0.002,
                         epsilon=1e-5,
                         urdf_string=utils.load_urdf_string(
-                            self._robot_urdf_package, self._robot_urdf
+                            self._robot_urdf_package, self._robot_urdf_file_name
                         ),
                     )
                 else:
@@ -233,7 +217,9 @@ class Arm(object):
         # Set up a trajectory message to publish.
         action_msg = JointTrajectory()
         action_msg.joint_names = (
-            JOINT_ORDER if self.joint_names is None else self.joint_names
+            rospy.get_param(self.joint_trajectory_controller + "/joints")
+            if self.joint_names is None
+            else self.joint_names
         )
 
         # Create a point to tell the robot to move to.
@@ -253,14 +239,10 @@ class Arm(object):
 
     def _solve_ik(self, pose, q_guess=None, attempts=5, verbose=True):
         q_guess_ = q_guess if q_guess is not None else self.joint_angles()
-
         if isinstance(q_guess, np.float64):
             q_guess_ = None
 
-        if self.ik_solver == IKFAST:
-            ik = self.arm_ikfast.inverse(pose, q_guess=q_guess_)
-
-        elif self.ik_solver == TRAC_IK:
+        if self.ik_solver == TRAC_IK:
             ik = self.trac_ik.get_ik(q_guess_, *pose)
             if ik is None:
                 if attempts > 0:

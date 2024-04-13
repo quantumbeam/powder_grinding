@@ -3,7 +3,7 @@ import actionlib
 import copy
 import collections
 import rospy
-from ur_control import utils, filters, conversions, constants
+from grinding_motion_routines import utils, filters, conversions, constants
 import numpy as np
 from std_msgs.msg import Float64
 from controller_manager_msgs.srv import ListControllers
@@ -18,10 +18,10 @@ from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryG
 from control_msgs.msg import GripperCommandAction, GripperCommandGoal
 
 # Link attacher
-try:
-    from gazebo_ros_link_attacher.srv import Attach, AttachRequest
-except ImportError:
-    print("Grasping pluging can't be loaded")
+# try:
+#     from gazebo_ros_link_attacher.srv import Attach, AttachRequest
+# except ImportError:
+#     print("Grasping pluging can't be loaded")
 
 
 class GripperController(object):
@@ -257,7 +257,7 @@ class JointControllerBase(object):
     Base class for the Joint Position Controllers. It subscribes to the C{joint_states} topic by default.
     """
 
-    def __init__(self, namespace, timeout, joint_names=None):
+    def __init__(self, namespace, timeout, joint_names):
         """
         JointControllerBase constructor. It subscribes to the C{joint_states} topic and informs after
         successfully reading a message from the topic.
@@ -267,10 +267,7 @@ class JointControllerBase(object):
         @param timeout: Time in seconds that will wait for the controller
         from the same node.
         """
-        self.valid_joint_names = (
-            constants.JOINT_ORDER if joint_names is None else joint_names
-        )
-
+        self.valid_joint_names = joint_names
         self.ns = utils.solve_namespace(namespace)
         self._jnt_positions_hist = collections.deque(maxlen=24)
         # Set-up publishers/subscribers
@@ -407,9 +404,7 @@ class JointPositionController(JointControllerBase):
         rospy.logdebug("Waiting for the joint position controllers...")
         rospy.wait_for_service(controller_list_srv, timeout=timeout)
         list_controllers = rospy.ServiceProxy(controller_list_srv, ListControllers)
-        expected_controllers = (
-            joint_names if joint_names is not None else constants.JOINT_ORDER
-        )
+        expected_controllers = joint_names
         start_time = rospy.get_time()
         while not rospy.is_shutdown():
             if (rospy.get_time() - start_time) > timeout:

@@ -39,7 +39,13 @@ class MotionGenerator:
         normalized_pos_z = pos_z / norm
 
         # calc yaw angle
-        yaw = np.arctan2(self.mortar_top_center_position["y"], self.mortar_top_center_position["x"]) + yaw_bias
+        yaw = (
+            np.arctan2(
+                self.mortar_top_center_position["y"],
+                self.mortar_top_center_position["x"],
+            )
+            + yaw_bias
+        )
 
         # rotate xy by the amount of yaw angle
         r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
