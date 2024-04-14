@@ -10,4 +10,6 @@
 version: master}
 - git: {local-name: third_party/Universal_Robots_MoveIt_and_Gazebo, uri: 'https://github.com/ros-industrial/universal_robot.git',
 version: noetic-devel}
+- git: {local-name: third_party/fake_joint, uri: 'https://github.com/tork-a/fake_joint.git',
+version: master}
 
