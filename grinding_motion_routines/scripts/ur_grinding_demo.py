@@ -280,6 +280,8 @@ def main():
                 motion_counts = 0
                 pouse_list_number = 0
                 experiment_time = initial_experiment_time
+                grinding_waypoints = np.array([])
+                gathering_waypoints = np.array([])
                 while True:
                     try:
                         key = inputimeout(
@@ -294,14 +296,23 @@ def main():
                     except TimeoutOccurred:
                         st = time.time()
                         if motion_command == "Rg":
+                            if grinding_waypoints.all():
+                                grinding_waypoints = compute_grinding_waypoints(
+                                    motion_gen
+                                )
                             primitive.execute_grinding(
-                                compute_grinding_waypoints(motion_gen),
+                                grinding_waypoints,
                                 grinding_sec=grinding_sec,
                                 total_joint_limit=grinding_total_joint_diffence_for_planning,
                                 trial_number=10,
                                 ee_link=grinding_ee_link,
                             )
                         elif motion_command == "RGG":
+                            if grinding_waypoints.all():
+                                print("compute grinding waypoints")
+                                grinding_waypoints = compute_grinding_waypoints(
+                                    motion_gen
+                                )
                             primitive.execute_grinding(
                                 compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
@@ -309,6 +320,11 @@ def main():
                                 trial_number=10,
                                 ee_link=grinding_ee_link,
                             )
+                            if gathering_waypoints.all():
+                                print("compute gathering waypoints")
+                                gathering_waypoints = compute_gathering_waypoints(
+                                    motion_gen
+                                )
                             primitive.execute_gathering(
                                 compute_gathering_waypoints(motion_gen),
                                 gathering_sec=gathering_sec,
