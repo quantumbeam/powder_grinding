@@ -1,0 +1,12 @@
+<launch>
+	<param name="controller_type" value="9"/>
+	<param name="robot_name" value="CVRB-0609W4 B"/>
+	<param name="robot_joints" value="6"/>
+	<param name="joint_1" value="1"/>
+	<param name="joint_2" value="1"/>
+	<param name="joint_3" value="1"/>
+	<param name="joint_4" value="1"/>
+	<param name="joint_5" value="1"/>
+	<param name="joint_6" value="1"/>
+	<param name="arm_group" value="0"/>
+</launch>
