@@ -1,8 +1,17 @@
 <launch>
+  <!-- Override robot_name argument -->
+  <arg name="robot_name" default="cobotta_pro_900" />
+
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
   <!--  - if sim=false, a ip_address argument is required -->
   <arg name="sim" default="true" />
   <arg name="ip_address" default="192.168.0.1" />
+
+  <!-- Robot controller -->
+  <arg name="controller_config_file" unless="$(arg sim)"
+    default="$(find grinding_robot_bringup)/config/cobotta_pro_900_controllers.yaml" />
+  <arg name="controller_config_file" if="$(arg sim)"
+    default="$(find grinding_robot_bringup)/config/cobotta_pro_900_controllers_fake_joint.yaml" />
 
   <!-- If you want to change send and recieve format of denso_robot_control, -->
   <!-- you can specify the send_format and recv_format parameters -->
@@ -11,11 +20,81 @@
 
   <arg name="bcap_slave_control_cycle_msec" default="8" />
 
-  <include file="$(find denso_robot_bringup)/launch/denso_robot_bringup.launch">
-    <arg name="robot_name" value="cobotta_pro_900"/>
-    <arg name="sim" value="$(arg sim)"/>
-    <arg name="ip_address" value="$(arg ip_address)"/>
-    <arg name="send_format" value="$(arg send_format)" />
-    <arg name="recv_format" value="$(arg recv_format)" />
+  <!-- b-CAP Slave Mode [default: 0x202] -->
+  <arg name="bcap_slave_mode" default="514" />
+
+  <!-- load the robot_description parameter before launching ROS-I nodes -->
+  <!-- By default we do not overwrite the URDF. Change the following to true to change the default
+  behavior -->
+  <arg name="load_robot_description" default="false" />
+
+  <!-- The name of the parameter under which the URDF is loaded -->
+  <arg name="robot_description" default="robot_description" />
+
+  <!-- The name of robot which is loaded from URDF -->
+  <arg name="robot_name" default="vs060" />
+
+  <!-- Load controller -->
+  <include file="$(find grinding_robot_bringup)/launch/inc/load_contoller.launch">
+    <arg name="controller_config_file" value="$(arg controller_config_file)" />
+    <arg name="controllers" value="$(arg controllers)" />
   </include>
+
+  <!-- Load universal robot description format (URDF) -->
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)"
+    textfile="$(find grinding_descriptions)/urdf/$(arg robot_name)/$(arg robot_name).urdf" />
+
+  <!-- The semantic description that corresponds to the URDF -->
+  <param name="$(arg robot_description)_semantic"
+    textfile="$(find denso_robot_moveit_config)/config/$(arg robot_name)_config/$(arg robot_name).srdf" />
+
+  <!-- Load updated joint limits (override information from URDF) -->
+  <group ns="$(arg robot_description)_planning">
+    <rosparam command="load"
+      file="$(find denso_robot_moveit_config)/config/$(arg robot_name)_config/joint_limits.yaml" />
+  </group>
+
+  <!-- Load default settings for kinematics; these settings are overridden by settings in a node's
+  namespace -->
+  <group ns="$(arg robot_description)_kinematics">
+    <rosparam command="load" file="$(find denso_robot_moveit_config)/config/kinematics.yaml" />
+  </group>
+
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="false" />
+    <param name="publish_frequency" type="double" value="125.0" />
+    <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states]</rosparam>
+  </node>
+
+  <!-- Running the real robot driver or fake driver -->
+  <!--   - this typically includes: robot_state, motion_interface, and joint_trajectory_action nodes -->
+  <!--   - replace these calls with appropriate robot-specific calls or launch files -->
+  <group if="$(arg sim)">
+    <node name="fake_joint_driver" pkg="fake_joint_driver" type="fake_joint_driver_node" />
+  </group>
+
+  <group unless="$(arg sim)">
+    <include file="$(find denso_robot_control)/launch/denso_robot_control.launch">
+      <arg name="robot_name" value="$(arg robot_name)" />
+      <arg name="ip_address" value="$(arg ip_address)" />
+      <arg name="send_format" value="$(arg send_format)" />
+      <arg name="recv_format" value="$(arg recv_format)" />
+      <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
+      <arg name="bcap_slave_mode" default="$(arg bcap_slave_mode)" />
+    </include>
+  </group>
+
+
+  <include file="$(find denso_robot_moveit_config)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true" />
+    <arg name="robot_name" value="$(arg robot_name)" />
+  </include>
+
+  <include file="$(find denso_robot_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true" />
+  </include>
+
+  <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
+
 </launch>
