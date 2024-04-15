@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     iputils-ping net-tools \
     libglib2.0-0 \
     libgl1-mesa-dev \
+    libxmlrpcpp-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
