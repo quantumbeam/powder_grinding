@@ -66,8 +66,8 @@ class MotionPrimitive:
         trial_number,
         grinding_sec,
         ee_link="pestle_tip",
-        moving_velocity_scale=0.1,
-        moving_acceleration_scale=0.1,
+        moving_velocity_scale=0.3,
+        moving_acceleration_scale=0.3,
         pre_motion=True,
         post_motion=True,
     ):
@@ -121,8 +121,6 @@ class MotionPrimitive:
         trial_number,
         gathering_sec,
         ee_link="spatula_tip",
-        gathering_velocity_scale=0.1,
-        gathering_acceleration_scale=0.1,
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
     ):
