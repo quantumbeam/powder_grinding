@@ -1,0 +1,21 @@
+<launch>
+    <arg name="planning_scene_config"
+        default="$(find grinding_motion_routines)/config/cobotta_pro_900_grinding_demo/planning_scene_config.yaml" />
+    <arg name="motion_config"
+        default="$(find grinding_motion_routines)/config/cobotta_pro_900_grinding_demo/motion_config.yaml" />
+
+    <arg name="abs_force" default="false" />
+    <arg name="rosbag_record" default="false" />
+    <arg name="rosbag_name" default="$(find grinding_motion_routines)/bag/" />
+
+    <node name="mechano_grinding" pkg="grinding_motion_routines" type="fr_grinding_demo.py"
+        output="screen">
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+        <rosparam command="load" file="$(arg motion_config)" />
+    </node>
+
+    <group if="$(arg rosbag_record)">
+        <node pkg="rosbag" type="record" name="rosbag_record"
+            args='record -a -o $(arg rosbag_name) -x "/camera/depth/(.*)|/camera/color/image_raw/(.*)"' />
+    </group>
+</launch>
