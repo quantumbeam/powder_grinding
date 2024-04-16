@@ -119,7 +119,7 @@ class Arm(object):
         self.max_joint_speed = np.deg2rad([191, 191, 191, 371, 371, 371])
 
         self._init_ik_solver(self.base_link, self.ee_link)
-        self._init_controllers(gripper, joint_names_prefix)
+        self._init_controllers(gripper)
         if ft_sensor:
             self._init_ft_sensor()
 
@@ -127,12 +127,10 @@ class Arm(object):
 
     ### private methods ###
 
-    def _init_controllers(self, gripper, joint_names_prefix=None):
+    def _init_controllers(self, gripper):
         traj_publisher = self.joint_trajectory_controller
-        self.joint_names = (
-            None
-            if joint_names_prefix is None
-            else rospy.get_param(self.joint_trajectory_controller + "/joints")
+        self.joint_names = rospy.get_param(
+            self.ns + "/" + self.joint_trajectory_controller + "/joints"
         )
 
         # Flexible trajectory (point by point)
