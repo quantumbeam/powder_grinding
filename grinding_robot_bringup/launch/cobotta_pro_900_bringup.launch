@@ -8,9 +8,9 @@
 
   <!-- Robot controller -->
   <arg name="controller_config_file" unless="$(arg sim)"
-    default="$(find grinding_robot_bringup)/config/cobotta_pro_900_controllers.yaml" />
+    default="$(find grinding_robot_bringup)/config/$(arg robot_name)_controllers.yaml" />
   <arg name="controller_config_file" if="$(arg sim)"
-    default="$(find grinding_robot_bringup)/config/cobotta_pro_900_controllers_fake_joint.yaml" />
+    default="$(find grinding_robot_bringup)/config/$(arg robot_name)_controllers_fake_joint.yaml" />
   <arg name="controllers"
     default="joint_state_controller arm_controller" />
 
@@ -97,17 +97,11 @@
     <rosparam file="$(arg controller_config_file)" command="load" />
     <node name="ros_control_controller_spawner" pkg="controller_manager" type="spawner"
       args="$(arg controllers)" output="screen" respawn="false" />
-    <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
- output="screen"
- ns="/$(arg robot_name)" args="$(arg controllers)" /> -->
 
     <!-- Publish TF -->
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="state_publisher">
       <param name="publish_frequency" type="double" value="500" />
     </node>
-    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher"
- type="robot_state_publisher" respawn="false" output="screen">
- <remap from="/joint_states" to="/$(arg robot_name)/joint_states" />
-</node> -->
+
   </group>
 </launch>
