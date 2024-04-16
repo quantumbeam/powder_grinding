@@ -16,6 +16,7 @@ This package can operate both in simulation (Gazebo) and on the actual robot.
   - [Building ROS Packages in Docker Container](#building-ros-packages-in-docker-container)
   - [Demonstration](#demonstration)
 - [Known Issues](#known-issues)
+- [For FR Series](#for-fr-series)
 - [Future Work](#future-work)
 - [Citation](#citation)
 - [License](#license)
@@ -69,6 +70,18 @@ You can also view the Japanese version of the [README_jp](./README_jp.md).
 
 ### Known Issues
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
+
+### For FR Series
+Prelase installation of the following packages is required.
+```
+sudo apt-get install -y \
+    ros-noetic-rosparam-shortcuts \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-moveit \
+    libxmlrpcpp-dev
+```
+
 
 ### Future Work
 - Add IKFast for motion planning
