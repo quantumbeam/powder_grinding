@@ -42,6 +42,11 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-dynamixel-sdk \
     ros-noetic-realsense2-camera \
     ros-noetic-realsense2-description \
+    ros-noetic-rosparam-shortcuts \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-moveit \
+    libxmlrpcpp-dev
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
