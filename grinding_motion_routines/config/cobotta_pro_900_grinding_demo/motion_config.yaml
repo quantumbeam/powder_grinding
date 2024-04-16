@@ -51,7 +51,7 @@ gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
 gathering_yaw_bias :  rad(-pi/3)
-gathering_total_joint_diffence_for_planning : 3.0
+gathering_total_joint_diffence_for_planning : 7
 
 # scooping params 
 # scooping_pos_begining : 
