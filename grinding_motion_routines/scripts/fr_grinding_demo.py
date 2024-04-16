@@ -126,18 +126,28 @@ def main():
 
     ################### motion primitive ###################
     ik_solver = rospy.get_param("~ik_solver", None)
+    robot_urdf_pkg = rospy.get_param("~robot_urdf_pkg", None)
+    robot_urdf_file_name = rospy.get_param("~robot_urdf_file_name", None)
+    joint_trajectory_controller_name = rospy.get_param(
+        "~joint_trajectory_controller_name", None
+    )
+    ns = rospy.get_param("~ns", None)
+    motion_planner_id = rospy.get_param("~motion_planner_id", None)
+    planning_time = rospy.get_param("~planning_time", None)
+
     primitive = motion_primitive.MotionPrimitive(
         init_pose=init_pose,
         ee_link=grinding_ee_link,
-        robot_urdf_pkg="robot_description",
-        robot_urdf_file_name="fr3_robot",
-        ns="/frrobot",
+        robot_urdf_pkg=robot_urdf_pkg,
+        robot_urdf_file_name=robot_urdf_file_name,
+        joint_trajectory_controller_name=joint_trajectory_controller_name,
+        ns=ns,
         joint_names_prefix=None,
         move_group_name=move_group_name,
-        planner_id="RRTConnectkConfigDefault",
-        planning_time=20,
+        planner_id=motion_planner_id,
+        planning_time=planning_time,
         ft_topic=None,
-        ik_solver="trac_ik",
+        ik_solver=ik_solver,
     )
 
     # main loop

@@ -5,7 +5,10 @@ grinding_eef_link: "pestle_tip"
 gathering_eef_link: "spatula_tip"
 
 # ik and motion planner params
+robot_urdf_pkg: "grinding_descriptions"
+robot_urdf_file_name: "fr3_robot"
 joint_trajectory_controller_name: "position_trajectory_controller"
+ns: "frrobot"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
 planning_time : 20 # timeout for motion planning
