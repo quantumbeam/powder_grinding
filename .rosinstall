@@ -10,7 +10,7 @@
 version: noetic-devel}
 - git: {local-name: third_party/DENSO_ROS, uri: 'https://github.com/DENSORobot/denso_robot_ros.git',
 version: master}
-- git: {local-name: third_party/FR_ROS, uri: 'https://github.com/FAIR-INNOVATION/frcobot_ros.git',
+- git: {local-name: third_party/FR_ROS, uri: 'https://github.com/YusakuNakajima/frcobot_ros.git',
 version: master}
 - git: {local-name: third_party/fake_joint, uri: 'https://github.com/tork-a/fake_joint.git',
 version: master}
