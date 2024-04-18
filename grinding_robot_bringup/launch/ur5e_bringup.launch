@@ -54,12 +54,6 @@
   <arg name="planning_scene_config"
     default="$(find grinding_motion_routines)/config/ur5e_grinding_demo/planning_scene_config.yaml" />
 
-  <!-- Load controller -->
-  <include file="$(find grinding_robot_bringup)/launch/inc/load_contoller.launch">
-    <arg name="controller_config_file" value="$(arg controller_config_file)" />
-    <arg name="controllers" value="$(arg controllers)" />
-  </include>
-
   <!-- Load the URDF, SRDF and joint_limits configuration -->
   <include file="$(find grinding_descriptions)/launch/load_ur5e.launch.xml">
     <arg name="joint_limit_params" value="$(arg joint_limit_params)" />
@@ -70,6 +64,11 @@
 
   <!-- Running the real robot driver or fake driver -->
   <group if="$(arg sim)">
+    <!-- Load controller -->
+    <include file="$(find grinding_robot_bringup)/launch/inc/load_contoller.launch">
+      <arg name="controller_config_file" value="$(arg controller_config_file)" />
+      <arg name="controllers" value="$(arg controllers)" />
+    </include>
     <node name="fake_joint_driver" pkg="fake_joint_driver" type="fake_joint_driver_node" />
   </group>
   <group unless="$(arg sim)">
