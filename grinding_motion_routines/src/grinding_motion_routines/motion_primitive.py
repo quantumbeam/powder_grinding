@@ -103,11 +103,8 @@ class MotionPrimitive:
         )
 
         if post_motion:
-            exit_mortar_pose = self.moveit_executor.move_group.get_current_pose(ee_link)
-            exit_mortar_pose = self._pose_stamped_to_list(exit_mortar_pose)
-            exit_mortar_pose[2] += 0.1
             self.JTC_executor.execute_to_goal_pose(
-                exit_mortar_pose,
+                self.init_pose,
                 ee_link=ee_link,
                 time_to_reach=3,
             )
