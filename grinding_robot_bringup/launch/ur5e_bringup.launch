@@ -6,7 +6,7 @@
   <arg name="pipeline" default="ompl" doc="The planning pipeline to use." />
 
   <!-- Params for UR hardware -->
-  <arg name="robot_ip" default="192.168.56.42" />
+  <arg name="robot_ip" default="192.168.58.42" />
   <arg name="reverse_ip" default="" />
   <arg name="reverse_port" default="50001" />
   <arg name="script_sender_port" default="50002" />
