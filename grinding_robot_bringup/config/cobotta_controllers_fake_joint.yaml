@@ -11,3 +11,7 @@ arm_controller:
     - joint_4
     - joint_5
     - joint_6
+
+initial:  # Define initial robot poses.
+  - group: arm
+    pose: home
