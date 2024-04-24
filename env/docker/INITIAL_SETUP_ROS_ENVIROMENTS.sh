@@ -20,10 +20,9 @@ catkin build
 source /opt/ros/$ROS_DISTRO/setup.bash
 source devel/setup.bash
 
-
-
 # Copy description files to DENSO ROS package
 rosrun grinding_descriptions install_denso_robot_description.py ./src/powder_grinding/grinding_descriptions/urdf/cobotta/setup_files
 rosrun grinding_descriptions install_denso_robot_description.py ./src/powder_grinding/grinding_descriptions/urdf/cobotta_pro_900/setup_files
 echo "It is fine if cobotta's setup_files does not exist even if you run this script more than once."
-echp "If you can't use roslauch, please run the 'source devel/setup.bash' on the terminal."
+echo "If you can't use roslauch, please run the 'source devel/setup.bash' on the terminal."
+
