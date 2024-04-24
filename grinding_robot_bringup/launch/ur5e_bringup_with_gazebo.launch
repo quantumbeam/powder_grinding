@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="sim" default="true" doc="Simulation flag that launch gazebo or connect real robot." />
+  <arg name="sim" default="false" doc="Simulation flag that launch gazebo or connect real robot." />
   <arg name="debug" default="false" doc="Debug flag that will get passed on to ur_common.launch" />
 
   <!-- Params for UR hardware -->
-  <arg name="robot_ip" default="192.168.56.42" />
+  <arg name="robot_ip" default="192.168.58.42" />
   <arg name="reverse_ip" default="" />
   <arg name="reverse_port" default="50001" />
   <arg name="script_sender_port" default="50002" />
