@@ -1,11 +1,9 @@
-version: "3.8"
-
 ################################################################################
 
 services:
   powder-grinding-ros:
     hostname: powder_grinding_ros
-    runtime: ${DOCKER_RUNTIME}
+    runtime: ""
     privileged: true
     image: powder_grinding_ros_noetic
     environment:
