@@ -23,9 +23,13 @@
 This repository focuses on the ROS environment for robot control.
 
 ## 対応ロボット
-- UR5e
-- UR3e
-- Cobotta
+- 実機動作確認済み
+   - UR5e (Universal Robot社)
+   - UR3e (Universal Robot社)
+   - Cobotta (DENSO WAVE社)
+   - FR3 (FAIRINO 社)
+- シミュレーションのみ動作確認済み
+   - Cobotta PRO 900 (DENSO WAVE社)
 
 ## クイックスタート
 
@@ -53,6 +57,8 @@ This repository focuses on the ROS environment for robot control.
    roslaunch grinding_robot_bringup ur5e_bringup.launch
    roslaunch grinding_robot_bringup ur3e_bringup.launch
    roslaunch grinding_robot_bringup cobotta_bringup.launch
+   roslaunch grinding_robot_bringup cobotta_bringup.launch
+
    ```
    - シミュレーション使う場合は`sim:=true`で立ち上げてください。
 - 粉砕モーションの立ち上げ

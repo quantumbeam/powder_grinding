@@ -25,12 +25,14 @@ This package can operate both in simulation (Gazebo) and on the actual robot.
 **Last Updated:** 2023/10/24  
 This repository focuses on the ROS environment for robot control.
 
-
-
-### Supported Robots
-- UR5e
-- UR3e
-- Cobotta
+## Supported Robots
+- Confirmed to work with actual machines
+   - UR5e (Universal Robot)
+   - UR3e (Universal Robot)
+   - Cobotta (DENSO WAVE)
+   - FR3 (FAIRINO)
+- Confirmed to work with simulation only
+   - Cobotta PRO 900 (DENSO WAVE)
 
 ### Quick Start Guide
 You can also view the Japanese version of the [README_jp](./README_jp.md).
@@ -70,17 +72,6 @@ You can also view the Japanese version of the [README_jp](./README_jp.md).
 
 ### Known Issues
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
-
-### For FR Series
-Prelase installation of the following packages is required.
-```
-sudo apt-get install -y \
-    ros-noetic-rosparam-shortcuts \
-    ros-noetic-ros-control \
-    ros-noetic-ros-controllers \
-    ros-noetic-moveit \
-    libxmlrpcpp-dev
-```
 
 
 ### Future Work
