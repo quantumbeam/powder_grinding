@@ -14,4 +14,5 @@ version: master}
 version: master}
 - git: {local-name: third_party/fake_joint, uri: 'https://github.com/tork-a/fake_joint.git',
 version: master}
-
+- git:  {local-name: third_party/trac_ik,uri: https://bitbucket.org/traclabs/trac_ik.git, 
+version: master }
