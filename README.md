@@ -57,6 +57,9 @@ You can also view the Japanese version of the [README_jp](./README_jp.md).
    roslaunch grinding_robot_bringup ur5e_bringup.launch
    roslaunch grinding_robot_bringup ur3e_bringup.launch
    roslaunch grinding_robot_bringup cobotta_bringup.launch
+   roslaunch grinding_robot_bringup cobotta_pro_900_bringup.launch
+   roslaunch grinding_robot_bringup fr3_bringup.launch
+
    ```
   - If you want to use simulation, please launch with sim:=true.
 - Launching Grinding Motion:
@@ -64,6 +67,9 @@ You can also view the Japanese version of the [README_jp](./README_jp.md).
    roslaunch grinding_motion_routines ur3e_grinding_demo.launch
    roslaunch grinding_motion_routines ur5e_grinding_demo.launch
    roslaunch grinding_motion_routines cobotta_grinding_demo.launch
+   roslaunch grinding_motion_routines cobotta_pro_900_grinding_demo.launch
+   roslaunch grinding_motion_routines fr3_grinding_demo.launch
+
    ```
    - Use the command g to prepare for grinding (g=grinding), and then use y to execute the grinding.
    - Use the command G to prepare for powder collection with a spatula (G=grinding), and then use y to execute the powder collection.

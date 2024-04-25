@@ -57,7 +57,8 @@ This repository focuses on the ROS environment for robot control.
    roslaunch grinding_robot_bringup ur5e_bringup.launch
    roslaunch grinding_robot_bringup ur3e_bringup.launch
    roslaunch grinding_robot_bringup cobotta_bringup.launch
-   roslaunch grinding_robot_bringup cobotta_bringup.launch
+   roslaunch grinding_robot_bringup cobotta_pro_900_bringup.launch
+   roslaunch grinding_robot_bringup fr3_bringup.launch
 
    ```
    - シミュレーション使う場合は`sim:=true`で立ち上げてください。
@@ -66,6 +67,9 @@ This repository focuses on the ROS environment for robot control.
    roslaunch grinding_motion_routines ur3e_grinding_demo.launch
    roslaunch grinding_motion_routines ur5e_grinding_demo.launch
    roslaunch grinding_motion_routines cobotta_grinding_demo.launch
+   roslaunch grinding_motion_routines cobotta_pro_900_grinding_demo.launch
+   roslaunch grinding_motion_routines fr3_grinding_demo.launch
+
    ```
    - コマンド`g`で粉砕の実行準備(g=grinding)、続けて`y`で粉砕実行します。
    - コマンド`G`でヘラによる粉集めの実行準備(g=grinding)、続けて`y`で粉集め実行します。
