@@ -4,12 +4,12 @@
 # Set up the workspace
 sudo apt update
 
-rosdep update
 
 # Updating ROSDEP and installing dependencies
+rosdep update
 vcs import src < src/powder_grinding/.rosinstall
-rosdep install --from-paths src --ignore-src --rosdistro=$ROS_DISTRO -y
 vcs pull src
+rosdep install --from-paths src --ignore-src --rosdistro=$ROS_DISTRO -y
 
 # Build
 catkin build

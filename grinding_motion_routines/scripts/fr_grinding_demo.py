@@ -7,6 +7,7 @@ import copy
 import tkinter as tk
 
 from math import pi, tau, dist, fabs, cos, sin, sqrt
+import numpy as np
 from scipy.spatial.transform import Rotation
 
 from grinding_motion_routines import (
@@ -118,8 +119,9 @@ def main():
     ################### init pose ###################
     rospy.loginfo("goto init pose")
     init_pos = copy.deepcopy(mortar_top_pos)
-    init_pos["z"] += 0.1
-    r = Rotation.from_euler("xyz", [pi, 0, 0], degrees=False)
+    init_pos["z"] += 0.05
+    yaw = np.arctan2(init_pos["y"], init_pos["x"])+pi
+    r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
     quat = r.as_quat()
     init_pose = list(init_pos.values()) + list(quat)
     moveit.execute_to_goal_pose(init_pose, vel_scale=0.9, acc_scale=0.9)
