@@ -15,7 +15,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/base_link.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/base_link.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -23,7 +23,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/base_link.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/base_link.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>
@@ -38,7 +38,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J1.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J1.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -46,7 +46,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J1.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J1.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>
@@ -79,7 +79,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J2.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J2.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -87,7 +87,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J2.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J2.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>
@@ -120,7 +120,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J3.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J3.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -128,7 +128,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J3.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J3.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>
@@ -161,7 +161,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J4.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J4.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -169,7 +169,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J4.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J4.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>
@@ -202,7 +202,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J5.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J5.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -210,7 +210,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J5.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J5.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>
@@ -243,7 +243,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J6.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J6.dae"
 					scale="1 1 1" />
 			</geometry>
 		</visual>
@@ -251,7 +251,7 @@
 			<origin rpy="0 0 0" xyz="0 0 0" />
 			<geometry>
 				<mesh
-					filename="package://denso_robot_descriptions/cobotta_pro_900_description/J6.dae"
+					filename="package://grinding_descriptions/urdf/cobotta_pro_900/J6.dae"
 					scale="1 1 1" />
 			</geometry>
 		</collision>

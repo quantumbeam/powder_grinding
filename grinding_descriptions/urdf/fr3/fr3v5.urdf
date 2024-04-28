@@ -35,7 +35,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/base_link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -49,7 +49,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/base_link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -75,7 +75,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/shoulder_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/shoulder_Link.STL" />
       </geometry>
       <material
         name="">
@@ -89,7 +89,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/shoulder_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/shoulder_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -144,7 +144,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/upperarm_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/upperarm_Link.STL" />
       </geometry>
       <material
         name="">
@@ -158,7 +158,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/upperarm_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/upperarm_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -213,7 +213,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/forearm_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/forearm_Link.STL" />
       </geometry>
       <material
         name="">
@@ -227,7 +227,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/forearm_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/forearm_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -282,7 +282,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/wrist1_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/wrist1_Link.STL" />
       </geometry>
       <material
         name="">
@@ -296,7 +296,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/wrist1_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/wrist1_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -351,7 +351,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/wrist2_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/wrist2_Link.STL" />
       </geometry>
       <material
         name="">
@@ -365,7 +365,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/wrist2_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/wrist2_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -420,7 +420,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/visual/wrist3_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/visual/wrist3_Link.STL" />
       </geometry>
       <material
         name="">
@@ -434,7 +434,7 @@ Stephen Brawner (brawner@gmail.com)
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://frcobot_description/meshes/fr3v5/collision/wrist3_Link.STL" />
+          filename="package://grinding_descriptions/meshes/fr3v5/collision/wrist3_Link.STL" />
       </geometry>
     </collision>
   </link>
