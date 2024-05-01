@@ -16,7 +16,10 @@
 - ロボットの実機やLAN接続のセンサーを動かす場合は、ファイアウォールの設定を変更してポート開放を行う必要があります。
   - Ubuntuだと`ufw`で簡単に設定ができます。ない場合は```sudo apt install ufw```でインストールしてください。
   - URのデフォルトのポート開放
-    - ```sudo ufw allow 50001:50004```
+    - ```sudo ufw allow 50001```
+    - ```sudo ufw allow 50002```
+    - ```sudo ufw allow 50003```
+    - ```sudo ufw allow 50004```
   - Cobottaのポート開放
     - ```sudo ufw allow 5007```
 
@@ -41,7 +44,7 @@
 
 # Dockerイメージのビルドとコンテナの立ち上げ
 - Dockerイメージのビルドは以下のコマンドで行ってください。
-  - ```cd ./env && ./BUILD-DOCKER-IMAGE.sh```
+  - ```cd ./env/docker && ./BUILD-DOCKER-IMAGE.sh```
 - メインディレクトリでDockerコンテナの立ち上げができます。詳細はリポジトリの[README.md](../README.md)内の"Dockerコンテナの立ち上げ"の項目を読んでください。
 
 
