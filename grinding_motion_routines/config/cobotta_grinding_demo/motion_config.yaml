@@ -34,12 +34,12 @@ gathering_pos_begining :
   - -35
   - 0
 gathering_pos_end :
-  - -25 
+  - -30 
   - 0.0001
 gathering_number_of_rotation : 5
 gathering_angle_param : 0
-gathering_rz_begining : 38
-gathering_rz_end : 38
+gathering_rz_begining : 37
+gathering_rz_end : 37
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
