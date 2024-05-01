@@ -18,8 +18,10 @@
     - ```sudo ufw allow 50004```
   - Cobotta port.
     - ```sudo ufw allow 5007```
+  - FR3 port.
+    - ```sudo ufw allow 8083```
 
-3. Network setting
+1. Network setting
 - Set static IP address on LAN adaptor
   - This package default : ```192.168.56.5```
 
