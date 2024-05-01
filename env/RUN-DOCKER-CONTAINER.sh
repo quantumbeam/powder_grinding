@@ -11,10 +11,13 @@ fi
 CONTAINER="${PROJECT}-powder-grinding-ros-1"
 echo "$0: PROJECT=${PROJECT}"
 echo "$0: CONTAINER=${CONTAINER}"
+echo $(dirname "$0")/docker/compose.yaml
+
 
 # Run the Docker container in the background.
 # Any changes made to './docker/compose.yaml' will recreate and overwrite the container.
-docker compose -p ${PROJECT} -f ./docker/compose.yaml up -d 
+
+docker compose -p ${PROJECT} -f $(dirname "$0")/docker/compose.yaml up -d 
 
 
 # Display GUI through X Server by granting full access to any external client.
@@ -42,9 +45,9 @@ case "$3" in
   esac
   ;;
   ( *".launch")
-  docker exec -it -w /root/catkin_ws ${CONTAINER} bash -i -c "./terminator/run-roslaunch-repeatedly.sh $2 $3"
+  docker exec -it -w /root/catkin_ws ${CONTAINER} bash -i -c "./src/powder_grinding/env/terminator/run-roslaunch-repeatedly.sh $2 $3"
   ;;
   ( * )
-  docker exec -it -w /root/catkin_ws ${CONTAINER} bash -i -c "./terminator/run-command-repeatedly.sh $2 $3"
+  docker exec -it -w /root/catkin_ws ${CONTAINER} bash -i -c "./src/powder_grinding/env/terminator/run-command-repeatedly.sh $2 $3"
   ;;
 esac
