@@ -1,12 +1,11 @@
-### Robotic Powder Grinding for Laboratory Automation
+###  Robotic Powder Grinding for Laboratory Automation
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
 乳棒と乳鉢用いたロボット粉体粉砕のためのROSパッケージです。
-シミュレーション(Gazebo)上での動作とロボット実機での動作ができます。
+シミュレーション(fake jointとRviz)上での動作とロボット実機での動作ができます。
+また、ROSパッケージだけでなくROS環境のDockerコンテナも提供します。
 
-## 目次
-- [目次](#目次)
-- [概要](#概要)
+### 目次
 - [対応ロボット](#対応ロボット)
 - [クイックスタート](#クイックスタート)
   - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
@@ -15,21 +14,19 @@
   - [モーションのデモ](#モーションのデモ)
 - [既知の課題](#既知の課題)
 - [Future Work](#future-work)
-  - [Citation](#citation)
+- [Citation](#citation)
 - [License](#license)
 
-## 概要
-**Last Updated:** 2023/10/24  
-This repository focuses on the ROS environment for robot control.
+
 
 ## 対応ロボット
 - 実機動作確認済み
    - UR5e (Universal Robot社)
    - UR3e (Universal Robot社)
-   - Cobotta (DENSO WAVE社)
+   - Cobotta (DENSOWAVE社)
    - FR3 (FAIRINO 社)
 - シミュレーションのみ動作確認済み
-   - Cobotta PRO 900 (DENSO WAVE社)
+   - Cobotta PRO 900 (DENSOWAVE社)
 
 ## クイックスタート
 
@@ -86,7 +83,7 @@ This repository focuses on the ROS environment for robot control.
 - UR内部もしくは外部の力センサを用いて、乳鉢位置の自動調整を行いたいです。
    - grinding_motion_routinesパッケージの`calibrate_mortar_position.launch`に途中まで作ったものがありますが、まだ完成していないので使う場合はスクリプトを読んで書き換えながら使ってください。
 
-### Citation
+## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
 ```
 @InProceedings{RoboticPowderGrinding,
