@@ -8,6 +8,7 @@ And provide Docker containers for the ROS environment.
 ### **Table of Contents**
 - [Supported Robots](#supported-robots)
 - [Quick Start Guide](#quick-start-guide)
+  - [Soft-Jig](#soft-jig)
   - [Setting up Environments of Host PC, Robot, and Docker](#setting-up-environments-of-host-pc-robot-and-docker)
   - [Running Docker Container](#running-docker-container)
   - [Building ROS Packages in Docker Container](#building-ros-packages-in-docker-container)
@@ -30,7 +31,12 @@ And provide Docker containers for the ROS environment.
 ## Quick Start Guide
 You can also view the Japanese version of the [README_jp](./README_jp.md).
 
+### Soft-Jig
+Please read below.
+- [How to make Soft-Jig](.\grinding_descriptions\mesh\3D_print_jig\README.md)
+-  [How to make Soft-Jig (Japanese version)](.\grinding_descriptions\mesh\3D_print_jig\README_jp.md)
 ### Setting up Environments of Host PC, Robot, and Docker
+Please read below.
 - [Setup Instructions](./env/docker/README.md)
 - [Setup Instructions (Japanese version)](./env/docker/README_jp.md)
 
