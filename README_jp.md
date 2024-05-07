@@ -8,6 +8,7 @@
 ### 目次
 - [対応ロボット](#対応ロボット)
 - [クイックスタート](#クイックスタート)
+  - [ソフト治具の作り方](#ソフト治具の作り方)
   - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
   - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
   - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
@@ -16,8 +17,6 @@
 - [Future Work](#future-work)
 - [Citation](#citation)
 - [License](#license)
-
-
 
 ## 対応ロボット
 - 実機動作確認済み
@@ -29,6 +28,9 @@
    - Cobotta PRO 900 (DENSOWAVE社)
 
 ## クイックスタート
+
+### ソフト治具の作り方
+- [こちら](.\grinding_descriptions\mesh\3D_print_jig\README_jp.md)を読んでください。
 
 ### PCとロボットとDocker環境のセットアップ
 - [環境セットアップの資料](./env/docker/README_jp.md)を読んで環境セットアップし、終わったらこちらに戻ってきて以下の続きを実行してください。
