@@ -10,3 +10,5 @@ catkin_ws/logs/
 catkin_ws/src/third_party/*
 
 test_scripts/*
+
+venv/*
