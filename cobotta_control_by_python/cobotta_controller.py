@@ -142,9 +142,6 @@ class CobottaController:
             m_bcapclient.robot_execute(HRobot, "ExtSpeed", 100)
             m_bcapclient.robot_move(HRobot, 1, "@P J(0,0,90,0,90,0)")
             time.sleep(1)
-            m_bcapclient.robot_move(HRobot, 1, "@P J(15.7,46.3,99.6,-22,-60,-73.7)")
-            m_bcapclient.robot_move(HRobot, 1, "@P P(290,-44.5,17,-90,0,-90,5)")
-            time.sleep(1)
             Command = "Motor"
             Param = [0,0]
             m_bcapclient.robot_execute(HRobot,Command,Param)    
