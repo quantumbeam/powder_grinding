@@ -189,8 +189,8 @@ class MotionPrimitive:
         )
         scooping_ready_pose = self._pose_stamped_to_list(scooping_ready_pose)
         r = Rotation.from_quat(scooping_ready_pose[3:])
-        r = r * Rotation.from_euler(
-            "xyz", [0, 0, pi + pi / 16]
+        r = (
+            r * Rotation.from_euler("xyz", [0, 0, pi + pi / 16])
         )  # pi rotation has half probability to be clockwise or counterclockwise, so we add pi/16 to make it more likely to be counterclockwise
         scooping_ready_pose[3:] = r.as_quat()
         self.moveit_executor.execute_to_goal_pose(
