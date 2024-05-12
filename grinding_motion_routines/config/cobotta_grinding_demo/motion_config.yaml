@@ -11,7 +11,7 @@ joint_trajectory_controller_name: "arm_controller"
 ns: "cobotta"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
-planning_time : 20 # timeout for motion planning
+planning_time : 20 # planning time to timeout in MoveIt motion planning 
 
 # grinding params
 grinding_pos_begining : 
@@ -23,17 +23,17 @@ grinding_pos_end :
 grinding_center_pos:
   - 0
   - 0
-grinding_number_of_rotation : 30
+grinding_number_of_rotation : 10
 grinding_sec_per_rotation : 2 # 2 >
-grinding_angle_param : 0.3 #0 - 0.3
+grinding_angle_param : 0 #0 - 0.3
 grinding_rz_begining : 35
 grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
-grinding_yaw_bias : 0
+grinding_yaw_bias : rad(pi/2)
 grinding_total_joint_diffence_for_planning : 3.0
-
+grinding_trial_number : 10 
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -50,5 +50,6 @@ gathering_rz_end : 35
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
-gathering_yaw_bias :  rad(-pi/3)
+gathering_yaw_bias :  0
 gathering_total_joint_diffence_for_planning : 3.0
+gathering_trial_number : 10 

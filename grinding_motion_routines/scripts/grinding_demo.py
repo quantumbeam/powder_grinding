@@ -7,10 +7,12 @@ import copy
 import tkinter as tk
 
 from math import pi, tau, dist, fabs, cos, sin, sqrt
+import numpy as np
 from scipy.spatial.transform import Rotation
 
 from grinding_motion_routines import (
     motion_generator,
+    motion_primitive,
     moveit_executor,
     marker_display,
     tf_publisher,
@@ -30,10 +32,11 @@ TIMEOUT_SEC = 0.1
 debug_marker = marker_display.MarkerDisplay("debug_marker")
 debug_tf = tf_publisher.TFPublisher()
 
+
 def display_debug_waypoints(waypoints):
     rospy.loginfo("Display debug marker and/or TF.")
-    debug_marker.display_waypoints(waypoints)
-    # debug_tf.broadcast_tf_with_waypoints(waypoints, "base_link")
+    # debug_marker.display_waypoints(waypoints)
+    debug_tf.broadcast_tf_with_waypoints(waypoints, "base_link")
 
 
 def compute_grinding_waypoints(motion_generator):
@@ -53,6 +56,7 @@ def compute_grinding_waypoints(motion_generator):
     # display_debug_waypoints(waypoints)
     return waypoints
 
+
 def compute_gathering_waypoints(motion_generator):
     waypoints = motion_generator.create_circular_waypoints(
         begining_position=rospy.get_param("~gathering_pos_begining"),
@@ -69,6 +73,7 @@ def compute_gathering_waypoints(motion_generator):
     # display_debug_waypoints(waypoints)
     return waypoints
 
+
 def exit_process(msg=""):
     if msg != "":
         rospy.loginfo(msg)
@@ -77,16 +82,31 @@ def exit_process(msg=""):
     rospy.spin()
     exit()
 
+
 def main():
     ################### init node ###################
-    rospy.init_node("cobotta_grinding_demo", anonymous=True)
+    rospy.init_node("grinding_demo", anonymous=True)
 
     ################### motion generator ###################
     mortar_top_pos = rospy.get_param("~mortar_top_position")
     mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
-    motion_gen = motion_generator.MotionGenerator(
-        mortar_top_pos, mortar_inner_scale
+    motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_scale)
+
+    # paarmeeters for grinding and gathering
+    grinding_sec = rospy.get_param("~grinding_sec_per_rotation") * rospy.get_param(
+        "~grinding_number_of_rotation"
     )
+    gathering_sec = rospy.get_param("~gathering_sec_per_rotation") * rospy.get_param(
+        "~gathering_number_of_rotation"
+    )
+    grinding_total_joint_diffence_for_planning = rospy.get_param(
+        "~grinding_total_joint_diffence_for_planning", None
+    )
+    gathering_total_joint_diffence_for_planning = rospy.get_param(
+        "~gathering_total_joint_diffence_for_planning", None
+    )
+    grinding_trial_number = rospy.get_param("~grinding_trial_number")
+    gathering_trial_number = rospy.get_param("~gathering_trial_number") 
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
@@ -101,42 +121,56 @@ def main():
     ################### init pose ###################
     rospy.loginfo("goto init pose")
     init_pos = copy.deepcopy(mortar_top_pos)
-    init_pos["z"] += 0.1
-    r = Rotation.from_euler("xyz", [pi, 0, 0], degrees=False)
+    init_pos["z"] += 0.05
+    yaw = np.arctan2(init_pos["y"], init_pos["x"])+pi
+    r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
     quat = r.as_quat()
     init_pose = list(init_pos.values()) + list(quat)
-    print(init_pose)
     moveit.execute_to_goal_pose(init_pose, vel_scale=0.9, acc_scale=0.9)
+
+    ################### motion primitive ###################
+    ik_solver = rospy.get_param("~ik_solver", None)
+    robot_urdf_pkg = rospy.get_param("~robot_urdf_pkg", None)
+    robot_urdf_file_name = rospy.get_param("~robot_urdf_file_name", None)
+    joint_trajectory_controller_name = rospy.get_param(
+        "~joint_trajectory_controller_name", None
+    )
+    ns = rospy.get_param("~ns", None)
+    motion_planner_id = rospy.get_param("~motion_planner_id", None)
+    planning_time = rospy.get_param("~planning_time", None)
+
+    primitive = motion_primitive.MotionPrimitive(
+        init_pose=init_pose,
+        ee_link=grinding_ee_link,
+        robot_urdf_pkg=robot_urdf_pkg,
+        robot_urdf_file_name=robot_urdf_file_name,
+        joint_trajectory_controller_name=joint_trajectory_controller_name,
+        ns=ns,
+        joint_names_prefix=None,
+        move_group_name=move_group_name,
+        planner_id=motion_planner_id,
+        planning_time=planning_time,
+        ft_topic=None,
+        ik_solver=ik_solver,
+    )
 
     # main loop
     def send_grinding_command():
-        waypoints = compute_grinding_waypoints(motion_gen)
-        moveit.execute_cartesian_path_by_waypoints(
-            waypoints,
+        primitive.execute_grinding(
+            compute_grinding_waypoints(motion_gen),
+            grinding_sec=grinding_sec,
+            total_joint_limit=grinding_total_joint_diffence_for_planning,
+            trial_number=grinding_trial_number,
             ee_link=grinding_ee_link,
-            vel_scale=1,
-            acc_scale=1,
-        )
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=grinding_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
         )
 
     def send_gathering_command():
-        waypoints = compute_gathering_waypoints(motion_gen)
-        moveit.execute_cartesian_path_by_waypoints(
-            waypoints,
+        primitive.execute_gathering(
+            compute_gathering_waypoints(motion_gen),
+            gathering_sec=gathering_sec,
+            total_joint_limit=gathering_total_joint_diffence_for_planning,
+            trial_number=gathering_trial_number,
             ee_link=gathering_ee_link,
-            vel_scale=0.8,
-            acc_scale=0.8,
-        )
-        moveit.execute_to_goal_pose(
-            init_pose,
-            ee_link=grinding_ee_link,
-            vel_scale=0.5,
-            acc_scale=0.5,
         )
 
     def send_grinding_and_gathering_command():
@@ -147,19 +181,29 @@ def main():
     font = ("Meiryo", 20)
     root.title("ROS Commands")
 
-    grinding_button = tk.Button(root, text="Grinding", command=send_grinding_command, font=font)
+    grinding_button = tk.Button(
+        root, text="Grinding", command=send_grinding_command, font=font
+    )
     grinding_button.pack(pady=5)
 
-    gathering_button = tk.Button(root, text="Gathering", command=send_gathering_command, font=font)
+    gathering_button = tk.Button(
+        root, text="Gathering", command=send_gathering_command, font=font
+    )
     gathering_button.pack(pady=5)
 
-    grinding_and_gathering_button = tk.Button(root, text="Grinding & Gathering", command=send_grinding_and_gathering_command, font=font)
+    grinding_and_gathering_button = tk.Button(
+        root,
+        text="Grinding & Gathering",
+        command=send_grinding_and_gathering_command,
+        font=font,
+    )
     grinding_and_gathering_button.pack(pady=5)
 
     grinding_button = tk.Button(root, text="Exit demo", command=exit_process, font=font)
     grinding_button.pack(pady=5)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()

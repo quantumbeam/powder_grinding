@@ -8,7 +8,7 @@
     <arg name="rosbag_record" default="false" />
     <arg name="rosbag_name" default="$(find grinding_motion_routines)/bag/" />
 
-    <node name="mechano_grinding" pkg="grinding_motion_routines" type="fr_grinding_demo.py"
+    <node name="mechano_grinding" pkg="grinding_motion_routines" type="grinding_demo.py"
         output="screen">
         <rosparam command="load" file="$(arg planning_scene_config)" />
         <rosparam command="load" file="$(arg motion_config)" />
