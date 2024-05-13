@@ -62,14 +62,15 @@ class MotionPrimitive:
     def execute_grinding(
         self,
         waypoints,
-        total_joint_limit,
-        trial_number,
-        grinding_sec,
+        total_joint_limit=1,
+        trial_number=10,
+        grinding_sec=1,
         ee_link="pestle_tip",
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
         pre_motion=True,
         post_motion=True,
+        execute_by_joint_trajectory=False,
     ):
         if pre_motion:
             result = self.moveit_executor.execute_to_goal_pose(
@@ -82,16 +83,19 @@ class MotionPrimitive:
             if result == False:
                 rospy.logerr("Failed to move to Grinding init pose")
                 return False
+        if execute_by_joint_trajectory:
+            joint_trajectory = waypoints
+        else:
+            joint_trajectory = self.JTC_executor.generate_joint_trajectory(
+                waypoints,
+                total_joint_limit=total_joint_limit,
+                ee_link=ee_link,
+                trial_number=trial_number,
+            )
+            if joint_trajectory == None:
+                rospy.logerr("No joint trajectory is generated")
+                return False
 
-        joint_trajectory = self.JTC_executor.generate_joint_trajectory(
-            waypoints,
-            total_joint_limit=total_joint_limit,
-            ee_link=ee_link,
-            trial_number=trial_number,
-        )
-        if joint_trajectory == None:
-            rospy.logerr("No joint trajectory is generated")
-            return False
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
             time_to_reach=2,
@@ -114,12 +118,13 @@ class MotionPrimitive:
     def execute_gathering(
         self,
         waypoints,
-        total_joint_limit,
-        trial_number,
-        gathering_sec,
+        total_joint_limit=1,
+        trial_number=10,
+        gathering_sec=1,
         ee_link="spatula_tip",
         moving_velocity_scale=0.3,
         moving_acceleration_scale=0.3,
+        execute_by_joint_trajectory=False,
     ):
         self.moveit_executor.execute_to_goal_pose(
             self.init_pose,
@@ -138,16 +143,18 @@ class MotionPrimitive:
         if result == False:
             rospy.logerr("Failed to move to Gathering init pose")
             return False
-
-        joint_trajectory = self.JTC_executor.generate_joint_trajectory(
-            waypoints,
-            total_joint_limit=total_joint_limit,
-            ee_link=ee_link,
-            trial_number=trial_number,
-        )
-        if joint_trajectory == None:
-            rospy.logerr("No joint trajectory is generated")
-            return False
+        if execute_by_joint_trajectory:
+            joint_trajectory = waypoints
+        else:
+            joint_trajectory = self.JTC_executor.generate_joint_trajectory(
+                waypoints,
+                total_joint_limit=total_joint_limit,
+                ee_link=ee_link,
+                trial_number=trial_number,
+            )
+            if joint_trajectory == None:
+                rospy.logerr("No joint trajectory is generated")
+                return False
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
             time_to_reach=2,
@@ -158,12 +165,12 @@ class MotionPrimitive:
             time_to_reach=gathering_sec,
         )
 
-        exit_mortar_pose = waypoints[0]
-        exit_mortar_pose[2] += 0.05
-        self.JTC_executor.execute_to_goal_pose(
-            exit_mortar_pose,
+        result = self.moveit_executor.execute_to_goal_pose(
+            self.init_pose,
             ee_link=ee_link,
-            time_to_reach=3,
+            vel_scale=moving_velocity_scale,
+            acc_scale=moving_acceleration_scale,
+            execute=True,
         )
 
         return True
@@ -189,8 +196,8 @@ class MotionPrimitive:
         )
         scooping_ready_pose = self._pose_stamped_to_list(scooping_ready_pose)
         r = Rotation.from_quat(scooping_ready_pose[3:])
-        r = (
-            r * Rotation.from_euler("xyz", [0, 0, pi + pi / 16])
+        r = r * Rotation.from_euler(
+            "xyz", [0, 0, pi + pi / 16]
         )  # pi rotation has half probability to be clockwise or counterclockwise, so we add pi/16 to make it more likely to be counterclockwise
         scooping_ready_pose[3:] = r.as_quat()
         self.moveit_executor.execute_to_goal_pose(
