@@ -4,5 +4,5 @@ move_group_name: "arm"
 table_position  :  {x: 0, y: 0, z: -0.04} # 0.015 is hight of UR5e base plate
 table_scale  :  {x: 0.5, y: 0.5, z: 0.01}
 
-mortar_top_position  :  {x:  0.25, y: 0, z: 0.05}
+mortar_top_position  :  {x:  0.25, y: 0, z: 0.022}
 mortar_inner_scale:  {x:  0.04, y: 0.04, z: 0.036} # official infomation says 0.04 * 0.04 * 0.032 but z is more deep actually 
