@@ -145,10 +145,10 @@ class MoveitExecutor(object):
             return result
 
         else:
-            self.move_group.plan()
+            result=self.move_group.plan()
             self.move_group.stop()
             self.move_group.clear_pose_targets()
-            return False
+            return result
 
     def execute_cartesian_path_to_goal_pose(
         self,
