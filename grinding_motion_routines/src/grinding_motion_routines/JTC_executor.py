@@ -19,6 +19,7 @@ class JointTrajectoryControllerExecutor(Arm):
         ft_topic=None,
         gripper=False,
         ik_solver="trac_ik",
+        solve_type="Distance"
     ):
 
         if joint_names_prefix is None:
@@ -33,9 +34,11 @@ class JointTrajectoryControllerExecutor(Arm):
             ee_link=tcp_link,
             ft_topic=ft_topic,
             ik_solver=ik_solver,
+            solve_type=solve_type,
         )
         self.joint_names_prefix = joint_names_prefix
         self.init_end_effector_link = tcp_link
+        self.solve_type=solve_type
 
     def execute_to_goal_pose(
         self,
@@ -128,4 +131,4 @@ class JointTrajectoryControllerExecutor(Arm):
             if self.joint_names_prefix is None
             else self.joint_names_prefix + new_ee_link
         )
-        self._init_ik_solver(self.base_link, self.ee_link)
+        self._init_ik_solver(self.base_link, self.ee_link,self.solve_type)

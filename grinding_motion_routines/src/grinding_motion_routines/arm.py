@@ -71,7 +71,7 @@ class Arm(object):
         robot_urdf_file_name,
         joint_trajectory_controller_name,
         ik_solver=TRAC_IK,
-        solve_type="Distance"
+        solve_type="Distance",
         namespace=None,
         gripper=False,
         joint_names_prefix=None,
