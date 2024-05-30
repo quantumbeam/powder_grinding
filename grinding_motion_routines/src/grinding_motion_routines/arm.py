@@ -71,6 +71,7 @@ class Arm(object):
         robot_urdf_file_name,
         joint_trajectory_controller_name,
         ik_solver=TRAC_IK,
+        solve_type="Distance"
         namespace=None,
         gripper=False,
         joint_names_prefix=None,
@@ -118,7 +119,7 @@ class Arm(object):
         # self.max_joint_speed = np.deg2rad([100, 100, 100, 200, 200, 200]) # deg/s -> rad/s
         self.max_joint_speed = np.deg2rad([191, 191, 191, 371, 371, 371])
 
-        self._init_ik_solver(self.base_link, self.ee_link)
+        self._init_ik_solver(self.base_link, self.ee_link,solve_type)
         self._init_controllers(gripper)
         if ft_sensor:
             self._init_ft_sensor()
@@ -155,7 +156,7 @@ class Arm(object):
                 namespace=self.ns, prefix=self.joint_names_prefix, timeout=2.0
             )
 
-    def _init_ik_solver(self, base_link, ee_link):
+    def _init_ik_solver(self, base_link, ee_link,solve_type):
         self.base_link = base_link
         self.ee_link = ee_link
         if self.ik_solver == TRAC_IK:
@@ -164,7 +165,7 @@ class Arm(object):
                     self.trac_ik = TRACK_IK_SOLVER(
                         base_link=base_link,
                         tip_link=ee_link,
-                        solve_type="Distance",
+                        solve_type=solve_type,
                         timeout=0.002,
                         epsilon=1e-5,
                         urdf_string=utils.load_urdf_string(
@@ -173,7 +174,7 @@ class Arm(object):
                     )
                 else:
                     self.trac_ik = TRACK_IK_SOLVER(
-                        base_link=base_link, tip_link=ee_link, solve_type="Distance"
+                        base_link=base_link, tip_link=ee_link, solve_type=solve_type
                     )
             except Exception as e:
                 rospy.logerr("Could not instantiate TRAC_IK" + str(e))
