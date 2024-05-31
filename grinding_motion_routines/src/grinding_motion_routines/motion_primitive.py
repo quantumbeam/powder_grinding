@@ -73,12 +73,10 @@ class MotionPrimitive:
         execute_by_joint_trajectory=False,
     ):
         if pre_motion:
-            result = self.moveit_executor.execute_to_goal_pose(
+            result = self.JTC_executor.execute_to_goal_pose(
                 self.init_pose,
                 ee_link=ee_link,
-                vel_scale=moving_velocity_scale,
-                acc_scale=moving_acceleration_scale,
-                execute=True,
+                time_to_reach=3,
             )
             if result == False:
                 rospy.logerr("Failed to move to Grinding init pose")
@@ -126,23 +124,18 @@ class MotionPrimitive:
         moving_acceleration_scale=0.3,
         execute_by_joint_trajectory=False,
     ):
-        self.moveit_executor.execute_to_goal_pose(
+
+        self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=self.grinding_ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+            time_to_reach=3,
         )
-        result = self.moveit_executor.execute_to_goal_pose(
+        self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+            time_to_reach=3,
         )
-        if result == False:
-            rospy.logerr("Failed to move to Gathering init pose")
-            return False
+
         if execute_by_joint_trajectory:
             joint_trajectory = waypoints
         else:
@@ -165,12 +158,10 @@ class MotionPrimitive:
             time_to_reach=gathering_sec,
         )
 
-        result = self.moveit_executor.execute_to_goal_pose(
+        self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+            time_to_reach=3,
         )
 
         return True
