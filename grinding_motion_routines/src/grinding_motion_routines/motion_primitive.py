@@ -5,6 +5,7 @@ import tf.transformations as tf
 from scipy.spatial.transform import Rotation
 from grinding_motion_routines.moveit_executor import MoveitExecutor
 from grinding_motion_routines.JTC_executor import JointTrajectoryControllerExecutor
+from grinding_motion_routines.constants import IK_NOT_FOUND
 
 import numpy as np
 from numpy import pi
@@ -73,14 +74,14 @@ class MotionPrimitive:
         execute_by_joint_trajectory=False,
     ):
         if pre_motion:
-            result = self.JTC_executor.execute_to_goal_pose(
+            pestle_ready_joints = self.JTC_executor.execute_to_goal_pose(
                 self.init_pose,
                 ee_link=ee_link,
                 time_to_reach=3,
             )
-            if result == False:
-                rospy.logerr("Failed to move to Grinding init pose")
-                return False
+            if pestle_ready_joints == IK_NOT_FOUND:
+                rospy.logerr("Pestle ready IK not found")   
+                return False, False
         if execute_by_joint_trajectory:
             joint_trajectory = waypoints
         else:
@@ -92,7 +93,7 @@ class MotionPrimitive:
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")
-                return False
+                return False, pestle_ready_joints
 
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
@@ -111,7 +112,7 @@ class MotionPrimitive:
                 time_to_reach=3,
             )
 
-        return True
+        return True, pestle_ready_joints
 
     def execute_gathering(
         self,
@@ -130,11 +131,14 @@ class MotionPrimitive:
             ee_link=self.grinding_ee_link,
             time_to_reach=3,
         )
-        self.JTC_executor.execute_to_goal_pose(
+        spatula_ready_joints = self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=ee_link,
             time_to_reach=3,
         )
+        if spatula_ready_joints == IK_NOT_FOUND:
+            rospy.logerr("Spatula ready IK not found")
+            return False, False
 
         if execute_by_joint_trajectory:
             joint_trajectory = waypoints
@@ -147,7 +151,7 @@ class MotionPrimitive:
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")
-                return False
+                return False, spatula_ready_joints
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
             time_to_reach=2,
@@ -164,7 +168,7 @@ class MotionPrimitive:
             time_to_reach=3,
         )
 
-        return True
+        return True, spatula_ready_joints
 
     def execute_scooping(
         self,

@@ -19,7 +19,7 @@ class JointTrajectoryControllerExecutor(Arm):
         ft_topic=None,
         gripper=False,
         ik_solver="trac_ik",
-        solve_type="Distance"
+        solve_type="Distance",
     ):
 
         if joint_names_prefix is None:
@@ -38,7 +38,7 @@ class JointTrajectoryControllerExecutor(Arm):
         )
         self.joint_names_prefix = joint_names_prefix
         self.init_end_effector_link = tcp_link
-        self.solve_type=solve_type
+        self.solve_type = solve_type
 
     def execute_to_goal_pose(
         self,
@@ -52,7 +52,7 @@ class JointTrajectoryControllerExecutor(Arm):
             ee_link = self.ee_link
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
-        self.set_target_pose(goal_pose, t=time_to_reach, wait=wait)
+        return self.set_target_pose(goal_pose, t=time_to_reach, wait=wait)
 
     def generate_joint_trajectory(
         self,
@@ -131,4 +131,4 @@ class JointTrajectoryControllerExecutor(Arm):
             if self.joint_names_prefix is None
             else self.joint_names_prefix + new_ee_link
         )
-        self._init_ik_solver(self.base_link, self.ee_link,self.solve_type)
+        self._init_ik_solver(self.base_link, self.ee_link, self.solve_type)

@@ -119,7 +119,7 @@ class Arm(object):
         # self.max_joint_speed = np.deg2rad([100, 100, 100, 200, 200, 200]) # deg/s -> rad/s
         self.max_joint_speed = np.deg2rad([191, 191, 191, 371, 371, 371])
 
-        self._init_ik_solver(self.base_link, self.ee_link,solve_type)
+        self._init_ik_solver(self.base_link, self.ee_link, solve_type)
         self._init_controllers(gripper)
         if ft_sensor:
             self._init_ft_sensor()
@@ -156,7 +156,7 @@ class Arm(object):
                 namespace=self.ns, prefix=self.joint_names_prefix, timeout=2.0
             )
 
-    def _init_ik_solver(self, base_link, ee_link,solve_type):
+    def _init_ik_solver(self, base_link, ee_link, solve_type):
         self.base_link = base_link
         self.ee_link = ee_link
         if self.ik_solver == TRAC_IK:
@@ -428,7 +428,8 @@ class Arm(object):
             # IK not found
             return IK_NOT_FOUND
         else:
-            return self.set_joint_positions(q, wait=wait, t=t)
+            self.set_joint_positions(q, wait=wait, t=t)
+            return q
 
     def set_target_pose_flex(self, pose, t=5.0):
         """Supported pose is only x y z aw ax ay az"""
