@@ -46,8 +46,8 @@ class MotionPrimitive:
         )
 
         self.init_pose = init_pose
-        self.grinding_ee_link = rospy.get_param("~grinding_eef_link", "pestle_tip")
-        self.gathering_ee_link = rospy.get_param("~gathering_eef_link", "spatula_tip")
+        self.grinding_ee_link = rospy.get_param("~grinding_ee_link", "pestle_tip")
+        self.gathering_ee_link = rospy.get_param("~gathering_ee_link", "spatula_tip")
 
     def _pose_stamped_to_list(self, pose_msg):
         return [
@@ -80,7 +80,7 @@ class MotionPrimitive:
                 time_to_reach=3,
             )
             if pestle_ready_joints == IK_NOT_FOUND:
-                rospy.logerr("Pestle ready IK not found")   
+                rospy.logerr("Pestle ready IK not found")
                 return False, False
         if execute_by_joint_trajectory:
             joint_trajectory = waypoints

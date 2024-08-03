@@ -106,12 +106,12 @@ def main():
         "~gathering_total_joint_diffence_for_planning", None
     )
     grinding_trial_number = rospy.get_param("~grinding_trial_number")
-    gathering_trial_number = rospy.get_param("~gathering_trial_number") 
+    gathering_trial_number = rospy.get_param("~gathering_trial_number")
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
-    grinding_ee_link = rospy.get_param("~grinding_eef_link")
-    gathering_ee_link = rospy.get_param("~gathering_eef_link")
+    grinding_ee_link = rospy.get_param("~grinding_ee_link")
+    gathering_ee_link = rospy.get_param("~gathering_ee_link")
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
     ################### init planning scene ###################
@@ -122,7 +122,7 @@ def main():
     rospy.loginfo("goto init pose")
     init_pos = copy.deepcopy(mortar_top_pos)
     init_pos["z"] += 0.05
-    yaw = np.arctan2(init_pos["y"], init_pos["x"])+pi
+    yaw = np.arctan2(init_pos["y"], init_pos["x"]) + pi
     r = Rotation.from_euler("xyz", [pi, 0, yaw], degrees=False)
     quat = r.as_quat()
     init_pose = list(init_pos.values()) + list(quat)
