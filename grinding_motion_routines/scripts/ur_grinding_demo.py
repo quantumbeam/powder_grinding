@@ -135,9 +135,9 @@ def main():
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name", None)
-    grinding_ee_link = rospy.get_param("~grinding_eef_link", None)
-    gathering_ee_link = rospy.get_param("~gathering_eef_link", None)
-    scooping_ee_link = rospy.get_param("~scooping_eef_link", None)
+    grinding_ee_link = rospy.get_param("~grinding_ee_link", None)
+    gathering_ee_link = rospy.get_param("~gathering_ee_link", None)
+    scooping_ee_link = rospy.get_param("~scooping_ee_link", None)
     grinding_total_joint_diffence_for_planning = rospy.get_param(
         "~grinding_total_joint_diffence_for_planning", None
     )

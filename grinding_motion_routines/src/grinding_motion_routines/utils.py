@@ -5,6 +5,7 @@ import sys
 import copy
 import time
 import numpy as np
+import xml.etree.ElementTree as ET
 import rospy
 import rospkg
 import sys
@@ -12,6 +13,19 @@ import inspect
 from grinding_motion_routines import transformations, spalg
 from sensor_msgs.msg import JointState
 from pyquaternion import Quaternion
+
+
+def get_move_group_name():
+    """
+    Get the name of the move group
+    @return: The name of the move group
+    """
+    srdf = rospy.get_param("/robot_description_semantic")
+    root = ET.fromstring(srdf)
+    for group in root.findall("group"):
+        move_group_name = group.get("name")
+
+    return move_group_name
 
 
 def load_urdf_string(package, filename):

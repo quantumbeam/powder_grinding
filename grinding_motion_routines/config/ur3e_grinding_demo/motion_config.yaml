@@ -1,9 +1,9 @@
 experimental_time : 90
 
 # end effector params
-grinding_eef_link: "pestle_tip"
-gathering_eef_link: "spatula_tip"
-scooping_eef_link: "spoon_tip"
+grinding_ee_link: "pestle_tip"
+gathering_ee_link: "spatula_tip"
+scooping_ee_link: "spoon_tip"
 
 # ik and motion planner params
 joint_trajectory_controller_name: "scaled_pos_joint_traj_controller"

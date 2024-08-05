@@ -33,8 +33,8 @@ You can also view the Japanese version of the [README_jp](./README_jp.md).
 
 ### Soft-Jig
 Please read below.
-- [How to make Soft-Jig](.\grinding_descriptions\mesh\3D_print_jig\README.md)
--  [How to make Soft-Jig (Japanese version)](.\grinding_descriptions\mesh\3D_print_jig\README_jp.md)
+- [How to make Soft-Jig](./grinding_descriptions/mesh/3D_print_jig/README.md)
+-  [How to make Soft-Jig (Japanese version)](./grinding_descriptions/mesh/3D_print_jig/README_jp.md)
 ### Setting up Environments of Host PC, Robot, and Docker
 Please read below.
 - [Setup Instructions](./env/docker/README.md)

@@ -18,7 +18,7 @@ class MotionGenerator:
         self.mortar_inner_scale = mortar_inner_scale
 
     def _calc_quaternion_of_mortar_inner_wall(
-        self, position, angle_param, yaw_bias, fixed_quaternion=False
+        self, position, angle_param, yaw_bias, yaw_rotation, fixed_quaternion=False
     ):
         quats = []
 
@@ -39,13 +39,17 @@ class MotionGenerator:
         normalized_pos_z = pos_z / norm
 
         # calc yaw angle
-        yaw = (
-            np.arctan2(
+        if yaw_bias == None:
+            yaw = np.arctan2(
                 self.mortar_top_center_position["y"],
                 self.mortar_top_center_position["x"],
             )
-            + yaw_bias
-        )
+        else:
+            yaw = yaw_bias
+
+        if yaw_rotation != 0:
+            yaw_rotations = np.linspace(0, yaw_rotation, len(pos_x))
+            yaw += yaw_rotations
 
         # rotate xy by the amount of yaw angle
         r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
@@ -161,7 +165,8 @@ class MotionGenerator:
         begining_radious_z,
         end_radious_z,
         angle_param=0,
-        yaw_bias=0,
+        yaw_bias=None,
+        yaw_rotation=0,
         number_of_rotations=1,
         number_of_waypoints_per_circle=10,
         center_position=np.array([0, 0]),
@@ -174,6 +179,7 @@ class MotionGenerator:
         end_radious_z : float
         angle_param : float
         yaw_bias : float
+        yaw_rotation : float
         number_of_rotations : int
         number_of_waypoints_per_circle : int
         center_position : list [x,y]
@@ -247,11 +253,11 @@ class MotionGenerator:
             y_for_quat = np.full_like(y, circular_center_position[1])
             pos_for_quat = np.array([x_for_quat, y_for_quat, z])
             quat = self._calc_quaternion_of_mortar_inner_wall(
-                pos_for_quat, 1.0, yaw_bias
+                pos_for_quat, 1.0, yaw_bias, yaw_rotation
             )
         else:
             quat = self._calc_quaternion_of_mortar_inner_wall(
-                position, angle_param, yaw_bias
+                position, angle_param, yaw_bias, yaw_rotation
             )
 
         #################### create waypoints
@@ -280,7 +286,7 @@ class MotionGenerator:
         end_radius_z,
         angle_param=0,
         fixed_quaternion=False,
-        yaw_bias=0,
+        yaw_bias=None,
         number_of_waypoints=5,
     ):
         """
@@ -332,6 +338,7 @@ class MotionGenerator:
             position=position,
             angle_param=angle_param,
             yaw_bias=yaw_bias,
+            yaw_rotation=0,
             fixed_quaternion=fixed_quaternion,
         )
 
@@ -363,7 +370,7 @@ class MotionGenerator:
         end_radius_z,
         angle_param=0,
         fixed_quaternion=False,
-        yaw_bias=0,
+        yaw_bias=None,
         number_of_waypoints=5,
         motion_counts=1,
     ):
@@ -429,6 +436,7 @@ class MotionGenerator:
                 position=position,
                 angle_param=angle_param,
                 yaw=yaw_bias,
+                yaw_rotation=0,
                 fixed_quaternion=fixed_quaternion,
             )
 

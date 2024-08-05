@@ -5,6 +5,7 @@ import tf.transformations as tf
 from scipy.spatial.transform import Rotation
 from grinding_motion_routines.moveit_executor import MoveitExecutor
 from grinding_motion_routines.JTC_executor import JointTrajectoryControllerExecutor
+from grinding_motion_routines.constants import IK_NOT_FOUND
 
 import numpy as np
 from numpy import pi
@@ -45,8 +46,8 @@ class MotionPrimitive:
         )
 
         self.init_pose = init_pose
-        self.grinding_ee_link = rospy.get_param("~grinding_eef_link", "pestle_tip")
-        self.gathering_ee_link = rospy.get_param("~gathering_eef_link", "spatula_tip")
+        self.grinding_ee_link = rospy.get_param("~grinding_ee_link", "pestle_tip")
+        self.gathering_ee_link = rospy.get_param("~gathering_ee_link", "spatula_tip")
 
     def _pose_stamped_to_list(self, pose_msg):
         return [
@@ -73,16 +74,14 @@ class MotionPrimitive:
         execute_by_joint_trajectory=False,
     ):
         if pre_motion:
-            result = self.moveit_executor.execute_to_goal_pose(
+            pestle_ready_joints = self.JTC_executor.execute_to_goal_pose(
                 self.init_pose,
                 ee_link=ee_link,
-                vel_scale=moving_velocity_scale,
-                acc_scale=moving_acceleration_scale,
-                execute=True,
+                time_to_reach=3,
             )
-            if result == False:
-                rospy.logerr("Failed to move to Grinding init pose")
-                return False
+            if pestle_ready_joints == IK_NOT_FOUND:
+                rospy.logerr("Pestle ready IK not found")
+                return False, False
         if execute_by_joint_trajectory:
             joint_trajectory = waypoints
         else:
@@ -94,7 +93,7 @@ class MotionPrimitive:
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")
-                return False
+                return False, pestle_ready_joints
 
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
@@ -113,7 +112,7 @@ class MotionPrimitive:
                 time_to_reach=3,
             )
 
-        return True
+        return True, pestle_ready_joints
 
     def execute_gathering(
         self,
@@ -126,23 +125,21 @@ class MotionPrimitive:
         moving_acceleration_scale=0.3,
         execute_by_joint_trajectory=False,
     ):
-        self.moveit_executor.execute_to_goal_pose(
+
+        self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=self.grinding_ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+            time_to_reach=3,
         )
-        result = self.moveit_executor.execute_to_goal_pose(
+        spatula_ready_joints = self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+            time_to_reach=3,
         )
-        if result == False:
-            rospy.logerr("Failed to move to Gathering init pose")
-            return False
+        if spatula_ready_joints == IK_NOT_FOUND:
+            rospy.logerr("Spatula ready IK not found")
+            return False, False
+
         if execute_by_joint_trajectory:
             joint_trajectory = waypoints
         else:
@@ -154,7 +151,7 @@ class MotionPrimitive:
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")
-                return False
+                return False, spatula_ready_joints
         self.JTC_executor.execute_to_joint_goal(
             joint_trajectory[0],
             time_to_reach=2,
@@ -165,15 +162,13 @@ class MotionPrimitive:
             time_to_reach=gathering_sec,
         )
 
-        result = self.moveit_executor.execute_to_goal_pose(
+        self.JTC_executor.execute_to_goal_pose(
             self.init_pose,
             ee_link=ee_link,
-            vel_scale=moving_velocity_scale,
-            acc_scale=moving_acceleration_scale,
-            execute=True,
+            time_to_reach=3,
         )
 
-        return True
+        return True, spatula_ready_joints
 
     def execute_scooping(
         self,

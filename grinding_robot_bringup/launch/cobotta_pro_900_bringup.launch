@@ -3,7 +3,7 @@
   <arg name="robot_name" default="cobotta_pro_900" />
 
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
-  <arg name="sim" default="true" />
+  <arg name="sim" default="false" />
   <arg name="ip_address" default="192.168.0.1" />
 
   <!-- Robot controller -->

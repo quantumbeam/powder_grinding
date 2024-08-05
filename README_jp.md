@@ -30,7 +30,7 @@
 ## クイックスタート
 
 ### ソフト治具の作り方
-- [こちら](.\grinding_descriptions\mesh\3D_print_jig\README_jp.md)を読んでください。
+- [こちら](./grinding_descriptions/mesh/3D_print_jig/README_jp.md)を読んでください。
 
 ### PCとロボットとDocker環境のセットアップ
 - [環境セットアップの資料](./env/docker/README_jp.md)を読んで環境セットアップし、終わったらこちらに戻ってきて以下の続きを実行してください。

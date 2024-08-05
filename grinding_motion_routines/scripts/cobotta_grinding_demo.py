@@ -32,6 +32,9 @@ TIMEOUT_SEC = 0.1
 debug_marker = marker_display.MarkerDisplay("debug_marker")
 debug_tf = tf_publisher.TFPublisher()
 
+vel_scale = 0.9
+acc_scale = 0.9
+
 
 def display_debug_waypoints(waypoints):
     rospy.loginfo("Display debug marker and/or TF.")
@@ -94,8 +97,8 @@ def main():
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
-    grinding_ee_link = rospy.get_param("~grinding_eef_link")
-    gathering_ee_link = rospy.get_param("~gathering_eef_link")
+    grinding_ee_link = rospy.get_param("~grinding_ee_link")
+    gathering_ee_link = rospy.get_param("~gathering_ee_link")
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
     ################### init planning scene ###################
@@ -122,7 +125,9 @@ def main():
     )
     quat = r.as_quat()
     gathering_init_pose = list(init_pos.values()) + list(quat)
-    moveit.execute_to_goal_pose(grinding_init_pose, vel_scale=0.9, acc_scale=0.9)
+    moveit.execute_to_goal_pose(
+        grinding_init_pose, vel_scale=vel_scale, acc_scale=acc_scale
+    )
 
     # main loop
 
@@ -130,22 +135,22 @@ def main():
         moveit.execute_to_goal_pose(
             grinding_init_pose,
             ee_link=grinding_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
         moveit.execute_cartesian_path_by_waypoints(
             compute_grinding_waypoints(motion_gen),
             ee_link=grinding_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
         moveit.execute_to_goal_pose(
             grinding_init_pose,
             ee_link=grinding_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
 
@@ -153,30 +158,30 @@ def main():
         moveit.execute_to_goal_pose(
             gathering_init_pose,
             ee_link=gathering_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
         moveit.execute_cartesian_path_by_waypoints(
             compute_gathering_waypoints(motion_gen),
             ee_link=gathering_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
         moveit.execute_to_goal_pose(
             gathering_init_pose,
             ee_link=gathering_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
 
         moveit.execute_to_goal_pose(
             grinding_init_pose,
             ee_link=grinding_ee_link,
-            vel_scale=0.9,
-            acc_scale=0.9,
+            vel_scale=vel_scale,
+            acc_scale=acc_scale,
             execute=True,
         )
 

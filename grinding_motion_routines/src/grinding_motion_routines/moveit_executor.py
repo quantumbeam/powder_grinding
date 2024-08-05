@@ -145,10 +145,10 @@ class MoveitExecutor(object):
             return result
 
         else:
-            self.move_group.plan()
+            result = self.move_group.plan()
             self.move_group.stop()
             self.move_group.clear_pose_targets()
-            return False
+            return result
 
     def execute_cartesian_path_to_goal_pose(
         self,
@@ -257,9 +257,9 @@ class MoveitExecutor(object):
         self.move_group.clear_pose_targets()
 
     def _change_end_effector_link(self, new_ee_link):
-        old_eef_link = self.move_group.get_end_effector_link()
+        old_ee_link = self.move_group.get_end_effector_link()
         rospy.loginfo(
             "============ Cange End effector link: %s to %s"
-            % (old_eef_link, new_ee_link)
+            % (old_ee_link, new_ee_link)
         )
         self.move_group.set_end_effector_link(new_ee_link)
