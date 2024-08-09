@@ -5,7 +5,8 @@
 
     <!-- specify the URDF and SRDF files to be loaded -->
     <arg name="robot_description_file"
-        default="$(find grinding_descriptions)/urdf/fr3/fr3v5.urdf" />
+        default="$(find frcobot_description)/urdf/fr3v5.urdf" />
+        
     <arg name="controller_config_file"
         default="$(find grinding_robot_bringup)/config/frrobot_controllers.yaml" />
 

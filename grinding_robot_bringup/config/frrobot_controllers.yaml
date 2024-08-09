@@ -58,8 +58,10 @@ position_trajectory_controller:
    #     joint1: {p: 2.0,  i: 0.0, d: 0.01, i_clamp: 1}
    #     joint2: {p: 2.0,  i: 0.0, d: 0.01, i_clamp: 1}
 
-    # state_publish_rate:  50 # Defaults to 50
-    # action_monitor_rate: 20 # Defaults to 20
+   state_publish_rate:  125 # Defaults to 50
+   action_monitor_rate: 20 # Defaults to 20
+   stop_trajectory_duration: 0.5
+
     #hold_trajectory_duration: 0 # Defaults to 0.5
 
 # Individual Position Controllers ---------------------------------------
