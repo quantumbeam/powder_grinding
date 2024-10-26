@@ -32,6 +32,7 @@ grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 10
 grinding_yaw_bias : rad(pi)
 grinding_total_joint_diffence_for_planning : 10
+grinding_trial_number : 10 
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -50,6 +51,7 @@ gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
 gathering_yaw_bias : rad(pi)
 gathering_total_joint_diffence_for_planning : 20
+gathering_trial_number : 10 
 
 # scooping params 
 # scooping_pos_begining : 
