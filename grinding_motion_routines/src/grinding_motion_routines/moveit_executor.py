@@ -158,7 +158,6 @@ class MoveitExecutor(object):
         acc_scale=0.1,
         execute=True,
         eef_step=0.01,
-        jump_threshold=0.0,
         avoid_collisions=True,
         path_constraints=None,
         number_of_waypoints=10,
@@ -188,7 +187,6 @@ class MoveitExecutor(object):
             acc_scale=acc_scale,
             execute=execute,
             eef_step=eef_step,
-            jump_threshold=jump_threshold,
             avoid_collisions=avoid_collisions,
             path_constraints=path_constraints,
         )
@@ -202,7 +200,6 @@ class MoveitExecutor(object):
         acc_scale=0.1,
         execute=True,
         eef_step=0.01,
-        jump_threshold=0.0,
         avoid_collisions=True,
         path_constraints=None,
     ):
@@ -218,7 +215,6 @@ class MoveitExecutor(object):
         (path, fraction) = self.move_group.compute_cartesian_path(
             waypoints,
             eef_step=eef_step,
-            jump_threshold=jump_threshold,
             avoid_collisions=avoid_collisions,
             path_constraints=path_constraints,
         )
