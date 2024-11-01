@@ -11,14 +11,14 @@ from numpy import pi, nan
 
 
 class MotionGenerator:
-    def __init__(self, mortar_top_center_position, mortar_inner_scale):
-        """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_scale [x:,y:,z:]"""
+    def __init__(self, mortar_top_center_position, mortar_inner_size):
+        """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_size [x:,y:,z:]"""
 
         self.mortar_top_center_position = mortar_top_center_position
-        self.mortar_inner_scale = mortar_inner_scale
+        self.mortar_inner_size = mortar_inner_size
 
     def _calc_quaternion_of_mortar_inner_wall(
-        self, position, angle_param, yaw_bias, yaw_rotation, fixed_quaternion=False
+        self, position, angle_scale, yaw_bias, yaw_twist, fixed_quaternion=False
     ):
         quats = []
 
@@ -28,7 +28,7 @@ class MotionGenerator:
 
         #################### calculate orientation
         # angle param < 0  use inverse x,y, mean using inverse slope
-        if angle_param < 0:
+        if angle_scale < 0:
             pos_x *= -1
             pos_y *= -1
 
@@ -39,6 +39,12 @@ class MotionGenerator:
         normalized_pos_z = pos_z / norm
 
         # calc yaw angle
+
+        # if yaw_twist != 0:
+        #     yaw_lin_seq = np.linspace(0, yaw_twist, len(pos_x))
+        #     yaw = np.pi * 2 * np.sin(yaw_lin_seq)
+        #     print(yaw)
+        # else:
         if yaw_bias == None:
             yaw = np.arctan2(
                 self.mortar_top_center_position["y"],
@@ -46,11 +52,6 @@ class MotionGenerator:
             )
         else:
             yaw = yaw_bias
-
-        if yaw_rotation != 0:
-            yaw_rotations = np.linspace(0, yaw_rotation, len(pos_x))
-            yaw += yaw_rotations
-
         # rotate xy by the amount of yaw angle
         r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
         rotated_normalized_pos_x, rotated_normalized_pos_y = self._polar_to_cartesian(
@@ -86,7 +87,7 @@ class MotionGenerator:
             )
 
             slerp = Slerp([0, 1], rotations)
-            slerp_quat = slerp(angle_param).as_quat()
+            slerp_quat = slerp(angle_scale).as_quat()
             quats.append(slerp_quat)
 
         quats = np.array(quats)
@@ -164,9 +165,9 @@ class MotionGenerator:
         end_position,
         begining_radious_z,
         end_radious_z,
-        angle_param=0,
-        yaw_bias=None,
-        yaw_rotation=0,
+        angle_scale=0,
+        yaw_bias=0,
+        yaw_twist_per_rotation=0,
         number_of_rotations=1,
         number_of_waypoints_per_circle=10,
         center_position=np.array([0, 0]),
@@ -177,9 +178,9 @@ class MotionGenerator:
         end_position : list [x,y]
         begining_radious_z : float
         end_radious_z : float
-        angle_param : float
+        angle_scale : float
         yaw_bias : float
-        yaw_rotation : float
+        grinding_yaw_twist_per_rotation : float
         number_of_rotations : int
         number_of_waypoints_per_circle : int
         center_position : list [x,y]
@@ -207,7 +208,7 @@ class MotionGenerator:
             end_position,
             total_number_of_waypoints,
             number_of_rotations,
-            self.mortar_inner_scale["x"],
+            self.mortar_inner_size["x"],
         )
 
         # shift center pos
@@ -215,10 +216,10 @@ class MotionGenerator:
         y += circular_center_position[1]
 
         # check xy in range
-        if np.any(np.abs(x) > self.mortar_inner_scale["x"]):
+        if np.any(np.abs(x) > self.mortar_inner_size["x"]):
             raise ValueError("calculated x is over mortar scale")
 
-        elif np.any(np.abs(y) > self.mortar_inner_scale["y"]):
+        elif np.any(np.abs(y) > self.mortar_inner_size["y"]):
             raise ValueError("calculated y is over mortar scale")
 
         # calc z
@@ -233,7 +234,7 @@ class MotionGenerator:
         z = self._ellipsoid_z_lower(
             x,
             y,
-            [self.mortar_inner_scale["x"], self.mortar_inner_scale["y"], radious_z],
+            [self.mortar_inner_size["x"], self.mortar_inner_size["y"], radious_z],
         )
 
         position = np.array([x, y, z])
@@ -247,17 +248,20 @@ class MotionGenerator:
             ]
         )
 
+        # calc twist
+        yaw_twist = yaw_twist_per_rotation * number_of_rotations
+
         #################### calculate orientation
-        if angle_param == 0:
+        if angle_scale == 0:
             x_for_quat = np.full_like(x, circular_center_position[0])
             y_for_quat = np.full_like(y, circular_center_position[1])
             pos_for_quat = np.array([x_for_quat, y_for_quat, z])
             quat = self._calc_quaternion_of_mortar_inner_wall(
-                pos_for_quat, 1.0, yaw_bias, yaw_rotation
+                pos_for_quat, 1.0, yaw_bias, yaw_twist
             )
         else:
             quat = self._calc_quaternion_of_mortar_inner_wall(
-                position, angle_param, yaw_bias, yaw_rotation
+                position, angle_scale, yaw_bias, yaw_twist
             )
 
         #################### create waypoints
@@ -284,9 +288,9 @@ class MotionGenerator:
         end_position,
         begining_radius_z,
         end_radius_z,
-        angle_param=0,
+        angle_scale=0,
         fixed_quaternion=False,
-        yaw_bias=None,
+        yaw_bias=0,
         number_of_waypoints=5,
     ):
         """
@@ -297,7 +301,7 @@ class MotionGenerator:
         end_length_from_center : float
         begining_radius_z : float
         end_radius_z : float
-        angle_param : float
+        angle_scale : float
         fixed_quaternion : bool
         yaw_bias : float
         number_of_waypoints : int
@@ -336,9 +340,9 @@ class MotionGenerator:
         #################### calculate orientation
         quat = self._calc_quaternion_of_mortar_inner_wall(
             position=position,
-            angle_param=angle_param,
+            angle_scale=angle_scale,
             yaw_bias=yaw_bias,
-            yaw_rotation=0,
+            grinding_yaw_twist_per_rotation=0,
             fixed_quaternion=fixed_quaternion,
         )
 
@@ -368,7 +372,7 @@ class MotionGenerator:
         end_length_from_center,
         begining_radius_z,
         end_radius_z,
-        angle_param=0,
+        angle_scale=0,
         fixed_quaternion=False,
         yaw_bias=None,
         number_of_waypoints=5,
@@ -382,7 +386,7 @@ class MotionGenerator:
         end_length_from_center : float
         begining_radius_z : float
         end_radius_z : float
-        angle_param : float
+        angle_scale : float
         fixed_quaternion : bool
         yaw_bias : float
         number_of_waypoints : int
@@ -434,9 +438,9 @@ class MotionGenerator:
             #################### calculate orientation
             quat = self._calc_quaternion_of_mortar_inner_wall(
                 position=position,
-                angle_param=angle_param,
+                angle_scale=angle_scale,
                 yaw=yaw_bias,
-                yaw_rotation=0,
+                grinding_yaw_twist_per_rotation=0,
                 fixed_quaternion=fixed_quaternion,
             )
 

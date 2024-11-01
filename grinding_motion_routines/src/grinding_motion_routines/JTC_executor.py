@@ -69,6 +69,7 @@ class JointTrajectoryControllerExecutor(Arm):
 
         for i in range(trial_number):
             joint_trajectory = []
+            joint_trajectory_without_frange = []
             start_joint = self.joint_angles()
             for pose in waypoints:
                 joints = self._solve_ik(pose, q_guess=start_joint)
@@ -78,11 +79,13 @@ class JointTrajectoryControllerExecutor(Arm):
                 else:
                     start_joint = joints
                     joint_trajectory.append(list(joints))
+                    joint_trajectory_without_frange.append(list(joints[0:-1]))
             if len(joint_trajectory) == 0:
                 rospy.logerr("Skip this trajectory")
                 continue
             total_joint_difference = np.sum(
-                np.max(joint_trajectory, axis=0) - np.min(joint_trajectory, axis=0)
+                np.max(joint_trajectory_without_frange, axis=0)
+                - np.min(joint_trajectory_without_frange, axis=0)
             )
             if total_joint_difference > total_joint_limit:
                 rospy.logerr("Trajectory is out of joint limit")
