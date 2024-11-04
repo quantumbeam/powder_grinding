@@ -27,6 +27,7 @@ class MotionPrimitive:
         planning_time=20,
         ft_topic=None,
         ik_solver="trac_ik",
+        solve_type="Distance",
     ):
         """Supported init_pose is only [x y z ax ay az aw]"""
 
@@ -43,6 +44,7 @@ class MotionPrimitive:
             tcp_link=ee_link,
             ft_topic=ft_topic,
             ik_solver=ik_solver,
+            solve_type=solve_type,
         )
 
         self.init_pose = init_pose
