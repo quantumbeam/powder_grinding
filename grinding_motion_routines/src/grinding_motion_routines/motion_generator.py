@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-# python-related imports
+import warnings
 import numpy as np
 from scipy.spatial.transform import Rotation
 from scipy.spatial.transform import Slerp
@@ -11,11 +11,13 @@ from numpy import pi, nan
 
 
 class MotionGenerator:
-    def __init__(self, mortar_top_center_position, mortar_inner_size):
+    def __init__(self, mortar_top_center_position, mortar_inner_size,yaw_twist_limit=[0,pi]):
         """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_size [x:,y:,z:]"""
 
         self.mortar_top_center_position = mortar_top_center_position
         self.mortar_inner_size = mortar_inner_size
+        self.min_yaw_twist = yaw_twist_limit[0]
+        self.max_yaw_twist = yaw_twist_limit[1]
 
     def _calc_quaternion_of_mortar_inner_wall(
         self, position, angle_scale, yaw_bias, yaw_twist, fixed_quaternion=False
@@ -39,30 +41,28 @@ class MotionGenerator:
         normalized_pos_z = pos_z / norm
 
         # calc yaw angle
-
-        # if yaw_twist != 0:
-        #     yaw_lin_seq = np.linspace(0, yaw_twist, len(pos_x))
-        #     yaw = np.pi * 2 * np.sin(yaw_lin_seq)
-        #     print(yaw)
-        # else:
-        if yaw_bias == None:
-            yaw = np.arctan2(
-                self.mortar_top_center_position["y"],
-                self.mortar_top_center_position["x"],
-            )
+        if yaw_twist > 0:
+            yaw_lin_seq = np.linspace(0, yaw_twist, len(pos_x))
+            yaw = self.max_yaw_twist * np.sin(yaw_lin_seq)
         else:
-            yaw = yaw_bias
-        # rotate xy by the amount of yaw angle
-        r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
-        rotated_normalized_pos_x, rotated_normalized_pos_y = self._polar_to_cartesian(
-            r, theta + yaw
-        )
-
+            if yaw_bias == None:
+                yaw = np.arctan2(
+                    self.mortar_top_center_position["y"],
+                    self.mortar_top_center_position["x"],
+                )
+            else:
+                yaw = yaw_bias
+        
+            # rotate xy by the amount of yaw angle
+            r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
+            normalized_pos_x, normalized_pos_y = self._polar_to_cartesian(
+                r, theta + yaw
+            )
         # calc euler of the normal and the verticle to the ground
-        roll_of_the_normal = -np.arctan2(rotated_normalized_pos_y, normalized_pos_z)
+        roll_of_the_normal = -np.arctan2(normalized_pos_y, normalized_pos_z)
         pitch_of_the_normal = -np.arctan2(
-            rotated_normalized_pos_x,
-            np.sqrt(rotated_normalized_pos_y**2 + normalized_pos_z**2),
+            normalized_pos_x,
+            np.sqrt(normalized_pos_y**2 + normalized_pos_z**2),
         )
         yaw_of_the_normal = np.full_like(pos_z, yaw)
 
@@ -180,7 +180,7 @@ class MotionGenerator:
         end_radious_z : float
         angle_scale : float
         yaw_bias : float
-        grinding_yaw_twist_per_rotation : float
+        yaw_twist_per_rotation : float
         number_of_rotations : int
         number_of_waypoints_per_circle : int
         center_position : list [x,y]
@@ -201,6 +201,10 @@ class MotionGenerator:
             raise ValueError(
                 "Can't calculate motion, you can choose number_of_waypoints_per_circle >= 1"
             )
+        
+        if yaw_twist_per_rotation > np.pi:
+            warnings.warn("yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior.")
+        
         #################### calculate position
         # calc xy
         x, y = self._lerp_in_polar(
@@ -252,17 +256,17 @@ class MotionGenerator:
         yaw_twist = yaw_twist_per_rotation * number_of_rotations
 
         #################### calculate orientation
-        if angle_scale == 0:
-            x_for_quat = np.full_like(x, circular_center_position[0])
-            y_for_quat = np.full_like(y, circular_center_position[1])
-            pos_for_quat = np.array([x_for_quat, y_for_quat, z])
-            quat = self._calc_quaternion_of_mortar_inner_wall(
-                pos_for_quat, 1.0, yaw_bias, yaw_twist
-            )
-        else:
-            quat = self._calc_quaternion_of_mortar_inner_wall(
-                position, angle_scale, yaw_bias, yaw_twist
-            )
+        # if angle_scale == 0:
+        #     x_for_quat = np.full_like(x, circular_center_position[0])
+        #     y_for_quat = np.full_like(y, circular_center_position[1])
+        #     pos_for_quat = np.array([x_for_quat, y_for_quat, z])
+        #     quat = self._calc_quaternion_of_mortar_inner_wall(
+        #         pos_for_quat, 1.0, yaw_bias, yaw_twist
+        #     )
+        # else:
+        quat = self._calc_quaternion_of_mortar_inner_wall(
+            position, angle_scale, yaw_bias, yaw_twist
+        )
 
         #################### create waypoints
         waypoints = np.stack(
