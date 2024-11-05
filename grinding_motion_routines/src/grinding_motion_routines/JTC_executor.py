@@ -98,6 +98,7 @@ class JointTrajectoryControllerExecutor(Arm):
             else:
                 # 2番目以降のwaypoint
                 retry_count = 0  # 各ポーズごとの再試行カウントをリセット
+                joint_difference_list = []
                 while retry_count < max_attempts:
                     ik_joint = self._solve_ik(pose, q_guess=start_joint)
                     if ik_joint is None or np.any(ik_joint == "ik_not_found"):
@@ -108,10 +109,11 @@ class JointTrajectoryControllerExecutor(Arm):
                     )
                     if joint_difference > joint_difference_limit:
                         retry_count += 1  # 再試行カウントを増やす
+                        joint_difference_list.append(joint_difference)
                         if retry_count >= max_attempts:
                             rospy.logerr(
                                 f"Waypoint {i + 1}/{total_waypoints} failed after {max_attempts} trials, "
-                                f"Joint difference was too large ({joint_difference})."
+                                f"Joint difference was too large (min diff:{min(joint_difference_list)})"
                             )
                             return None
                         continue
