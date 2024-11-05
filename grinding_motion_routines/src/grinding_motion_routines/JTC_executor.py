@@ -60,7 +60,7 @@ class JointTrajectoryControllerExecutor(Arm):
         waypoints,
         ee_link="",
         joint_difference_limit=0.03,
-        trial_number=100,
+        max_attempts=1000,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
         if ee_link == "":
@@ -77,12 +77,10 @@ class JointTrajectoryControllerExecutor(Arm):
             total=total_waypoints,
             desc="Planning motion for waypoints",
         ):
-            if i == 0:
-                # 初回のみtrial_number回の試行で最良の結果を採用
-                best_ik_joint = None
+            if i == 0:max_attemptsk_joint = None
                 best_joint_difference = float("inf")
                 for i in tqdm(
-                    range(trial_number),
+                    range(max_attempts),
                     desc="Finding best IK solution for 1st waypoint",
                 ):
                     ik_joint = self._solve_ik(pose, q_guess=start_joint)
@@ -100,7 +98,7 @@ class JointTrajectoryControllerExecutor(Arm):
             else:
                 # 2番目以降のwaypoint
                 retry_count = 0  # 各ポーズごとの再試行カウントをリセット
-                while retry_count < trial_number:
+                while retry_count < max_attempts:
                     ik_joint = self._solve_ik(pose, q_guess=start_joint)
                     if ik_joint is None or np.any(ik_joint == "ik_not_found"):
                         rospy.logerr("IK not found, Please check the pose")
@@ -110,9 +108,9 @@ class JointTrajectoryControllerExecutor(Arm):
                     )
                     if joint_difference > joint_difference_limit:
                         retry_count += 1  # 再試行カウントを増やす
-                        if retry_count >= trial_number:
+                        if retry_count >= max_attempts:
                             rospy.logerr(
-                                f"Waypoint {i + 1}/{total_waypoints} failed after {trial_number} trials, "
+                                f"Waypoint {i + 1}/{total_waypoints} failed after {max_attempts} trials, "
                                 f"Joint difference was too large ({joint_difference})."
                             )
                             return None
@@ -133,7 +131,7 @@ class JointTrajectoryControllerExecutor(Arm):
         joint_difference_limit,
         ee_link="",
         time_to_reach=5.0,
-        trial_number=10,
+        max_attempts=100,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
 
@@ -141,7 +139,7 @@ class JointTrajectoryControllerExecutor(Arm):
             waypoints,
             joint_difference_limit,
             ee_link=ee_link,
-            trial_number=trial_number,
+            max_attempts=max_attempts,
         )
         self.set_joint_trajectory(joint_trajectory, t=time_to_reach)
 

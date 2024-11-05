@@ -105,8 +105,8 @@ def main():
     gathering_total_joint_diffence_for_planning = rospy.get_param(
         "~gathering_total_joint_diffence_for_planning", None
     )
-    grinding_trial_number = rospy.get_param("~grinding_trial_number")
-    gathering_trial_number = rospy.get_param("~gathering_trial_number")
+    grinding_max_attempts = rospy.get_param("~grinding_max_attempts")
+    gathering_max_attempts = rospy.get_param("~gathering_max_attempts")
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
@@ -160,7 +160,7 @@ def main():
             compute_grinding_waypoints(motion_gen),
             grinding_sec=grinding_sec,
             joint_difference_limit=grinding_total_joint_diffence_for_planning,
-            trial_number=grinding_trial_number,
+            max_attempts=grinding_max_attempts,
             ee_link=grinding_ee_link,
         )
 
@@ -169,7 +169,7 @@ def main():
             compute_gathering_waypoints(motion_gen),
             gathering_sec=gathering_sec,
             joint_difference_limit=gathering_total_joint_diffence_for_planning,
-            trial_number=gathering_trial_number,
+            max_attempts=gathering_max_attempts,
             ee_link=gathering_ee_link,
         )
 

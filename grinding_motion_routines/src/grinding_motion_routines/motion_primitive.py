@@ -66,7 +66,7 @@ class MotionPrimitive:
         self,
         waypoints,
         joint_difference_limit=0.03,
-        trial_number=10,
+        max_attempts=100,
         grinding_sec=1,
         ee_link="pestle_tip",
         moving_velocity_scale=0.3,
@@ -91,7 +91,7 @@ class MotionPrimitive:
                 waypoints,
                 joint_difference_limit=joint_difference_limit,
                 ee_link=ee_link,
-                trial_number=trial_number,
+                max_attempts=max_attempts,
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")
@@ -120,7 +120,7 @@ class MotionPrimitive:
         self,
         waypoints,
         joint_difference_limit=0.03,
-        trial_number=10,
+        max_attempts=100,
         gathering_sec=1,
         ee_link="spatula_tip",
         moving_velocity_scale=0.3,
@@ -149,7 +149,7 @@ class MotionPrimitive:
                 waypoints,
                 joint_difference_limit=joint_difference_limit,
                 ee_link=ee_link,
-                trial_number=trial_number,
+                max_attempts=max_attempts,
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")

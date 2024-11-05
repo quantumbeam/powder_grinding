@@ -236,7 +236,7 @@ def main():
                         compute_grinding_waypoints(motion_gen),
                         grinding_sec=grinding_sec,
                         joint_difference_limit=grinding_total_joint_diffence_for_planning,
-                        trial_number=10,
+                        max_attempts=100,
                         ee_link=grinding_ee_link,
                     )
                 elif exec == False:
@@ -251,7 +251,7 @@ def main():
                         compute_gathering_waypoints(motion_gen),
                         gathering_sec=gathering_sec,
                         joint_difference_limit=gathering_total_joint_diffence_for_planning,
-                        trial_number=10,
+                        max_attempts=100,
                         ee_link=gathering_ee_link,
                     )
                 elif exec == False:
@@ -304,7 +304,7 @@ def main():
                                 grinding_waypoints,
                                 grinding_sec=grinding_sec,
                                 joint_difference_limit=grinding_total_joint_diffence_for_planning,
-                                trial_number=10,
+                                max_attempts=100,
                                 ee_link=grinding_ee_link,
                             )
                         elif motion_command == "RGG":
@@ -317,7 +317,7 @@ def main():
                                 compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
                                 joint_difference_limit=grinding_total_joint_diffence_for_planning,
-                                trial_number=10,
+                                max_attempts=100,
                                 ee_link=grinding_ee_link,
                             )
                             if gathering_waypoints.all():
@@ -329,7 +329,7 @@ def main():
                                 compute_gathering_waypoints(motion_gen),
                                 gathering_sec=gathering_sec,
                                 joint_difference_limit=gathering_total_joint_diffence_for_planning,
-                                trial_number=10,
+                                max_attempts=100,
                                 ee_link=gathering_ee_link,
                             )
                         motion_counts += 1
