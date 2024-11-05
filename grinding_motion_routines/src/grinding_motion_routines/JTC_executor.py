@@ -77,7 +77,7 @@ class JointTrajectoryControllerExecutor(Arm):
             total=total_waypoints,
             desc="Planning motion for waypoints",
         ):
-            if i == 0:max_attemptsk_joint = None
+            if i == 0:
                 best_joint_difference = float("inf")
                 for i in tqdm(
                     range(max_attempts),
