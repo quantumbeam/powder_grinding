@@ -5,6 +5,7 @@ import rospy
 from grinding_motion_routines.arm import Arm
 from tqdm import tqdm
 
+
 class JointTrajectoryControllerExecutor(Arm):
     """Motion Executor including IK and JointTrajectoryController(JTC) ."""
 
@@ -57,44 +58,75 @@ class JointTrajectoryControllerExecutor(Arm):
     def generate_joint_trajectory(
         self,
         waypoints,
-        total_joint_limit,
         ee_link="",
-        trial_number=5,
+        total_joint_limit=0.03,
+        trial_number=100,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
+        rospy.loginfo("Total joint limit: %s" % total_joint_limit)
         if ee_link == "":
             ee_link = self.ee_link
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
 
         joint_trajectory = []
+        joint_dif_list = []
         start_joint = self.joint_angles()
-
         total_waypoints = len(waypoints)  # 全体のwaypoints数を取得
-        for i, pose in tqdm(enumerate(waypoints), total=total_waypoints, desc="Planning motion for waypoints"):
-            retry_count = 0  # 各ポーズごとの再試行カウントをリセット
-            while retry_count < trial_number:  # trial_number回までループ
-                ik_joint = self._solve_ik(pose, q_guess=start_joint)
-                if np.any(ik_joint == "ik_not_found") or ik_joint is None:
-                    rospy.logerr("IK not found, Please check the pose")
-                    return None
-                else:
-                    joint_difference = np.sum(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1]))
+
+        for i, pose in tqdm(
+            enumerate(waypoints),
+            total=total_waypoints,
+            desc="Planning motion for waypoints",
+        ):
+            if i == 0:
+                # 初回のみtrial_number回の試行で最良の結果を採用
+                best_ik_joint = None
+                best_joint_difference = float("inf")
+                for i in tqdm(
+                    range(trial_number),
+                    desc="Finding best IK solution for 1st waypoint",
+                ):
+                    ik_joint = self._solve_ik(pose, q_guess=start_joint)
+                    if ik_joint is None or np.any(ik_joint == "ik_not_found"):
+                        rospy.logerr("IK not found, Please check the pose")
+                        continue
+                    joint_difference = abs(
+                        np.sum(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1]))
+                    )
+                    if joint_difference < best_joint_difference:
+                        best_ik_joint = ik_joint
+                        best_joint_difference = joint_difference
+                start_joint = best_ik_joint
+                joint_trajectory.append(list(best_ik_joint))
+                joint_dif_list.append(best_joint_difference)
+            else:
+                # 2番目以降のwaypoint
+                retry_count = 0  # 各ポーズごとの再試行カウントをリセット
+                while retry_count < trial_number:
+                    ik_joint = self._solve_ik(pose, q_guess=start_joint)
+                    if ik_joint is None or np.any(ik_joint == "ik_not_found"):
+                        rospy.logerr("IK not found, Please check the pose")
+                        return None
+                    joint_difference = abs(
+                        np.sum(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1]))
+                    )
                     if joint_difference > total_joint_limit:
                         retry_count += 1  # 再試行カウントを増やす
-                        if retry_count >= trial_number:  # トライアル数を超えた場合のエラーログ
+                        if retry_count >= trial_number:
                             rospy.logerr(
                                 f"Waypoint {i + 1}/{total_waypoints} failed after {trial_number} trials, "
                                 f"Joint difference was too large ({joint_difference})."
                             )
                             return None
-                        continue  # 同じポーズに対して再計算
+                        continue
                     else:
-                        start_joint = ik_joint  # 成功した場合、start_jointを更新
+                        start_joint = ik_joint
                         joint_trajectory.append(list(ik_joint))
-                        break  # 成功したので、次のポーズへ
-        
-        # すべてのwaypointsを処理した後に結果を返す
+                        joint_dif_list.append(joint_difference)
+                        break
+
+        rospy.loginfo("Joint difference of top 10: %s" % sorted(joint_dif_list)[-10:])
         return joint_trajectory if joint_trajectory else None
 
     def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
