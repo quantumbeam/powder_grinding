@@ -235,7 +235,7 @@ def main():
                     primitive.execute_grinding(
                         compute_grinding_waypoints(motion_gen),
                         grinding_sec=grinding_sec,
-                        total_joint_limit=grinding_total_joint_diffence_for_planning,
+                        joint_difference_limit=grinding_total_joint_diffence_for_planning,
                         trial_number=10,
                         ee_link=grinding_ee_link,
                     )
@@ -250,7 +250,7 @@ def main():
                     primitive.execute_gathering(
                         compute_gathering_waypoints(motion_gen),
                         gathering_sec=gathering_sec,
-                        total_joint_limit=gathering_total_joint_diffence_for_planning,
+                        joint_difference_limit=gathering_total_joint_diffence_for_planning,
                         trial_number=10,
                         ee_link=gathering_ee_link,
                     )
@@ -303,7 +303,7 @@ def main():
                             primitive.execute_grinding(
                                 grinding_waypoints,
                                 grinding_sec=grinding_sec,
-                                total_joint_limit=grinding_total_joint_diffence_for_planning,
+                                joint_difference_limit=grinding_total_joint_diffence_for_planning,
                                 trial_number=10,
                                 ee_link=grinding_ee_link,
                             )
@@ -316,7 +316,7 @@ def main():
                             primitive.execute_grinding(
                                 compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
-                                total_joint_limit=grinding_total_joint_diffence_for_planning,
+                                joint_difference_limit=grinding_total_joint_diffence_for_planning,
                                 trial_number=10,
                                 ee_link=grinding_ee_link,
                             )
@@ -328,7 +328,7 @@ def main():
                             primitive.execute_gathering(
                                 compute_gathering_waypoints(motion_gen),
                                 gathering_sec=gathering_sec,
-                                total_joint_limit=gathering_total_joint_diffence_for_planning,
+                                joint_difference_limit=gathering_total_joint_diffence_for_planning,
                                 trial_number=10,
                                 ee_link=gathering_ee_link,
                             )

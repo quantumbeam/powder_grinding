@@ -65,7 +65,7 @@ class MotionPrimitive:
     def execute_grinding(
         self,
         waypoints,
-        total_joint_limit=1,
+        joint_difference_limit=0.03,
         trial_number=10,
         grinding_sec=1,
         ee_link="pestle_tip",
@@ -89,7 +89,7 @@ class MotionPrimitive:
         else:
             joint_trajectory = self.JTC_executor.generate_joint_trajectory(
                 waypoints,
-                total_joint_limit=total_joint_limit,
+                joint_difference_limit=joint_difference_limit,
                 ee_link=ee_link,
                 trial_number=trial_number,
             )
@@ -119,7 +119,7 @@ class MotionPrimitive:
     def execute_gathering(
         self,
         waypoints,
-        total_joint_limit=1,
+        joint_difference_limit=0.03,
         trial_number=10,
         gathering_sec=1,
         ee_link="spatula_tip",
@@ -147,7 +147,7 @@ class MotionPrimitive:
         else:
             joint_trajectory = self.JTC_executor.generate_joint_trajectory(
                 waypoints,
-                total_joint_limit=total_joint_limit,
+                joint_difference_limit=joint_difference_limit,
                 ee_link=ee_link,
                 trial_number=trial_number,
             )
