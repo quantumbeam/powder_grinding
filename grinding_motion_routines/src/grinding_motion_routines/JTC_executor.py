@@ -59,18 +59,16 @@ class JointTrajectoryControllerExecutor(Arm):
         self,
         waypoints,
         ee_link="",
-        total_joint_limit=0.03,
+        joint_difference_limit=0.03,
         trial_number=100,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
-        rospy.loginfo("Total joint limit: %s" % total_joint_limit)
         if ee_link == "":
             ee_link = self.ee_link
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
 
         joint_trajectory = []
-        joint_dif_list = []
         start_joint = self.joint_angles()
         total_waypoints = len(waypoints)  # 全体のwaypoints数を取得
 
@@ -99,7 +97,6 @@ class JointTrajectoryControllerExecutor(Arm):
                         best_joint_difference = joint_difference
                 start_joint = best_ik_joint
                 joint_trajectory.append(list(best_ik_joint))
-                joint_dif_list.append(best_joint_difference)
             else:
                 # 2番目以降のwaypoint
                 retry_count = 0  # 各ポーズごとの再試行カウントをリセット
@@ -111,7 +108,7 @@ class JointTrajectoryControllerExecutor(Arm):
                     joint_difference = abs(
                         np.sum(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1]))
                     )
-                    if joint_difference > total_joint_limit:
+                    if joint_difference > joint_difference_limit:
                         retry_count += 1  # 再試行カウントを増やす
                         if retry_count >= trial_number:
                             rospy.logerr(
@@ -123,10 +120,8 @@ class JointTrajectoryControllerExecutor(Arm):
                     else:
                         start_joint = ik_joint
                         joint_trajectory.append(list(ik_joint))
-                        joint_dif_list.append(joint_difference)
                         break
 
-        rospy.loginfo("Joint difference of top 10: %s" % sorted(joint_dif_list)[-10:])
         return joint_trajectory if joint_trajectory else None
 
     def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
@@ -135,7 +130,7 @@ class JointTrajectoryControllerExecutor(Arm):
     def execute_by_waypoints(
         self,
         waypoints,
-        total_joint_limit,
+        joint_difference_limit,
         ee_link="",
         time_to_reach=5.0,
         trial_number=10,
@@ -144,7 +139,7 @@ class JointTrajectoryControllerExecutor(Arm):
 
         joint_trajectory = self.generate_joint_trajectory(
             waypoints,
-            total_joint_limit,
+            joint_difference_limit,
             ee_link=ee_link,
             trial_number=trial_number,
         )
