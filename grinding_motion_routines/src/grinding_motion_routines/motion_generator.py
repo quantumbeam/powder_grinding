@@ -11,7 +11,9 @@ from numpy import pi, nan
 
 
 class MotionGenerator:
-    def __init__(self, mortar_top_center_position, mortar_inner_size,yaw_twist_limit=[0,pi]):
+    def __init__(
+        self, mortar_top_center_position, mortar_inner_size, yaw_twist_limit=[0, 2 * pi]
+    ):
         """Supported type : 'Dict' mortar_base_position [x:,y:,z:], 'Dict' mortar_inner_size [x:,y:,z:]"""
 
         self.mortar_top_center_position = mortar_top_center_position
@@ -42,8 +44,11 @@ class MotionGenerator:
 
         # calc yaw angle
         if yaw_twist > 0:
-            yaw_lin_seq = np.linspace(0, yaw_twist, len(pos_x))
-            yaw = self.max_yaw_twist * np.sin(yaw_lin_seq)
+            yaw = np.linspace(0, yaw_twist, len(pos_x))
+            if yaw.max() > self.max_yaw_twist:
+                raise ValueError("yaw_twist is bigger than 2pi")
+            elif yaw.min() < self.min_yaw_twist:
+                raise ValueError("yaw_twist is smaller than zero")
         else:
             if yaw_bias == None:
                 yaw = np.arctan2(
@@ -52,7 +57,7 @@ class MotionGenerator:
                 )
             else:
                 yaw = yaw_bias
-        
+
             # rotate xy by the amount of yaw angle
             r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
             normalized_pos_x, normalized_pos_y = self._polar_to_cartesian(
@@ -201,10 +206,12 @@ class MotionGenerator:
             raise ValueError(
                 "Can't calculate motion, you can choose number_of_waypoints_per_circle >= 1"
             )
-        
+
         if yaw_twist_per_rotation > np.pi:
-            warnings.warn("yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior.")
-        
+            warnings.warn(
+                "yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior."
+            )
+
         #################### calculate position
         # calc xy
         x, y = self._lerp_in_polar(

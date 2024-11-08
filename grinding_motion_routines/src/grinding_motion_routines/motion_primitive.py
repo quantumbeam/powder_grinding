@@ -75,6 +75,7 @@ class MotionPrimitive:
         post_motion=True,
         execute_by_joint_trajectory=False,
     ):
+        pestle_ready_joints = None
         if pre_motion:
             pestle_ready_joints = self.JTC_executor.execute_to_goal_pose(
                 self.init_pose,
@@ -108,11 +109,17 @@ class MotionPrimitive:
         )
 
         if post_motion:
-            self.JTC_executor.execute_to_goal_pose(
-                self.init_pose,
-                ee_link=ee_link,
-                time_to_reach=3,
-            )
+            if pestle_ready_joints is not None:
+                self.JTC_executor.execute_to_joint_goal(
+                    pestle_ready_joints,
+                    time_to_reach=3,
+                )
+            else:
+                self.JTC_executor.execute_to_goal_pose(
+                    self.init_pose,
+                    ee_link=ee_link,
+                    time_to_reach=3,
+                )
 
         return True, pestle_ready_joints
 
