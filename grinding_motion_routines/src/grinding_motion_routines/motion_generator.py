@@ -43,12 +43,13 @@ class MotionGenerator:
         normalized_pos_z = pos_z / norm
 
         # calc yaw angle
-        if yaw_twist > 0:
-            yaw = np.linspace(0, yaw_twist, len(pos_x))
-            if yaw.max() > self.max_yaw_twist:
+        if yaw_twist != 0:
+            if abs(yaw_twist) > self.max_yaw_twist:
                 raise ValueError("yaw_twist is bigger than 2pi")
-            elif yaw.min() < self.min_yaw_twist:
-                raise ValueError("yaw_twist is smaller than zero")
+            if yaw_twist < 0:
+                yaw = np.linspace(0, abs(yaw_twist), len(pos_x))
+            else:
+                yaw = np.linspace(abs(yaw_twist), 0, len(pos_x))
         else:
             if yaw_bias == None:
                 yaw = np.arctan2(
