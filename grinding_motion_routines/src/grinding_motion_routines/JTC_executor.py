@@ -46,6 +46,7 @@ class JointTrajectoryControllerExecutor(Arm):
         goal_pose,
         ee_link="",
         time_to_reach=5.0,
+        max_attempts=10,
         wait=True,
     ):
         """Supported pose is only x y z aw ax ay az"""
@@ -53,7 +54,22 @@ class JointTrajectoryControllerExecutor(Arm):
             ee_link = self.ee_link
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
-        return self.set_target_pose(goal_pose, t=time_to_reach, wait=wait)
+        
+        
+        best_ik= None
+        best_dif= float("inf")
+        start_joint = self.joint_angles()
+        for i in range(max_attempts):
+            joint_goal = self._solve_ik(goal_pose)
+            if joint_goal is None or np.any(joint_goal == "ik_not_found"):
+                rospy.logerr("IK not found, Please check the pose")
+                continue
+            dif=abs(np.sum(np.array(start_joint[0:-1])-np.array(joint_goal[0:-1])))
+            if dif < best_dif:
+                best_ik=joint_goal
+                best_dif=dif
+        self.set_joint_positions(best_ik, t=time_to_reach, wait=wait)
+        return best_ik
 
     def generate_joint_trajectory(
         self,
