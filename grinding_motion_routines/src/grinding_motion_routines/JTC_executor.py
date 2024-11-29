@@ -77,6 +77,7 @@ class JointTrajectoryControllerExecutor(Arm):
         ee_link="",
         joint_difference_limit=0.03,
         max_attempts=1000,
+        max_attempts_for_first_waypoint=100,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
         if ee_link == "":
@@ -96,16 +97,14 @@ class JointTrajectoryControllerExecutor(Arm):
             if i == 0:
                 best_joint_difference = float("inf")
                 for i in tqdm(
-                    range(max_attempts),
+                    range(max_attempts_for_first_waypoint),
                     desc="Finding best IK solution for 1st waypoint",
                 ):
                     ik_joint = self._solve_ik(pose, q_guess=start_joint)
                     if ik_joint is None or np.any(ik_joint == "ik_not_found"):
                         rospy.logerr("IK not found, Please check the pose")
                         continue
-                    joint_difference = abs(
-                        np.sum(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1]))
-                    )
+                    joint_difference = np.sum(np.abs(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1])))
                     if joint_difference < best_joint_difference:
                         best_ik_joint = ik_joint
                         best_joint_difference = joint_difference
@@ -120,9 +119,7 @@ class JointTrajectoryControllerExecutor(Arm):
                     if ik_joint is None or np.any(ik_joint == "ik_not_found"):
                         rospy.logerr("IK not found, Please check the pose")
                         return None
-                    joint_difference = abs(
-                        np.sum(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1]))
-                    )
+                    joint_difference = np.sum(np.abs(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1])))
                     if joint_difference > joint_difference_limit:
                         retry_count += 1  # 再試行カウントを増やす
                         joint_difference_list.append(joint_difference)
