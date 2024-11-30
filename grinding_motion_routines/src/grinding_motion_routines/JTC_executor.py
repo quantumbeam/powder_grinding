@@ -146,15 +146,17 @@ class JointTrajectoryControllerExecutor(Arm):
         joint_difference_limit,
         ee_link="",
         time_to_reach=5.0,
-        max_attempts=100,
+        max_attempts=1000,
+        max_attempts_for_first_waypoint=100
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
 
         joint_trajectory = self.generate_joint_trajectory(
             waypoints,
-            joint_difference_limit,
             ee_link=ee_link,
+            joint_difference_limit=joint_difference_limit,
             max_attempts=max_attempts,
+            max_attempts_for_first_waypoint=max_attempts_for_first_waypoint
         )
         self.set_joint_trajectory(joint_trajectory, t=time_to_reach)
 
