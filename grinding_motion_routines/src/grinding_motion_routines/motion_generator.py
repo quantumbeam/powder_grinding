@@ -174,7 +174,7 @@ class MotionGenerator:
         begining_radious_z,
         end_radious_z,
         angle_scale=0,
-        yaw_bias=0,
+        yaw_bias=None,
         yaw_twist_per_rotation=0,
         number_of_rotations=1,
         number_of_waypoints_per_circle=10,
@@ -304,7 +304,7 @@ class MotionGenerator:
         end_radius_z,
         angle_scale=0,
         fixed_quaternion=False,
-        yaw_bias=0,
+        yaw_bias=None,
         number_of_waypoints=5,
     ):
         """
