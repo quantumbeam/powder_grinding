@@ -47,7 +47,6 @@ class MotionGenerator:
                     self.mortar_top_center_position["y"],
                     self.mortar_top_center_position["x"],
                 )
-        print("yaw_std", yaw_std)
         if yaw_twist != 0:
             if abs(yaw_twist) > self.max_yaw_twist:
                 raise ValueError("yaw_twist is bigger than 2pi")
