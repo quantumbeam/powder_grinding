@@ -9,7 +9,7 @@ scooping_ee_link: "spoon_tip"
 joint_trajectory_controller_name: "scaled_pos_joint_traj_controller"
 urdf_name: "ur5e" # support "ur3e" and "ur5e"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
-motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
+motion_planner_id: "RRTConnect" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
 planning_time : 20 # timeout for motion planning
 
 # grinding params
@@ -36,22 +36,22 @@ grinding_max_attempts : 1000
 
 # circular gathering params 
 gathering_pos_begining : 
-  - -30
+  - 30
   - 0
 gathering_pos_end :
-  - -18
+  - -22
   - 0.0001
-gathering_number_of_rotation : 8
+gathering_number_of_rotation : 5
 gathering_sec_per_rotation : 2
 gathering_angle_scale : 0
-gathering_rz_begining : 31.3
-gathering_rz_end : 31.3
+gathering_rz_begining : 35
+gathering_rz_end : 35
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
-gathering_number_of_waypoints_per_circle : 20
-gathering_yaw_bias : rad(pi)
-gathering_total_joint_diffence_for_planning : 0.03
-gathering_max_attempts : 100
+gathering_number_of_waypoints_per_circle : 100
+gathering_yaw_bias :  rad(pi)
+gathering_joint_difference_limit_for_motion_planning : 0.03
+gathering_max_attempts : 1000
 
 # scooping params 
 # scooping_pos_begining : 
