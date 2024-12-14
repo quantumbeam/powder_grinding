@@ -31,7 +31,7 @@ grinding_vel_scale : 1
 grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 100
 grinding_yaw_bias : rad(pi)
-grinding_total_joint_diffence_for_planning : 0.03
+grinding_joint_difference_limit_for_motion_planning : 0.03
 grinding_max_attempts : 1000
 
 # circular gathering params 

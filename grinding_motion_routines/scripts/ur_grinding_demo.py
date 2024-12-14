@@ -138,15 +138,15 @@ def main():
     grinding_ee_link = rospy.get_param("~grinding_ee_link", None)
     gathering_ee_link = rospy.get_param("~gathering_ee_link", None)
     scooping_ee_link = rospy.get_param("~scooping_ee_link", None)
-    grinding_total_joint_diffence_for_planning = rospy.get_param(
-        "~grinding_total_joint_diffence_for_planning", None
+    grinding_joint_difference_limit_for_motion_planning = rospy.get_param(
+        "~grinding_joint_difference_limit_for_motion_planning", None
     )
-    gathering_total_joint_diffence_for_planning = rospy.get_param(
-        "~gathering_total_joint_diffence_for_planning", None
+    gathering_joint_difference_limit_for_motion_planning = rospy.get_param(
+        "~gathering_joint_difference_limit_for_motion_planning", None
     )
     motion_planner_id = rospy.get_param("~motion_planner_id", None)
     planning_time = rospy.get_param("~planning_time", None)
-    rospy.loginfo(grinding_total_joint_diffence_for_planning)
+    rospy.loginfo(grinding_joint_difference_limit_for_motion_planning)
     moveit = moveit_executor.MoveitExecutor(
         move_group_name, grinding_ee_link, motion_planner_id, planning_time
     )
@@ -235,7 +235,7 @@ def main():
                     primitive.execute_grinding(
                         compute_grinding_waypoints(motion_gen),
                         grinding_sec=grinding_sec,
-                        joint_difference_limit=grinding_total_joint_diffence_for_planning,
+                        joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
                         max_attempts=100,
                         ee_link=grinding_ee_link,
                     )
@@ -250,7 +250,7 @@ def main():
                     primitive.execute_gathering(
                         compute_gathering_waypoints(motion_gen),
                         gathering_sec=gathering_sec,
-                        joint_difference_limit=gathering_total_joint_diffence_for_planning,
+                        joint_difference_limit=gathering_joint_difference_limit_for_motion_planning,
                         max_attempts=100,
                         ee_link=gathering_ee_link,
                     )
@@ -303,7 +303,7 @@ def main():
                             primitive.execute_grinding(
                                 grinding_waypoints,
                                 grinding_sec=grinding_sec,
-                                joint_difference_limit=grinding_total_joint_diffence_for_planning,
+                                joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
                                 max_attempts=100,
                                 ee_link=grinding_ee_link,
                             )
@@ -316,7 +316,7 @@ def main():
                             primitive.execute_grinding(
                                 compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
-                                joint_difference_limit=grinding_total_joint_diffence_for_planning,
+                                joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
                                 max_attempts=100,
                                 ee_link=grinding_ee_link,
                             )
@@ -328,7 +328,7 @@ def main():
                             primitive.execute_gathering(
                                 compute_gathering_waypoints(motion_gen),
                                 gathering_sec=gathering_sec,
-                                joint_difference_limit=gathering_total_joint_diffence_for_planning,
+                                joint_difference_limit=gathering_joint_difference_limit_for_motion_planning,
                                 max_attempts=100,
                                 ee_link=gathering_ee_link,
                             )
