@@ -36,6 +36,7 @@
     default="$(find grinding_descriptions)/config/ur5e/230413_real_robot_kinematics.yaml" />
   <arg name="kinematics_params" if="$(arg sim)"
     default="$(find grinding_descriptions)/config/ur5e/default_kinematics.yaml" />
+  <arg name="rviz_config" default="$(find grinding_robot_bringup)/etc/ur.rviz" />
 
   <!-- Configrations for  UR hardware -->
   <arg name="robot_description_file"
@@ -87,9 +88,7 @@
   </include>
 
   <!-- launch rviz -->
-  <include file="$(find ur5e_moveit_config)/launch/moveit_rviz.launch">
-    <param name="config" value="true" />
-  </include>
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(arg rviz_config)" output="screen"/>
 
   <!-- load planning scene -->
   <node name="loading_planning_scene" pkg="grinding_descriptions" type="load_planning_scene.py"
