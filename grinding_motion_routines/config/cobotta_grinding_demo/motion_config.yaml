@@ -25,7 +25,7 @@ grinding_center_pos:
   - 0
 grinding_number_of_rotation : 5
 grinding_sec_per_rotation : 5 
-grinding_angle_param : 0.3 #0 - 0.3
+grinding_angle_scale : 0.3 #0 - 0.3
 grinding_rz_begining : 36 
 grinding_rz_end : 36
 grinding_vel_scale : 1
@@ -33,7 +33,7 @@ grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 50
 grinding_yaw_bias : rad(-pi/2)
 grinding_total_joint_diffence_for_planning : 0.03
-grinding_max_attempts : 100
+grinding_max_attempts : 1000
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -44,7 +44,7 @@ gathering_pos_end :
   - 0.0001
 gathering_number_of_rotation : 5
 gathering_sec_per_rotation : 5
-gathering_angle_param : 0
+gathering_angle_scale : 0
 gathering_rz_begining : 36
 gathering_rz_end : 36
 gathering_vel_scale : 0.1
