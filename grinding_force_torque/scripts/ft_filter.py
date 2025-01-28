@@ -85,6 +85,8 @@ class FTsensor(object):
         # Low pass filter
         self.filter = filters.ButterLowPass(cutoff, sampling_frequency, order)
 
+        rospy.loginfo("Filter settings: sampling_frequency=%d, cutoff=%.2f, order=%d, data_window=%d" % (sampling_frequency, cutoff, order, data_window))
+
         self.data_window = data_window
         assert self.data_window >= 5
         self.data_queue = collections.deque(maxlen=self.data_window)
@@ -188,6 +190,18 @@ def main():
         help="Topic where filtered data will be published",
     )
     parser.add_argument("-z", "--zero", action="store_true", help="Zero FT signal")
+    parser.add_argument(
+        "-sf", "--sampling_frequency", type=int, help="Sampling frequency", default=100
+    )
+    parser.add_argument(
+        "-c", "--cutoff", type=float, help="Cutoff frequency", default=2.5
+    )
+    parser.add_argument(
+        "-o", "--order", type=int, help="Filter order", default=3
+    )
+    parser.add_argument(
+        "-dw", "--data_window", type=int, help="Data window size", default=100
+    )
 
     args, unknown = parser.parse_known_args()
 
@@ -200,6 +214,10 @@ def main():
         in_topic=args.ft_topic,
         out_topic=out_topic,
         republish=True,
+        sampling_frequency=args.sampling_frequency,
+        cutoff=args.cutoff,
+        order=args.order,
+        data_window=args.data_window,
     )
     if args.zero:
         ft_sensor.update_wrench_offset()
