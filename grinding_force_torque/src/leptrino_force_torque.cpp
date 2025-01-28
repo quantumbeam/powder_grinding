@@ -180,7 +180,7 @@ int main(int argc, char** argv)
     }
   }
 
-  ros::Publisher force_torque_pub = nh_private.advertise<geometry_msgs::WrenchStamped>("force_torque", 1);
+  ros::Publisher force_torque_pub = nh_private.advertise<geometry_msgs::WrenchStamped>("wrench", 1);
 
   usleep(10000);
 
