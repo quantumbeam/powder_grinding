@@ -14,6 +14,7 @@ And provide Docker containers for the ROS environment.
   - [Building ROS Packages in Docker Container](#building-ros-packages-in-docker-container)
   - [Demonstration](#demonstration)
 - [Known Issues](#known-issues)
+- [Release Memo](#release-memo)
 - [Future Work](#future-work)
 - [Citation](#citation)
 - [License](#license)
@@ -70,18 +71,28 @@ Please read below.
    roslaunch grinding_motion_routines fr3_grinding_demo.launch
 
    ```
-   - Use the command g to prepare for grinding (g=grinding), and then use y to execute the grinding.
-   - Use the command G to prepare for powder collection with a spatula (G=grinding), and then use y to execute the powder collection.
+   - Use the command `g` to prepare for grinding (g=grinding), and then use `y` to execute the grinding.
+   - Use the command `G` to prepare for powder collection with a spatula (G=grinding), and then use `y` to execute the powder collection.
 - Grinding Parameters Configuration:
    - The configuration settings are located in the config directory within the grinding_motion_routines package.
 
 ## Known Issues
-- Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
+- Cobotta's .dea file is unreadable for Rviz (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
+
+## Release Memo
+- v1.0.0 (2025/02/01)
+   - Initial release.
+- v2.0.0 (2025/xx/xx)
+   - Change the simulation software from Gazebo to Fake Joint on Rviz.
+     - Gazebo is too much for the simulation of position control robots.
+   - Update re-planning algorithm for grinding motion.
+     - Total planning time is reduced more than 50% for many cases.
+   - Add automated calibration of mortar position using a force sensor (supported only UR3e/UR5e).
+     - The calibration is performed by the robot itself.
+   - 
 
 
 ## Future Work
-- Add IKFast for motion planning
- - Need to load custom URDF for grinding on IKFast
 - Automated calibration of mortar position using a force sensor.
 
 ## Citation
