@@ -89,8 +89,10 @@ Please read below.
      - Total planning time is reduced more than 50% for many cases.
    - Add automated calibration of mortar position using a force sensor (supported only UR3e/UR5e).
      - The calibration is performed by the robot itself.
-   - 
-
+   - Remove the dependency of ur_xx packages.
+     - The core code is now included in this repository.
+   - Remove the leptrino force sensor script in grinding_force_torque.
+     - The driver for specific types of sensors will now be managed in a separate package.
 
 ## Future Work
 - Automated calibration of mortar position using a force sensor.
