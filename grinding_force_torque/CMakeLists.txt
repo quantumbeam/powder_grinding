@@ -35,13 +35,11 @@ include
 )
 
 # C++ files
-add_executable(leptrino_force_torque
-  src/leptrino_force_torque.cpp
-  src/rs_comm.cpp
-)
+# add_executable(${PROJECT_NAME}
+# )
 
 # Linking
-target_link_libraries(leptrino_force_torque
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(${PROJECT_NAME}
+#   ${catkin_LIBRARIES}
+# )
 

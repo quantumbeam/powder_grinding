@@ -1,5 +1,5 @@
 <launch>
-    <arg name="wrench_topic" default="/leptrino/force_torque/filtered" />
+    <arg name="wrench_topic" default="/wrench/filtered" />
     <arg name="wrench_statistics_service" default="/wrench_statistics" />
     
     <node name="wrench_statistics" pkg="grinding_force_torque" type="wrench_statistics.py" output="screen">
