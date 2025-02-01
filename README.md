@@ -94,8 +94,9 @@ Please read below.
    - Remove the leptrino force sensor script in grinding_force_torque.
      - The driver for specific types of sensors will now be managed in a separate package.
 
-## Future Work
-- Automated calibration of mortar position using a force sensor.
+## Acknowledgement
+The code related to the Joint Trajectory controller and FTsensor has been adapted and modified based on the UR3 repository.
+Repository URL: [https://github.com/cambel/ur3.git](https://github.com/cambel/ur3.git)
 
 ## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
