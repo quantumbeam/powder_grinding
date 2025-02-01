@@ -27,6 +27,7 @@ class MotionPrimitive:
         planning_time=20,
         ft_topic=None,
         ik_solver="trac_ik",
+        solve_type="Distance",
     ):
         """Supported init_pose is only [x y z ax ay az aw]"""
 
@@ -43,6 +44,7 @@ class MotionPrimitive:
             tcp_link=ee_link,
             ft_topic=ft_topic,
             ik_solver=ik_solver,
+            solve_type=solve_type,
         )
 
         self.init_pose = init_pose
@@ -63,8 +65,8 @@ class MotionPrimitive:
     def execute_grinding(
         self,
         waypoints,
-        total_joint_limit=1,
-        trial_number=10,
+        joint_difference_limit=0.03,
+        max_attempts=100,
         grinding_sec=1,
         ee_link="pestle_tip",
         moving_velocity_scale=0.3,
@@ -73,6 +75,7 @@ class MotionPrimitive:
         post_motion=True,
         execute_by_joint_trajectory=False,
     ):
+        pestle_ready_joints = None
         if pre_motion:
             pestle_ready_joints = self.JTC_executor.execute_to_goal_pose(
                 self.init_pose,
@@ -87,9 +90,9 @@ class MotionPrimitive:
         else:
             joint_trajectory = self.JTC_executor.generate_joint_trajectory(
                 waypoints,
-                total_joint_limit=total_joint_limit,
+                joint_difference_limit=joint_difference_limit,
                 ee_link=ee_link,
-                trial_number=trial_number,
+                max_attempts=max_attempts,
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")
@@ -106,19 +109,25 @@ class MotionPrimitive:
         )
 
         if post_motion:
-            self.JTC_executor.execute_to_goal_pose(
-                self.init_pose,
-                ee_link=ee_link,
-                time_to_reach=3,
-            )
+            if pestle_ready_joints is not None:
+                self.JTC_executor.execute_to_joint_goal(
+                    pestle_ready_joints,
+                    time_to_reach=3,
+                )
+            else:
+                self.JTC_executor.execute_to_goal_pose(
+                    self.init_pose,
+                    ee_link=ee_link,
+                    time_to_reach=3,
+                )
 
         return True, pestle_ready_joints
 
     def execute_gathering(
         self,
         waypoints,
-        total_joint_limit=1,
-        trial_number=10,
+        joint_difference_limit=0.03,
+        max_attempts=100,
         gathering_sec=1,
         ee_link="spatula_tip",
         moving_velocity_scale=0.3,
@@ -145,9 +154,9 @@ class MotionPrimitive:
         else:
             joint_trajectory = self.JTC_executor.generate_joint_trajectory(
                 waypoints,
-                total_joint_limit=total_joint_limit,
+                joint_difference_limit=joint_difference_limit,
                 ee_link=ee_link,
-                trial_number=trial_number,
+                max_attempts=max_attempts,
             )
             if joint_trajectory == None:
                 rospy.logerr("No joint trajectory is generated")

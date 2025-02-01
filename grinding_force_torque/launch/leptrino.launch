@@ -1,5 +1,5 @@
 <launch>
-    <arg name="comport" default="/dev/ttyUSB0" />
+    <arg name="comport" default="/dev/ttyACM0" />
     <node name="leptrino" pkg="grinding_force_torque" type="leptrino_force_torque"
         output="screen">
         <param name="com_port" value="$(arg comport)" />

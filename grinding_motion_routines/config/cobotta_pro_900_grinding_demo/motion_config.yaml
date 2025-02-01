@@ -26,15 +26,15 @@ grinding_center_pos:
   - 0
 grinding_number_of_rotation : 5
 grinding_sec_per_rotation : 0.5 # 0.5 >
-grinding_angle_param : 0.3 #0 - 0.3
+grinding_angle_scale : 0.3 #0 - 0.3
 grinding_rz_begining : 35
 grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
-grinding_number_of_waypoints_per_circle : 100
+grinding_number_of_waypoints_per_circle : 1000
 grinding_yaw_bias : 0
-grinding_total_joint_diffence_for_planning : 3.0
-grinding_trial_number : 10 
+grinding_joint_difference_limit_for_motion_planning : 0.03
+grinding_max_attempts : 1000
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -45,15 +45,15 @@ gathering_pos_end :
   - 0.0001
 gathering_number_of_rotation : 8
 gathering_sec_per_rotation : 2
-gathering_angle_param : 0
+gathering_angle_scale : 0
 gathering_rz_begining : 35
 gathering_rz_end : 35
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
 gathering_yaw_bias :  rad(-pi/3)
-gathering_total_joint_diffence_for_planning : 7
-gathering_trial_number : 10 
+gathering_joint_difference_limit_for_motion_planning : 0.03
+gathering_max_attempts : 1000
 
 # scooping params 
 # scooping_pos_begining : 
@@ -73,7 +73,7 @@ scooping_pos_end :
   - 0
 scooping_rz_begining : 31.3
 scooping_rz_end : 31.3
-scooping_angle_param : 1
+scooping_angle_scale : 1
 scooping_vel_scale : 0.1
 scooping_acc_scale : 0.1
 scooping_number_of_waypoints : 20

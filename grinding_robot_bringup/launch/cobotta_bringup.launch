@@ -102,6 +102,10 @@
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="state_publisher">
       <param name="publish_frequency" type="double" value="500" />
     </node>
-
   </group>
+  <!-- launch bcap service -->
+  <include file="$(find bcap_service)/launch/bcap_service.launch">
+        <arg name="ip_address" value="$(arg ip_address)" />
+  </include>
+
 </launch>

@@ -54,7 +54,7 @@ def compute_grinding_waypoints(motion_generator, debug_type=False):
         end_position=rospy.get_param("~grinding_pos_end"),
         begining_radious_z=rospy.get_param("~grinding_rz_begining"),
         end_radious_z=rospy.get_param("~grinding_rz_end"),
-        angle_param=rospy.get_param("~grinding_angle_param"),
+        angle_scale=rospy.get_param("~grinding_angle_scale"),
         yaw_bias=rospy.get_param("~grinding_yaw_bias"),
         number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
@@ -73,7 +73,7 @@ def compute_gathering_waypoints(motion_generator, debug_type=False):
         end_position=rospy.get_param("~gathering_pos_end"),
         begining_radious_z=rospy.get_param("~gathering_rz_begining"),
         end_radious_z=rospy.get_param("~gathering_rz_end"),
-        angle_param=rospy.get_param("~gathering_angle_param"),
+        angle_scale=rospy.get_param("~gathering_angle_scale"),
         yaw_bias=rospy.get_param("~gathering_yaw_bias"),
         number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
@@ -91,7 +91,7 @@ def compute_scooping_waypoints(motion_generator, debug_type=False):
         end_position=rospy.get_param("~scooping_pos_end"),
         begining_radius_z=rospy.get_param("~scooping_rz_begining"),
         end_radius_z=rospy.get_param("~scooping_rz_end"),
-        angle_param=rospy.get_param("~scooping_angle_param"),
+        angle_scale=rospy.get_param("~scooping_angle_scale"),
         yaw_bias=rospy.get_param("~scooping_yaw_bias"),
         number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
     )
@@ -138,15 +138,15 @@ def main():
     grinding_ee_link = rospy.get_param("~grinding_ee_link", None)
     gathering_ee_link = rospy.get_param("~gathering_ee_link", None)
     scooping_ee_link = rospy.get_param("~scooping_ee_link", None)
-    grinding_total_joint_diffence_for_planning = rospy.get_param(
-        "~grinding_total_joint_diffence_for_planning", None
+    grinding_joint_difference_limit_for_motion_planning = rospy.get_param(
+        "~grinding_joint_difference_limit_for_motion_planning", None
     )
-    gathering_total_joint_diffence_for_planning = rospy.get_param(
-        "~gathering_total_joint_diffence_for_planning", None
+    gathering_joint_difference_limit_for_motion_planning = rospy.get_param(
+        "~gathering_joint_difference_limit_for_motion_planning", None
     )
     motion_planner_id = rospy.get_param("~motion_planner_id", None)
     planning_time = rospy.get_param("~planning_time", None)
-    rospy.loginfo(grinding_total_joint_diffence_for_planning)
+    rospy.loginfo(grinding_joint_difference_limit_for_motion_planning)
     moveit = moveit_executor.MoveitExecutor(
         move_group_name, grinding_ee_link, motion_planner_id, planning_time
     )
@@ -235,8 +235,8 @@ def main():
                     primitive.execute_grinding(
                         compute_grinding_waypoints(motion_gen),
                         grinding_sec=grinding_sec,
-                        total_joint_limit=grinding_total_joint_diffence_for_planning,
-                        trial_number=10,
+                        joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
+                        max_attempts=100,
                         ee_link=grinding_ee_link,
                     )
                 elif exec == False:
@@ -250,8 +250,8 @@ def main():
                     primitive.execute_gathering(
                         compute_gathering_waypoints(motion_gen),
                         gathering_sec=gathering_sec,
-                        total_joint_limit=gathering_total_joint_diffence_for_planning,
-                        trial_number=10,
+                        joint_difference_limit=gathering_joint_difference_limit_for_motion_planning,
+                        max_attempts=100,
                         ee_link=gathering_ee_link,
                     )
                 elif exec == False:
@@ -303,8 +303,8 @@ def main():
                             primitive.execute_grinding(
                                 grinding_waypoints,
                                 grinding_sec=grinding_sec,
-                                total_joint_limit=grinding_total_joint_diffence_for_planning,
-                                trial_number=10,
+                                joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
+                                max_attempts=100,
                                 ee_link=grinding_ee_link,
                             )
                         elif motion_command == "RGG":
@@ -316,8 +316,8 @@ def main():
                             primitive.execute_grinding(
                                 compute_grinding_waypoints(motion_gen),
                                 grinding_sec=grinding_sec,
-                                total_joint_limit=grinding_total_joint_diffence_for_planning,
-                                trial_number=10,
+                                joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
+                                max_attempts=100,
                                 ee_link=grinding_ee_link,
                             )
                             if gathering_waypoints.all():
@@ -328,8 +328,8 @@ def main():
                             primitive.execute_gathering(
                                 compute_gathering_waypoints(motion_gen),
                                 gathering_sec=gathering_sec,
-                                total_joint_limit=gathering_total_joint_diffence_for_planning,
-                                trial_number=10,
+                                joint_difference_limit=gathering_joint_difference_limit_for_motion_planning,
+                                max_attempts=100,
                                 ee_link=gathering_ee_link,
                             )
                         motion_counts += 1

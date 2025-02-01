@@ -3,6 +3,7 @@
 import numpy as np
 import rospy
 from grinding_motion_routines.arm import Arm
+from tqdm import tqdm
 
 
 class JointTrajectoryControllerExecutor(Arm):
@@ -45,6 +46,7 @@ class JointTrajectoryControllerExecutor(Arm):
         goal_pose,
         ee_link="",
         time_to_reach=5.0,
+        max_attempts=10,
         wait=True,
     ):
         """Supported pose is only x y z aw ax ay az"""
@@ -52,14 +54,30 @@ class JointTrajectoryControllerExecutor(Arm):
             ee_link = self.ee_link
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
-        return self.set_target_pose(goal_pose, t=time_to_reach, wait=wait)
+        
+        
+        best_ik= None
+        best_dif= float("inf")
+        start_joint = self.joint_angles()
+        for i in range(max_attempts):
+            joint_goal = self._solve_ik(goal_pose)
+            if joint_goal is None or np.any(joint_goal == "ik_not_found"):
+                rospy.logerr("IK not found, Please check the pose")
+                continue
+            dif=abs(np.sum(np.array(start_joint[0:-1])-np.array(joint_goal[0:-1])))
+            if dif < best_dif:
+                best_ik=joint_goal
+                best_dif=dif
+        self.set_joint_positions(best_ik, t=time_to_reach, wait=wait)
+        return best_ik
 
     def generate_joint_trajectory(
         self,
         waypoints,
-        total_joint_limit,
         ee_link="",
-        trial_number=10,
+        joint_difference_limit=0.03,
+        max_attempts=1000,
+        max_attempts_for_first_waypoint=100,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
         if ee_link == "":
@@ -67,34 +85,57 @@ class JointTrajectoryControllerExecutor(Arm):
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
 
-        for i in range(trial_number):
-            joint_trajectory = []
-            start_joint = self.joint_angles()
-            for pose in waypoints:
-                joints = self._solve_ik(pose, q_guess=start_joint)
-                if np.any(joints == "ik_not_found") or joints is None:
-                    rospy.logerr("IK not found, Try again")
-                    break
-                else:
-                    start_joint = joints
-                    joint_trajectory.append(list(joints))
-            if len(joint_trajectory) == 0:
-                rospy.logerr("Skip this trajectory")
-                continue
-            total_joint_difference = np.sum(
-                np.max(joint_trajectory, axis=0) - np.min(joint_trajectory, axis=0)
-            )
-            if total_joint_difference > total_joint_limit:
-                rospy.logerr("Trajectory is out of joint limit")
-                rospy.logerr(f"Total joints difference: {total_joint_difference}")
-                rospy.logerr("Try again")
+        joint_trajectory = []
+        start_joint = self.joint_angles()
+        total_waypoints = len(waypoints)  # 全体のwaypoints数を取得
+
+        for i, pose in tqdm(
+            enumerate(waypoints),
+            total=total_waypoints,
+            desc="Planning motion for waypoints",
+        ):
+            if i == 0:
+                best_joint_difference = float("inf")
+                for i in tqdm(
+                    range(max_attempts_for_first_waypoint),
+                    desc="Finding best IK solution for 1st waypoint",
+                ):
+                    ik_joint = self._solve_ik(pose, q_guess=start_joint)
+                    if ik_joint is None or np.any(ik_joint == "ik_not_found"):
+                        rospy.logerr("IK not found, Please check the pose")
+                        continue
+                    joint_difference = np.sum(np.abs(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1])))
+                    if joint_difference < best_joint_difference:
+                        best_ik_joint = ik_joint
+                        best_joint_difference = joint_difference
+                start_joint = best_ik_joint
+                joint_trajectory.append(list(best_ik_joint))
             else:
-                rospy.loginfo(
-                    f"Trajectory is in total joint limit:{total_joint_difference}"
-                )
-                return joint_trajectory
-        rospy.logerr("Failed to find trajectory")
-        return None
+                # 2番目以降のwaypoint
+                retry_count = 0  # 各ポーズごとの再試行カウントをリセット
+                joint_difference_list = []
+                while retry_count < max_attempts:
+                    ik_joint = self._solve_ik(pose, q_guess=start_joint)
+                    if ik_joint is None or np.any(ik_joint == "ik_not_found"):
+                        rospy.logerr("IK not found, Please check the pose")
+                        return None
+                    joint_difference = np.sum(np.abs(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1])))
+                    if joint_difference > joint_difference_limit:
+                        retry_count += 1  # 再試行カウントを増やす
+                        joint_difference_list.append(joint_difference)
+                        if retry_count >= max_attempts:
+                            rospy.logerr(
+                                f"Waypoint {i + 1}/{total_waypoints} failed after {max_attempts} trials, "
+                                f"Joint difference was too large (min diff:{min(joint_difference_list)})"
+                            )
+                            return None
+                        continue
+                    else:
+                        start_joint = ik_joint
+                        joint_trajectory.append(list(ik_joint))
+                        break
+
+        return joint_trajectory if joint_trajectory else None
 
     def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
         self.set_joint_trajectory(joint_trajectory, t=time_to_reach)
@@ -102,18 +143,20 @@ class JointTrajectoryControllerExecutor(Arm):
     def execute_by_waypoints(
         self,
         waypoints,
-        total_joint_limit,
+        joint_difference_limit,
         ee_link="",
         time_to_reach=5.0,
-        trial_number=10,
+        max_attempts=1000,
+        max_attempts_for_first_waypoint=100
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
 
         joint_trajectory = self.generate_joint_trajectory(
             waypoints,
-            total_joint_limit,
             ee_link=ee_link,
-            trial_number=trial_number,
+            joint_difference_limit=joint_difference_limit,
+            max_attempts=max_attempts,
+            max_attempts_for_first_waypoint=max_attempts_for_first_waypoint
         )
         self.set_joint_trajectory(joint_trajectory, t=time_to_reach)
 

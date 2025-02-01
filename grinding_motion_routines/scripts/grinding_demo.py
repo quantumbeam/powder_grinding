@@ -45,7 +45,7 @@ def compute_grinding_waypoints(motion_generator):
         end_position=rospy.get_param("~grinding_pos_end"),
         begining_radious_z=rospy.get_param("~grinding_rz_begining"),
         end_radious_z=rospy.get_param("~grinding_rz_end"),
-        angle_param=rospy.get_param("~grinding_angle_param"),
+        angle_scale=rospy.get_param("~grinding_angle_scale"),
         yaw_bias=rospy.get_param("~grinding_yaw_bias"),
         number_of_rotations=rospy.get_param("~grinding_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
@@ -63,7 +63,7 @@ def compute_gathering_waypoints(motion_generator):
         end_position=rospy.get_param("~gathering_pos_end"),
         begining_radious_z=rospy.get_param("~gathering_rz_begining"),
         end_radious_z=rospy.get_param("~gathering_rz_end"),
-        angle_param=rospy.get_param("~gathering_angle_param"),
+        angle_scale=rospy.get_param("~gathering_angle_scale"),
         yaw_bias=rospy.get_param("~gathering_yaw_bias"),
         number_of_rotations=rospy.get_param("~gathering_number_of_rotation"),
         number_of_waypoints_per_circle=rospy.get_param(
@@ -99,14 +99,14 @@ def main():
     gathering_sec = rospy.get_param("~gathering_sec_per_rotation") * rospy.get_param(
         "~gathering_number_of_rotation"
     )
-    grinding_total_joint_diffence_for_planning = rospy.get_param(
-        "~grinding_total_joint_diffence_for_planning", None
+    grinding_joint_difference_limit_for_motion_planning = rospy.get_param(
+        "~grinding_joint_difference_limit_for_motion_planning", None
     )
-    gathering_total_joint_diffence_for_planning = rospy.get_param(
-        "~gathering_total_joint_diffence_for_planning", None
+    gathering_joint_difference_limit_for_motion_planning = rospy.get_param(
+        "~gathering_joint_difference_limit_for_motion_planning", None
     )
-    grinding_trial_number = rospy.get_param("~grinding_trial_number")
-    gathering_trial_number = rospy.get_param("~gathering_trial_number")
+    grinding_max_attempts = rospy.get_param("~grinding_max_attempts")
+    gathering_max_attempts = rospy.get_param("~gathering_max_attempts")
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
@@ -159,8 +159,8 @@ def main():
         primitive.execute_grinding(
             compute_grinding_waypoints(motion_gen),
             grinding_sec=grinding_sec,
-            total_joint_limit=grinding_total_joint_diffence_for_planning,
-            trial_number=grinding_trial_number,
+            joint_difference_limit=grinding_joint_difference_limit_for_motion_planning,
+            max_attempts=grinding_max_attempts,
             ee_link=grinding_ee_link,
         )
 
@@ -168,8 +168,8 @@ def main():
         primitive.execute_gathering(
             compute_gathering_waypoints(motion_gen),
             gathering_sec=gathering_sec,
-            total_joint_limit=gathering_total_joint_diffence_for_planning,
-            trial_number=gathering_trial_number,
+            joint_difference_limit=gathering_joint_difference_limit_for_motion_planning,
+            max_attempts=gathering_max_attempts,
             ee_link=gathering_ee_link,
         )
 
