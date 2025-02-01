@@ -87,16 +87,17 @@ Please read below.
 ## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
 ```
-@InProceedings{RoboticPowderGrinding,
+@InProceedings{RoboticPowderGrindingWithSoftJig,
   Title                    = {Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science},
   Author                   = {Yusaku Nakajima, Masashi Hamaya, Yuta Suzuki, Takafumi Hawai, Felix Von Drigalski, Kazutoshi Tanaka, Yoshitaka Ushiku and Kanta Ono.},
   Booktitle                = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
   Year                     = {2022},
   Doi                      = {10.1109/IROS47612.2022.9981081}
 }
-- [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
 ```
-- Related article: [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://omron-sinicx.github.io/powder-grinding/) (IROS 2023)
+If you are interested in the application of robotic powder grinding, please take a look at...
+- [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://ieeexplore.ieee.org/document/10341526) (IROS 2023)
+   -  Github pages [here](https://omron-sinicx.github.io/powder-grinding/) 
 
 ## License
 This repository is under the MIT license. See [LICENSE](./LICENSE) for details.
