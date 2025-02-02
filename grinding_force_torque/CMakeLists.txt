@@ -24,15 +24,13 @@ generate_messages(
 )
 
 catkin_package(
- INCLUDE_DIRS include
  CATKIN_DEPENDS rospy roscpp std_msgs
 )
 
 # Include directories
-include_directories(
-include
-  ${catkin_INCLUDE_DIRS}
-)
+# include_directories(
+#   ${catkin_INCLUDE_DIRS}
+# )
 
 # C++ files
 # add_executable(${PROJECT_NAME}
