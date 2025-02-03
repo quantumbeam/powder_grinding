@@ -48,11 +48,12 @@ class FTsensor(object):
         order=3,
         data_window=100,
         timeout=3.0,
-        republish=False,
+        enable_publish=True,
+        enable_filtering=True,
     ):
         self.ns = namespace if namespace else ""
-        self.enable_publish = republish
-        self.enable_filtering = True
+        self.enable_publish = enable_publish
+        self.enable_filtering = enable_filtering
 
         self.in_topic = utils.solve_namespace(namespace + "/" + in_topic)
         if out_topic:
@@ -202,6 +203,12 @@ def main():
     parser.add_argument(
         "-dw", "--data_window", type=int, help="Data window size", default=100
     )
+    parser.add_argument(
+        "-dp", "--disable_publish", action="store_false", help="Disable publishing"
+    )
+    parser.add_argument(
+        "-df", "--disable_filtering", action="store_false", help="Disable filtering"
+    )
 
     args, unknown = parser.parse_known_args()
 
@@ -213,11 +220,12 @@ def main():
         namespace=args.namespace,
         in_topic=args.ft_topic,
         out_topic=out_topic,
-        republish=True,
         sampling_frequency=args.sampling_frequency,
         cutoff=args.cutoff,
         order=args.order,
         data_window=args.data_window,
+        enable_publish=args.disable_publish,
+        enable_filtering=args.disable_filtering,
     )
     if args.zero:
         ft_sensor.update_wrench_offset()
