@@ -14,7 +14,6 @@
   - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
   - [モーションのデモ](#モーションのデモ)
 - [既知の課題](#既知の課題)
-- [Future Work](#future-work)
 - [Citation](#citation)
 - [License](#license)
 
@@ -78,12 +77,6 @@
 ## 既知の課題
 - 通常版Cobottaの3Dモデルファイルの .deaファイルはROSで読めない形式になっています。
    - grinding_descriptionsパッケージ内のcobotta_description_converter.pyを使うことでblenderの.dae形式に変換され、ROSで読めるようになります。ただ、blenderのpythonモジュールであるbpyをインストールして使用してください。
-
-## Future Work
-- シミュレータでの粉砕動作
-   - 現時点で製作途中です。
-- UR内部もしくは外部の力センサを用いて、乳鉢位置の自動調整を行いたいです。
-   - grinding_motion_routinesパッケージの`calibrate_mortar_position.launch`に途中まで作ったものがありますが、まだ完成していないので使う場合はスクリプトを読んで書き換えながら使ってください。
 
 ## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
