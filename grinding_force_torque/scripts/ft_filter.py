@@ -148,6 +148,9 @@ class FTsensor(object):
         return wrench_filtered[-1, :]
 
     def update_wrench_offset(self):
+        enable_filtering_state = self.enable_filtering
+        self.enable_filtering = True
+        rospy.sleep(0.1)
         current_wrench = self.get_filtered_wrench()
         if current_wrench is not None:
             self.wrench_offset = current_wrench
@@ -155,6 +158,7 @@ class FTsensor(object):
                 rospy.set_param(
                     "%sft_offset" % self.out_topic, self.wrench_offset.tolist()
                 )
+        self.enable_filtering = enable_filtering_state
 
     def set_enable_publish(self, enable):
         self.enable_publish = enable
