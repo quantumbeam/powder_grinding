@@ -11,6 +11,7 @@
 - よく切れるハサミ(ゲルシートの切断はカッターよりもハサミが便利です)
 
 ## 3Dプリンタで印刷する治具の一覧(各1個づつ)
+- stlファイルはこの文書と同じ階層にあります
 - 乳鉢
   - Mortar_case_on_optical_bench.stl(When using optical bench)
   - Mortar_case_on_aluminum_frame_8series.stl(When using aluminium_frame)

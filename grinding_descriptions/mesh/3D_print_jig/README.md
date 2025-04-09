@@ -9,6 +9,7 @@
 - Adhesive: Aron Alpha EXTRA Quick Multipurpose
 
 ## List of Fixtures to be Printed with 3D Printer (1 each)
+- stl files are in the same directory as this document
 - Mortar
   - Mortar_case_on_optical_bench.stl (When using optical bench)
   - Mortar_case_on_aluminum_frame_8series.stl (When using aluminum frame)
