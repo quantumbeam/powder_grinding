@@ -15,7 +15,7 @@ And provide Docker containers for the ROS environment.
   - [Demonstration](#demonstration)
 - [Known Issues](#known-issues)
 - [Release Memo](#release-memo)
-- [Future Work](#future-work)
+- [Acknowledgement](#acknowledgement)
 - [Citation](#citation)
 - [License](#license)
 
@@ -75,6 +75,9 @@ Please read below.
    - Use the command `G` to prepare for powder collection with a spatula (G=grinding), and then use `y` to execute the powder collection.
 - Grinding Parameters Configuration:
    - The configuration settings are located in the config directory within the grinding_motion_routines package.
+- Estimation of the pestle length and mortar position:
+  - The pestle length and mortar position are estimated using a force sensor. 
+  - The code is currently under preparation, so please wait for a while.
 
 ## Known Issues
 - Cobotta's .dea file is unreadable for Rviz (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).

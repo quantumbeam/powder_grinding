@@ -60,7 +60,7 @@
 
    ```
    - シミュレーション使う場合は`sim:=true`で立ち上げてください。
-- 粉砕モーションの立ち上げ
+- 粉砕モーションの実行
    ```
    roslaunch grinding_motion_routines ur3e_grinding_demo.launch
    roslaunch grinding_motion_routines ur5e_grinding_demo.launch
@@ -73,6 +73,9 @@
    - コマンド`G`でヘラによる粉集めの実行準備(g=gathering)、続けて`y`で粉集め実行します。
 - 粉砕パラメータの設定
    -  grinding_motion_routinesパッケージ内のconfig内に設定があります。
+- 乳棒長さと乳鉢座標のキャリブレーション
+  - ロボットの手先のフォーストルクセンサを使って乳棒長さと乳鉢座標を自動推定します
+  - コードはただいま準備中です、しばらくお待ち下さい
 
 ## 既知の課題
 - 通常版Cobottaの3Dモデルファイルの .deaファイルはROSで読めない形式になっています。
