@@ -5,7 +5,7 @@
 
     <!-- specify the URDF and SRDF files to be loaded -->
     <arg name="robot_description_file"
-        default="$(find frcobot_description)/urdf/fr3v5.urdf" />
+        default="$(find grinding_descriptions)/urdf/fr3/fr3v6.urdf" />
         
     <arg name="controller_config_file"
         default="$(find grinding_robot_bringup)/config/frrobot_controllers.yaml" />
@@ -21,7 +21,7 @@
     <!-- By default, we do not start a database (it can be large) -->
     <arg name="db" default="false" />
     <!-- Allow user to specify database location -->
-    <arg name="db_path" default="$(find fr3v5_moveit_config)/default_warehouse_mongo_db" />
+    <arg name="db_path" default="$(find fr3v6_moveit_config)/default_warehouse_mongo_db" />
 
     <!--
     By default, hide joint_state_publisher's GUI
@@ -35,7 +35,7 @@
     <arg name="use_rviz" default="true" />
 
     <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-    <include file="$(find fr3v5_moveit_config)/launch/planning_context.launch">
+    <include file="$(find fr3v6_moveit_config)/launch/planning_context.launch">
         <arg name="load_robot_description" value="true" />
     </include>
 
@@ -54,7 +54,7 @@
 
     <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers
     configured by default) -->
-    <include file="$(find fr3v5_moveit_config)/launch/move_group.launch">
+    <include file="$(find fr3v6_moveit_config)/launch/move_group.launch">
         <arg name="allow_trajectory_execution" value="true" />
         <arg name="fake_execution" value="false" />
         <arg name="info" value="true" />
@@ -63,13 +63,13 @@
     </include>
 
     <!-- Run Rviz and load the default config to see the state of the move_group node -->
-    <include file="$(find fr3v5_moveit_config)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
-        <arg name="rviz_config" value="$(find fr3v5_moveit_config)/launch/moveit.rviz" />
+    <include file="$(find fr3v6_moveit_config)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
+        <arg name="rviz_config" value="$(find fr3v6_moveit_config)/launch/moveit.rviz" />
         <arg name="debug" value="$(arg debug)" />
     </include>
 
     <!-- If database loading was enabled, start mongodb as well -->
-    <include file="$(find fr3v5_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
+    <include file="$(find fr3v6_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
         <arg name="moveit_warehouse_database_path" value="$(arg db_path)" />
     </include>
 
