@@ -128,10 +128,10 @@ def main():
 
     ################### motion generator ###################
     mortar_top_pos = rospy.get_param("~mortar_top_position", None)
-    mortar_inner_scale = rospy.get_param("~mortar_inner_scale", None)
+    mortar_inner_size = rospy.get_param("~mortar_inner_size", None)
     funnel_position = rospy.get_param("~funnel_position", None)
     pouring_hight = rospy.get_param("~pouring_hight_at_funnel", None)
-    motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_scale)
+    motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_size)
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name", None)

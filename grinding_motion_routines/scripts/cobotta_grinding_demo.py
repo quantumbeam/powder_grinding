@@ -92,8 +92,8 @@ def main():
 
     ################### motion generator ###################
     mortar_top_pos = rospy.get_param("~mortar_top_position")
-    mortar_inner_scale = rospy.get_param("~mortar_inner_scale")
-    motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_scale)
+    mortar_inner_size = rospy.get_param("~mortar_inner_size")
+    motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_size)
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name")
