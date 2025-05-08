@@ -1,4 +1,4 @@
-experimental_time : 90
+experiment_time : 90
 
 # end effector params
 grinding_ee_link: "pestle_tip"

@@ -124,7 +124,7 @@ def command_to_execute(cmd):
 def main():
     ################### init node ###################
     rospy.init_node("mechano_grinding", anonymous=True)
-    experimental_time = rospy.get_param("~experimental_time", None)
+    experiment_time = rospy.get_param("~experiment_time", None)
 
     ################### motion generator ###################
     mortar_top_pos = rospy.get_param("~mortar_top_position", None)
@@ -341,7 +341,7 @@ def main():
                         input(
                             "Pouse experiment on pouse settings. Press Enter to continue..."
                         )
-                    if experiment_time > experimental_time:
+                    if experiment_time > experiment_time:
                         rospy.loginfo("Over experiment time")
                         exit_process("Motion counts: " + str(motion_counts))
 
