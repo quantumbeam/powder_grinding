@@ -12,6 +12,7 @@ ns: "frrobot"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
 planning_time : 20 # timeout for motion planning
+max_attempts : 1000
 
 # grinding params
 grinding_pos_begining : 
@@ -33,7 +34,6 @@ grinding_acc_scale : 1
 grinding_number_of_waypoints_per_circle : 100
 grinding_yaw_bias : 0
 grinding_joint_difference_limit_for_motion_planning : 0.03
-grinding_max_attempts : 1000
 
 # circular gathering params 
 gathering_pos_begining : 
@@ -52,7 +52,7 @@ gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 20
 gathering_yaw_bias :  rad(-pi/3)
 gathering_joint_difference_limit_for_motion_planning : 0.03
-gathering_max_attempts : 1000
+
 
 # scooping params 
 # scooping_pos_begining : 
