@@ -21,6 +21,7 @@
 ## 概要
 **Last Updated:** 2023/10/24  
 This repository focuses on the ROS environment for robot control.
+[パッケージ解説スライドも公開しています。](https://docs.google.com/presentation/d/1NM6mxm0q2QrHuePchJIvgVollS97jfg_tNNWKQHokds/edit?usp=sharing)
 
 ## 対応ロボット
 - UR5e
