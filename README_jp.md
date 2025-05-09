@@ -5,6 +5,8 @@
 シミュレーション(fake jointとRviz)上での動作とロボット実機での動作ができます。
 また、ROSパッケージだけでなくROS環境のDockerコンテナも提供します。
 
+[パッケージ解説スライドも公開しています。](https://docs.google.com/presentation/d/1NM6mxm0q2QrHuePchJIvgVollS97jfg_tNNWKQHokds/edit?usp=sharing)
+
 ### 目次
 - [対応ロボット](#対応ロボット)
 - [クイックスタート](#クイックスタート)
