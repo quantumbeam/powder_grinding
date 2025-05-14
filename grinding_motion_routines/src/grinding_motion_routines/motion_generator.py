@@ -164,7 +164,7 @@ class MotionGenerator:
 
         return x, y
 
-    def update_mortar_position(self, pos):
+    def update_fixed_tool_position(self, pos):
         self.mortar_top_center_position = pos
 
     def create_circular_waypoints(
