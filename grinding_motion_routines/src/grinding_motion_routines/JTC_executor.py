@@ -41,33 +41,69 @@ class JointTrajectoryControllerExecutor(Arm):
         self.init_end_effector_link = tcp_link
         self.solve_type = solve_type
 
+    def is_outlier_iqr(self, data, k=1.5):
+        """Detect outliers based on the IQR."""
+        if len(data) < 4:  # Need at least 4 data points to calculate quartiles
+            return np.zeros_like(data, dtype=bool)
+        q1 = np.percentile(data, 25)
+        q3 = np.percentile(data, 75)
+        iqr = q3 - q1
+        lower_bound = q1 - k * iqr
+        upper_bound = q3 + k * iqr
+        return (data < lower_bound) | (data > upper_bound)
+
     def execute_to_goal_pose(
         self,
         goal_pose,
         ee_link="",
         time_to_reach=5.0,
-        max_attempts=10,
+        joint_difference_limit=1.5*np.pi,
+        max_attempts=100,
         wait=True,
+        error_rate_check=False,
     ):
         """Supported pose is only x y z aw ax ay az"""
         if ee_link == "":
             ee_link = self.ee_link
         if self.ee_link != ee_link:
             self._change_ee_link(ee_link)
-        
-        
-        best_ik= None
-        best_dif= float("inf")
+
+        best_ik = None
+        best_dif = float("inf")
+
+        dif_list = []
         start_joint = self.joint_angles()
-        for i in range(max_attempts):
+        for i in tqdm(
+                    range(max_attempts),
+                    desc="Finding best IK solution",
+                ):
             joint_goal = self._solve_ik(goal_pose)
             if joint_goal is None or np.any(joint_goal == "ik_not_found"):
                 rospy.logerr("IK not found, Please check the pose")
                 continue
-            dif=abs(np.sum(np.array(start_joint[0:-1])-np.array(joint_goal[0:-1])))
+            dif = np.sum(np.abs(np.array(start_joint[0:-1]) - np.array(joint_goal[0:-1])))
+            dif_list.append(dif)
             if dif < best_dif:
-                best_ik=joint_goal
-                best_dif=dif
+                best_ik = joint_goal
+                best_dif = dif
+
+        if error_rate_check:
+            dif_from_best = np.array(dif_list) - best_dif  # Difference of each dif from best_dif
+            outlier_mask = self.is_outlier_iqr(dif_from_best)
+            outlier_count = np.sum(outlier_mask)
+            outlier_ratio = outlier_count / len(dif_list) if dif_list else 0.0
+            rospy.loginfo(
+                f"Best joint difference : best_joint_difference {best_dif} ( joint_difference_limit {joint_difference_limit} )"
+                )
+            rospy.loginfo(
+                f"Statistical outlier ratio of joint difference (based on best_dif) (IQR): {outlier_ratio * 100:.2f}% ({outlier_count}/{len(dif_list)})"
+            )
+
+        if best_dif > joint_difference_limit:
+            rospy.logerr(
+            f"Best joint difference was too large: best_joint_difference {best_dif} > joint_difference_limit {joint_difference_limit}"
+            )
+            return None
         self.set_joint_positions(best_ik, t=time_to_reach, wait=wait)
         return best_ik
 
