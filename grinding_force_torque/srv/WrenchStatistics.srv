@@ -5,5 +5,11 @@ float32 average_force_x
 float32 average_force_y
 float32 average_force_z
 float32 variance_force_x
-float32 variance_force_y
-float32 variance_force_z
+float64 variance_force_y
+float64 variance_force_z
+float64 average_torque_x
+float64 average_torque_y
+float64 average_torque_z
+float64 variance_torque_x
+float64 variance_torque_y
+float64 variance_torque_z
