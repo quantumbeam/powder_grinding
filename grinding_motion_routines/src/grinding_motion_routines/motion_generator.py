@@ -49,7 +49,7 @@ class MotionGenerator:
                 )
         if yaw_twist != 0:
             if abs(yaw_twist) > self.max_yaw_twist:
-                raise ValueError("yaw_twist is bigger than 2pi")
+                raise ValueError("yaw_twist is bigger than max_yaw_twist: ",self.max_yaw_twist)
             if yaw_twist < 0:
                 yaw = np.linspace(0, abs(yaw_twist), len(pos_x))
             else:
@@ -215,84 +215,157 @@ class MotionGenerator:
                 "yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior."
             )
 
-        #################### calculate position
-        # calc xy
-        x, y = self._lerp_in_polar(
-            begining_position,
-            end_position,
-            total_number_of_waypoints,
-            number_of_rotations,
-            self.mortar_inner_size["x"],
-        )
-
-        # shift center pos
-        x += circular_center_position[0]
-        y += circular_center_position[1]
-
-        # check xy in range
-        if np.any(np.abs(x) > self.mortar_inner_size["x"]):
-            raise ValueError("calculated x is over mortar scale")
-
-        elif np.any(np.abs(y) > self.mortar_inner_size["y"]):
-            raise ValueError("calculated y is over mortar scale")
-
-        # calc z
-        if end_radious_z < begining_radious_z:
-            raise ValueError(
-                "Calc error: begining radius z is bigger than end radius z."
-            )
-            return False
-        radious_z = np.linspace(
-            begining_radious_z, end_radious_z, total_number_of_waypoints, endpoint=False
-        )
-        z = self._ellipsoid_z_lower(
-            x,
-            y,
-            [self.mortar_inner_size["x"], self.mortar_inner_size["y"], radious_z],
-        )
-
-        position = np.array([x, y, z])
-
-        # shift to work pos
-        shifted_position = np.array(
-            [
-                position[0] + self.mortar_top_center_position["x"],
-                position[1] + self.mortar_top_center_position["y"],
-                position[2] + self.mortar_top_center_position["z"],
-            ]
-        )
 
         # calc twist
-        yaw_twist = yaw_twist_per_rotation * number_of_rotations
+        total_yaw_twist = yaw_twist_per_rotation * number_of_rotations
 
-        #################### calculate orientation
-        # if angle_scale == 0:
-        #     x_for_quat = np.full_like(x, circular_center_position[0])
-        #     y_for_quat = np.full_like(y, circular_center_position[1])
-        #     pos_for_quat = np.array([x_for_quat, y_for_quat, z])
-        #     quat = self._calc_quaternion_of_mortar_inner_wall(
-        #         pos_for_quat, 1.0, yaw_bias, yaw_twist
-        #     )
-        # else:
-        quat = self._calc_quaternion_of_mortar_inner_wall(
-            position, angle_scale, yaw_bias, yaw_twist
-        )
+        # Check if total total_yaw_twist exceeds the limit
+        if abs(total_yaw_twist) > self.max_yaw_twist:
+            limited_yaw_twist = self.max_yaw_twist
+            limited_number_of_rotations=int(limited_yaw_twist / yaw_twist_per_rotation)
+            iterations = int(number_of_rotations/ limited_number_of_rotations)
+            warnings.warn(f"Total total_yaw_twist ({total_yaw_twist:.2f} rad) exceeds max_yaw_twist ({self.max_yaw_twist:.2f} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad).")
 
-        #################### create waypoints
-        waypoints = np.stack(
-            [
-                shifted_position[0],
-                shifted_position[1],
-                shifted_position[2],
-                quat.T[0],
-                quat.T[1],
-                quat.T[2],
-                quat.T[3],
-            ]
-        ).T
-        # delete duplicated waypoints
-        # waypoints, index = np.unique(waypoints, axis=0, return_index=True)
-        # waypoints = waypoints[np.argsort(index)]
+            #################### calculate position
+            # calc xy
+            x, y = self._lerp_in_polar(
+                begining_position,
+                end_position,
+                total_number_of_waypoints,
+                limited_number_of_rotations,
+                self.mortar_inner_size["x"],
+            )
+
+            # shift center pos
+            x += circular_center_position[0]
+            y += circular_center_position[1]
+
+            # check xy in range
+            if np.any(np.abs(x) > self.mortar_inner_size["x"]):
+                raise ValueError("calculated x is over mortar scale")
+
+            elif np.any(np.abs(y) > self.mortar_inner_size["y"]):
+                raise ValueError("calculated y is over mortar scale")
+
+            # calc z
+            if end_radious_z < begining_radious_z:
+                raise ValueError(
+                    "Calc error: begining radius z is bigger than end radius z."
+                )
+                return False
+            radious_z = np.linspace(
+                begining_radious_z, end_radious_z, total_number_of_waypoints, endpoint=False
+            )
+            z = self._ellipsoid_z_lower(
+                x,
+                y,
+                [self.mortar_inner_size["x"], self.mortar_inner_size["y"], radious_z],
+            )
+
+            position = np.array([x, y, z])
+
+            # shift to work pos
+            shifted_position = np.array(
+                [
+                    position[0] + self.mortar_top_center_position["x"],
+                    position[1] + self.mortar_top_center_position["y"],
+                    position[2] + self.mortar_top_center_position["z"],
+                ]
+            )
+
+            #################### calculate orientation
+            quat = self._calc_quaternion_of_mortar_inner_wall(
+                position, angle_scale, yaw_bias, limited_yaw_twist
+            )
+
+            #################### create waypoints
+            partial_waypoints = np.stack(
+                [
+                    shifted_position[0],
+                    shifted_position[1],
+                    shifted_position[2],
+                    quat.T[0],
+                    quat.T[1],
+                    quat.T[2],
+                    quat.T[3],
+                ]
+            ).T
+            
+            waypoints=[]
+            for i in range(iterations):
+                if i % 2 == 0:
+                    waypoints.extend(partial_waypoints[0:-1])
+                else:
+                    p = waypoints[::-1]
+                    waypoints.extend(p[0:-1])
+                
+        else:
+                
+            #################### calculate position
+            # calc xy
+            x, y = self._lerp_in_polar(
+                begining_position,
+                end_position,
+                total_number_of_waypoints,
+                number_of_rotations,
+                self.mortar_inner_size["x"],
+            )
+
+            # shift center pos
+            x += circular_center_position[0]
+            y += circular_center_position[1]
+
+            # check xy in range
+            if np.any(np.abs(x) > self.mortar_inner_size["x"]):
+                raise ValueError("calculated x is over mortar scale")
+
+            elif np.any(np.abs(y) > self.mortar_inner_size["y"]):
+                raise ValueError("calculated y is over mortar scale")
+
+            # calc z
+            if end_radious_z < begining_radious_z:
+                raise ValueError(
+                    "Calc error: begining radius z is bigger than end radius z."
+                )
+                return False
+            radious_z = np.linspace(
+                begining_radious_z, end_radious_z, total_number_of_waypoints, endpoint=False
+            )
+            z = self._ellipsoid_z_lower(
+                x,
+                y,
+                [self.mortar_inner_size["x"], self.mortar_inner_size["y"], radious_z],
+            )
+
+            position = np.array([x, y, z])
+
+            # shift to work pos
+            shifted_position = np.array(
+                [
+                    position[0] + self.mortar_top_center_position["x"],
+                    position[1] + self.mortar_top_center_position["y"],
+                    position[2] + self.mortar_top_center_position["z"],
+                ]
+            )
+
+            #################### calculate orientation
+            quat = self._calc_quaternion_of_mortar_inner_wall(
+                position, angle_scale, yaw_bias, total_yaw_twist
+            )
+
+            #################### create waypoints
+            waypoints = np.stack(
+                [
+                    shifted_position[0],
+                    shifted_position[1],
+                    shifted_position[2],
+                    quat.T[0],
+                    quat.T[1],
+                    quat.T[2],
+                    quat.T[3],
+                ]
+            ).T
+
 
         return waypoints
 
