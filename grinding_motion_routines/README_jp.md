@@ -1,14 +1,14 @@
 # 粉砕モーションのパラメータ一覧
 | パラメータ                                                     | 型             | 大きさ/意味合い                                                                                                                           |
 | :-------------------------------------------------------: | :-----------: | :--------------------------------------------------------------------------------------------------------------------------------: |
-| grinding\_pos\_begining                                   | List\[float\] | \[X座標, Y座標\]。粉砕開始位置の二次元座標。具体的な数値で指定。                                                                                               |
+| grinding\_pos\_beginning                                   | List\[float\] | \[X座標, Y座標\]。粉砕開始位置の二次元座標。具体的な数値で指定。                                                                                               |
 | grinding\_pos\_end                                        | List\[float\] | \[X座標, Y座標\]。粉砕終了位置の二次元座標。具体的な数値で指定。                                                                                               |
 | grinding\_center\_pos                                     | List\[float\] | \[X座標, Y座標\]。円弧粉砕の中心位置の二次元座標。直線粉砕では影響小。具体的な数値で指定。                                                                                  |
 | grinding\_number\_of\_rotation                            | int           | 粉砕動作の総回転数。正の整数で指定。                                                                                                                 |
 | grinding\_sec\_per\_rotation                              | float         | 1回転あたりの時間（秒）。正の小数で指定。grinding\_number\_of\_rotation \* grinding\_sec\_per\_rotation が合計粉砕時間となり、合計 15秒以下 を推奨(モーションプランニングの計算が重たいため)。 |
 | grinding\_number\_of\_waypoints\_per\_circle              | int           | 円弧粉砕時の1周あたりの経由点数。直線粉砕時は始点-終点間の分割数。正の整数で指定。値が大きいほど動きが滑らか(50点以上を推奨)。                                                                 |
 | grinding\_angle\_scale                                    | float         | 粉砕角度の変化に対するスケール。0(垂直)から1(接線の法線方向)の範囲で指定。0\~0.3が推奨                                                                                  |
-| grinding\_rz\_begining                                    | float         | 粉砕開始時の粉砕モーションの乳鉢深さパラメータ(mm)。具体的な数値で指定。                                                                                             |
+| grinding\_rz\_beginning                                    | float         | 粉砕開始時の粉砕モーションの乳鉢深さパラメータ(mm)。具体的な数値で指定。                                                                                             |
 | grinding\_rz\_end                                         | float         | 粉砕終了時の粉砕モーションの乳鉢深さパラメータ(mm)。具体的な数値で指定。                                                                                             |
 | grinding\_yaw\_bias                                       | float         | 粉砕動作のヨー角バイアス（ラジアン）。rad(pi) は約3.14ラジアン（180度）。                                                                                       |
 | grinding\_joint\_difference\_limit\_for\_motion\_planning | float         | モーションプランニングにおける関節角度変化の許容限界（ラジアン）。正の小数で指定。これを超える変化はモーションプランニングができないように制約。                                                           |
