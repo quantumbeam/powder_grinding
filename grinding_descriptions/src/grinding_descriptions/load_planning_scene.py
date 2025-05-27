@@ -6,7 +6,7 @@ from moveit_commander import PlanningSceneInterface
 from moveit_commander import MoveGroupCommander
 
 
-class PlanningScene:
+class PlanningSceneLoader:
     """
     A class to manage the planning scene for a MoveIt! move group.
 
@@ -95,5 +95,5 @@ class PlanningScene:
 if __name__ == "__main__":
     rospy.init_node("load_planning_scene")
     move_group_name = rospy.get_param("~move_group_name")
-    planning_scene = PlanningScene(MoveGroupCommander(move_group_name))
+    planning_scene = PlanningSceneLoader(MoveGroupCommander(move_group_name))
     planning_scene.init_planning_scene()
