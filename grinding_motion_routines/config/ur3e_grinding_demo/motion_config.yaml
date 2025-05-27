@@ -12,7 +12,7 @@ motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning 
 planning_time : 20 # timeout for motion planning
 
 # grinding params
-grinding_pos_begining : 
+grinding_pos_beginning : 
   - -8
   - 0
 grinding_pos_end :
@@ -24,7 +24,7 @@ grinding_center_pos:
 grinding_number_of_rotation : 30
 grinding_sec_per_rotation : 0.5 # 0.5 >
 grinding_angle_param : 0.3 #0 - 0.3
-grinding_rz_begining : 35
+grinding_rz_beginning : 35
 grinding_rz_end : 35
 grinding_vel_scale : 1
 grinding_acc_scale : 1
@@ -33,7 +33,7 @@ grinding_yaw_bias : rad(pi)
 grinding_total_joint_diffence_for_planning : 3.0
 
 # circular gathering params 
-gathering_pos_begining : 
+gathering_pos_beginning : 
   - -30
   - 0
 gathering_pos_end :
@@ -42,7 +42,7 @@ gathering_pos_end :
 gathering_number_of_rotation : 8
 gathering_sec_per_rotation : 2
 gathering_angle_param : 0
-gathering_rz_begining : 35
+gathering_rz_beginning : 35
 gathering_rz_end : 35
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
@@ -51,22 +51,22 @@ gathering_yaw_bias :  rad(-pi/3)
 gathering_total_joint_diffence_for_planning : 3.0
 
 # scooping params 
-# scooping_pos_begining : 
+# scooping_pos_beginning : 
 #   - -20
 #   - 0
 # scooping_pos_end :
 #   - 20
 #   - 0
-# scooping_rz_begining : 32.3
+# scooping_rz_beginning : 32.3
 # scooping_rz_end : 32.3
 
-scooping_pos_begining : 
+scooping_pos_beginning : 
   - -20
   - 0
 scooping_pos_end :
   - 25
   - 0
-scooping_rz_begining : 31.3
+scooping_rz_beginning : 31.3
 scooping_rz_end : 31.3
 scooping_angle_param : 1
 scooping_vel_scale : 0.1

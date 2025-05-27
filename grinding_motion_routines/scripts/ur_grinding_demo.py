@@ -50,9 +50,9 @@ def display_debug_waypoints(waypoints, debug_type, tf_name="debug"):
 
 def compute_grinding_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
-        begining_position=rospy.get_param("~grinding_pos_begining"),
+        beginning_position=rospy.get_param("~grinding_pos_beginning"),
         end_position=rospy.get_param("~grinding_pos_end"),
-        begining_radious_z=rospy.get_param("~grinding_rz_begining"),
+        beginning_radious_z=rospy.get_param("~grinding_rz_beginning"),
         end_radious_z=rospy.get_param("~grinding_rz_end"),
         angle_param=rospy.get_param("~grinding_angle_param"),
         yaw_bias=rospy.get_param("~grinding_yaw_bias"),
@@ -69,9 +69,9 @@ def compute_grinding_waypoints(motion_generator, debug_type=False):
 
 def compute_gathering_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
-        begining_position=rospy.get_param("~gathering_pos_begining"),
+        beginning_position=rospy.get_param("~gathering_pos_beginning"),
         end_position=rospy.get_param("~gathering_pos_end"),
-        begining_radious_z=rospy.get_param("~gathering_rz_begining"),
+        beginning_radious_z=rospy.get_param("~gathering_rz_beginning"),
         end_radious_z=rospy.get_param("~gathering_rz_end"),
         angle_param=rospy.get_param("~gathering_angle_param"),
         yaw_bias=rospy.get_param("~gathering_yaw_bias"),
@@ -87,9 +87,9 @@ def compute_gathering_waypoints(motion_generator, debug_type=False):
 
 def compute_scooping_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_cartesian_waypoints(
-        begining_position=rospy.get_param("~scooping_pos_begining"),
+        beginning_position=rospy.get_param("~scooping_pos_beginning"),
         end_position=rospy.get_param("~scooping_pos_end"),
-        begining_radius_z=rospy.get_param("~scooping_rz_begining"),
+        beginning_radius_z=rospy.get_param("~scooping_rz_beginning"),
         end_radius_z=rospy.get_param("~scooping_rz_end"),
         angle_param=rospy.get_param("~scooping_angle_param"),
         yaw_bias=rospy.get_param("~scooping_yaw_bias"),

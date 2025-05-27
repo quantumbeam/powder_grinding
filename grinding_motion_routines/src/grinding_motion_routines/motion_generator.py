@@ -150,9 +150,9 @@ class MotionGenerator:
 
     def create_circular_waypoints(
         self,
-        begining_position,
+        beginning_position,
         end_position,
-        begining_radious_z,
+        beginning_radious_z,
         end_radious_z,
         angle_param=0,
         yaw_bias=0,
@@ -162,9 +162,9 @@ class MotionGenerator:
     ):
         """
         supported type
-        begining_position : list [x,y]
+        beginning_position : list [x,y]
         end_position : list [x,y]
-        begining_radious_z : float
+        beginning_radious_z : float
         end_radious_z : float
         angle_param : float
         yaw_bias : float
@@ -173,9 +173,9 @@ class MotionGenerator:
         center_position : list [x,y]
         """
         # chnage unit from mm to m
-        begining_position = np.array(begining_position).astype(np.float64) * 0.001
+        beginning_position = np.array(beginning_position).astype(np.float64) * 0.001
         end_position = np.array(end_position).astype(np.float64) * 0.001
-        begining_radious_z = float(begining_radious_z) * 0.001
+        beginning_radious_z = float(beginning_radious_z) * 0.001
         end_radious_z = float(end_radious_z) * 0.001
         circular_center_position = np.array(center_position).astype(np.float64) * 0.001
         total_number_of_waypoints = number_of_rotations * number_of_waypoints_per_circle
@@ -191,7 +191,7 @@ class MotionGenerator:
         #################### calculate position
         # calc xy
         x, y = self._lerp_in_polar(
-            begining_position,
+            beginning_position,
             end_position,
             total_number_of_waypoints,
             number_of_rotations,
@@ -210,13 +210,13 @@ class MotionGenerator:
             raise ValueError("calculated y is over mortar scale")
 
         # calc z
-        if end_radious_z < begining_radious_z:
+        if end_radious_z < beginning_radious_z:
             raise ValueError(
-                "Calc error: begining radius z is bigger than end radius z."
+                "Calc error: beginning radius z is bigger than end radius z."
             )
             return False
         radious_z = np.linspace(
-            begining_radious_z, end_radious_z, total_number_of_waypoints, endpoint=False
+            beginning_radious_z, end_radious_z, total_number_of_waypoints, endpoint=False
         )
         z = self._ellipsoid_z_lower(
             x,
@@ -268,9 +268,9 @@ class MotionGenerator:
 
     def create_cartesian_waypoints(
         self,
-        begining_position,
+        beginning_position,
         end_position,
-        begining_radius_z,
+        beginning_radius_z,
         end_radius_z,
         angle_param=0,
         fixed_quaternion=False,
@@ -279,11 +279,11 @@ class MotionGenerator:
     ):
         """
         supported type
-        begining_theta : float
+        beginning_theta : float
         end_tehta : float
-        begining_length_from_center : float
+        beginning_length_from_center : float
         end_length_from_center : float
-        begining_radius_z : float
+        beginning_radius_z : float
         end_radius_z : float
         angle_param : float
         fixed_quaternion : bool
@@ -297,17 +297,17 @@ class MotionGenerator:
             )
 
         # chnage unit from mm to m
-        begining_position = np.array(begining_position).astype(np.float64) * 0.001
+        beginning_position = np.array(beginning_position).astype(np.float64) * 0.001
         end_position = np.array(end_position).astype(np.float64) * 0.001
-        begining_radius_z *= 0.001
+        beginning_radius_z *= 0.001
         end_radius_z *= 0.001
 
         # calculate position
         x, y = self._lerp_in_cartesian(
-            begining_position, end_position, number_of_waypoints
+            beginning_position, end_position, number_of_waypoints
         )
         radius_z = np.linspace(
-            begining_radius_z, end_radius_z, number_of_waypoints, endpoint=False
+            beginning_radius_z, end_radius_z, number_of_waypoints, endpoint=False
         )
         z = self._ellipsoid_z_lower(x, y, radius_z)
         position = np.array([x, y, z])
@@ -349,11 +349,11 @@ class MotionGenerator:
 
     def create_liner_waypoints_list(
         self,
-        begining_theta,
+        beginning_theta,
         end_tehta,
-        begining_length_from_center,
+        beginning_length_from_center,
         end_length_from_center,
-        begining_radius_z,
+        beginning_radius_z,
         end_radius_z,
         angle_param=0,
         fixed_quaternion=False,
@@ -363,11 +363,11 @@ class MotionGenerator:
     ):
         """
         supported type
-        begining_theta : float
+        beginning_theta : float
         end_tehta : float
-        begining_length_from_center : float
+        beginning_length_from_center : float
         end_length_from_center : float
-        begining_radius_z : float
+        beginning_radius_z : float
         end_radius_z : float
         angle_param : float
         fixed_quaternion : bool
@@ -381,30 +381,30 @@ class MotionGenerator:
             )
 
         # chnage unit from mm to m
-        begining_length_from_center *= 0.001
+        beginning_length_from_center *= 0.001
         end_length_from_center *= 0.001
-        begining_radius_z *= 0.001
+        beginning_radius_z *= 0.001
         end_radius_z *= 0.001
 
         # calculate position in tahta range
-        theta = np.linspace(begining_theta, end_tehta, motion_counts, endpoint=False)
-        begining_r = np.full_like(theta, begining_length_from_center)
+        theta = np.linspace(beginning_theta, end_tehta, motion_counts, endpoint=False)
+        beginning_r = np.full_like(theta, beginning_length_from_center)
         end_r = np.full_like(theta, end_length_from_center)
-        begining_x, begining_y = self._polar_to_cartesian(begining_r, theta)
+        beginning_x, beginning_y = self._polar_to_cartesian(beginning_r, theta)
         end_x, end_y = self._polar_to_cartesian(end_r, theta)
         radius_z = np.linspace(
-            begining_radius_z, end_radius_z, number_of_waypoints, endpoint=False
+            beginning_radius_z, end_radius_z, number_of_waypoints, endpoint=False
         )
 
         waypoints_list = []
-        for begining_x, begining_y, end_x, end_y in zip(
-            begining_x, begining_y, end_x, end_y
+        for beginning_x, beginning_y, end_x, end_y in zip(
+            beginning_x, beginning_y, end_x, end_y
         ):
             #################### calculate position
-            begining_position = [begining_x, begining_y]
+            beginning_position = [beginning_x, beginning_y]
             end_position = [end_x, end_y]
             x, y = self._lerp_in_cartesian(
-                begining_position, end_position, number_of_waypoints
+                beginning_position, end_position, number_of_waypoints
             )
             z = self._ellipsoid_z_lower(x, y, radius_z)
             position = np.array([x, y, z])

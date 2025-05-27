@@ -11,7 +11,7 @@ motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning 
 planning_time : 20 # timeout for motion planning
 
 # grinding params
-grinding_pos_begining : 
+grinding_pos_beginning : 
   - -10
   - 0
 grinding_pos_end :
@@ -22,7 +22,7 @@ grinding_center_pos:
   - 0
 grinding_number_of_rotation : 10
 grinding_angle_param : 0.5
-grinding_rz_begining : 34
+grinding_rz_beginning : 34
 grinding_rz_end : 34
 grinding_vel_scale : 1
 grinding_acc_scale : 1
@@ -30,7 +30,7 @@ grinding_number_of_waypoints_per_circle : 10
 grinding_yaw_bias : rad(pi)
 
 # circular gathering params 
-gathering_pos_begining : 
+gathering_pos_beginning : 
   - -35
   - 0
 gathering_pos_end :
@@ -38,7 +38,7 @@ gathering_pos_end :
   - 0.0001
 gathering_number_of_rotation : 5
 gathering_angle_param : 0
-gathering_rz_begining : 37
+gathering_rz_beginning : 37
 gathering_rz_end : 37
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
