@@ -152,8 +152,8 @@ class MotionGenerator:
 
         dr = abs(ed_r - st_r) / (r_max * 2)
         d_theta = abs(ed_theta - st_theta) / (2 * pi)
-radius
-        if dradiusheta:
+
+        if dr > d_theta:
             r = np.linspace(st_r, ed_r, points, endpoint=False)
             theta = st_theta + (ed_theta - st_theta) * (r - st_r) / (ed_r - st_r)
         else:
@@ -164,8 +164,8 @@ radius
 
         return x, y
 
-    def update_fixradius_position(self, pos):
-        selfradius_top_center_position = pos
+    def update_fixed_tool_position(self, pos):
+        self.mortar_top_center_position = pos
 
     def create_circular_waypoints(
         self,
@@ -175,8 +175,8 @@ radius
         end_radius_z,
         angle_scale=0,
         yaw_bias=None,
-        yaw_twist_radiusation=0,radius
-        numbradiusotations=1,radius
+        yaw_twist_per_rotation=0,
+        number_of_rotations=1,
         number_of_waypoints_per_circle=10,
         center_position=np.array([0, 0]),
     ):
@@ -210,18 +210,18 @@ radius
                 "Can't calculate motion, you can choose number_of_waypoints_per_circle >= 1"
             )
 
-        if yaw_radiuser_rotation > nradius
+        if yaw_twist_per_rotation > np.pi:
             warnings.warn(
                 "yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior."
             )
 
-radius
-        # calc twistradiusradius
+
+        # calc twist
         total_yaw_twist = yaw_twist_per_rotation * number_of_rotations
 
         # Check if total total_yaw_twist exceeds the limit
         if abs(total_yaw_twist) > self.max_yaw_twist:
-            limited_yaw_twist = self.max_yaw_twistradius
+            limited_yaw_twist = self.max_yaw_twist
             limited_number_of_rotations=int(limited_yaw_twist / yaw_twist_per_rotation)
             iterations = int(number_of_rotations/ limited_number_of_rotations)
             warnings.warn(f"Total total_yaw_twist ({total_yaw_twist:.2f} rad) exceeds max_yaw_twist ({self.max_yaw_twist:.2f} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad).")
