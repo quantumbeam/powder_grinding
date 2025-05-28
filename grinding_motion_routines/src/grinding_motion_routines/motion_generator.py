@@ -224,14 +224,19 @@ class MotionGenerator:
             limited_yaw_twist = self.max_yaw_twist
             limited_number_of_rotations=int(limited_yaw_twist / yaw_twist_per_rotation)
             iterations = int(number_of_rotations/ limited_number_of_rotations)
-            warnings.warn(f"Total total_yaw_twist ({total_yaw_twist:.2f} rad) exceeds max_yaw_twist ({self.max_yaw_twist:.2f} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad).")
-
+            limited_number_of_waypoints = int(total_number_of_waypoints/ iterations)
+            if limited_number_of_waypoints < 1:
+                raise ValueError(
+                    "Can't calculate motion, you can choose number_of_waypoints_per_circle >= 1"
+                )
+            warnings.warn(f"Total total_yaw_twist ({total_yaw_twist} rad) exceeds max_yaw_twist ({self.max_yaw_twist} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad).")
+            warnings.warn(f"limited_number_of_rotations: {limited_number_of_rotations}, limited_number_of_waypoints: {limited_number_of_waypoints}")
             #################### calculate position
             # calc xy
             x, y = self._lerp_in_polar(
                 beginning_position,
                 end_position,
-                total_number_of_waypoints,
+                limited_number_of_waypoints,
                 limited_number_of_rotations,
                 self.mortar_inner_size["x"],
             )
@@ -254,7 +259,7 @@ class MotionGenerator:
                 )
                 return False
             radius_z = np.linspace(
-                beginning_radius_z, end_radius_z, total_number_of_waypoints, endpoint=False
+                beginning_radius_z, end_radius_z, limited_number_of_waypoints, endpoint=False
             )
             z = self._ellipsoid_z_lower(
                 x,
@@ -290,13 +295,13 @@ class MotionGenerator:
                     quat.T[3],
                 ]
             ).T
-            
+            print(f"partial_waypoints shape: {partial_waypoints.shape}")
             waypoints=[]
             for i in range(iterations):
                 if i % 2 == 0:
                     waypoints.extend(partial_waypoints[0:-1])
                 else:
-                    p = waypoints[::-1]
+                    p = partial_waypoints[::-1]
                     waypoints.extend(p[0:-1])
                 
         else:
