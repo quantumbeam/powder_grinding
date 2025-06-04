@@ -7,6 +7,14 @@
 
 [パッケージ解説スライドも公開しています。](https://docs.google.com/presentation/d/1NM6mxm0q2QrHuePchJIvgVollS97jfg_tNNWKQHokds/edit?usp=sharing)
 
+
+**重要なお知らせ (Ubuntu Pro Tokenについて):**
+ROS Noeticはサポートが終了 (EOL) しました。このリポジトリのDocker環境は、引き続き必要なソフトウェアパッケージにアクセスするためにUbuntu Proを利用するよう設定されています。
+Dockerコンテナを正常に動作させるためには、**必ず**以下の形式でご自身のUbuntu Proトークンを環境変数に設定してください。
+`export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"`
+この設定を行わない場合、一部のROSパッケージがダウンロードできず、ビルドや実行に失敗します。
+
+
 ### 目次
 - [対応ロボット](#対応ロボット)
 - [クイックスタート](#クイックスタート)

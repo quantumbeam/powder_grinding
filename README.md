@@ -5,6 +5,9 @@ Custum ROS packages for robotic powder grinding.
 This package can operate both in simulation (fake joint and Rviz) and on the actual robot.
 And provide Docker containers for the ROS environment.
 
+**Note:** The Docker environment for this package is configured to utilize Ubuntu Pro. Due to ROS Noetic's End-of-Life (EOL), you will need to set the `UBUNTU_PRO_TOKEN` environment variable to ensure access to all necessary packages. Please set it as follows:
+`export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"`
+
 ### **Table of Contents**
 - [Supported Robots](#supported-robots)
 - [Quick Start Guide](#quick-start-guide)
