@@ -1,4 +1,4 @@
-### Robotic Powder Grinding for Laboratory Automation
+# Robotic Powder Grinding for Laboratory Automation
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
 Custum ROS packages for robotic powder grinding.
@@ -7,8 +7,10 @@ This package can operate both in simulation (Gazebo) and on the actual robot.
 **Note:** The Docker environment for this package is configured to utilize Ubuntu Pro. Due to ROS Noetic's End-of-Life (EOL), you will need to set the `UBUNTU_PRO_TOKEN` environment variable to ensure access to all necessary packages. Please set it as follows:
 `export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"`
 
-#### **Table of Contents**
-- [Supported Robots](#supported-robots)
+# **Table of Contents**
+- [Robotic Powder Grinding for Laboratory Automation](#robotic-powder-grinding-for-laboratory-automation)
+- [**Table of Contents**](#table-of-contents)
+  - [Supported Robots](#supported-robots)
   - [Quick Start Guide](#quick-start-guide)
     - [Setting up Environments of Host PC, Robot, and Docker](#setting-up-environments-of-host-pc-robot-and-docker)
     - [Running Docker Container](#running-docker-container)
@@ -19,10 +21,6 @@ This package can operate both in simulation (Gazebo) and on the actual robot.
   - [Citation](#citation)
   - [License](#license)
 
-### Overview
-**Last Updated:** 2023/10/24  
-This repository focuses on the ROS environment for robot control.
-
 ## Supported Robots
 - Confirmed to work with actual machines
    - UR5e (Universal Robot)
@@ -32,23 +30,23 @@ This repository focuses on the ROS environment for robot control.
 - Confirmed to work with simulation only
    - Cobotta PRO 900 (DENSO WAVE)
 
-### Quick Start Guide
+## Quick Start Guide
 You can also view the Japanese version of the [README_jp](./README_jp.md).
 
-#### Setting up Environments of Host PC, Robot, and Docker
+### Setting up Environments of Host PC, Robot, and Docker
 - [Setup Instructions](./env/docker/README.md)
 - [Setup Instructions (Japanese version)](./env/docker/README_jp.md)
 
-#### Running Docker Container
+### Running Docker Container
 - Runing docker container on terminal: `cd ./env && ./RUN-DOCKER-CONTAINER.sh`
 - Launch Terminator and running docker container: `cd ./env && ./LAUNCH-TERMINATOR-TERMINAL.sh`
 
-#### Building ROS Packages in Docker Container
+### Building ROS Packages in Docker Container
 - Execute only once on first `./INITIAL_SETUP_ROS_ENVIROMENTS.sh` in `catkin_ws` in docker conatner.  
 - Execute to build `./BUILD_ROS_WORKSPACE.sh` in `catkin_ws` in docker conatner.
 
 
-#### Demonstration
+### Demonstration
 - We have prepared demo files for launching and performing grinding motions.
 - Robot Launch:
    ```
@@ -74,16 +72,16 @@ You can also view the Japanese version of the [README_jp](./README_jp.md).
 - Grinding Parameters Configuration:
    - The configuration settings are located in the config directory within the grinding_motion_routines package.
 
-### Known Issues
+## Known Issues
 - Cobotta's .dea file is unreadable (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
 
 
-### Future Work
+## Future Work
 - Add IKFast for motion planning
  - Need to load custom URDF for grinding on IKFast
 - Automated calibration of mortar position using a force sensor.
 
-### Citation
+## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
 ```
 @InProceedings{RoboticPowderGrindingWithSoftJig,
@@ -98,6 +96,6 @@ If you are interested in the application of robotic powder grinding, please take
 - [Robotic Powder Grinding with Audio-Visual Feedback for Laboratory Automation in Materials Science](https://ieeexplore.ieee.org/document/10341526) (IROS 2023)
    -  Github pages [here](https://omron-sinicx.github.io/powder-grinding/) 
 
-### License
+## License
 This repository is under the MIT license. See [LICENSE](./LICENSE) for details.
 

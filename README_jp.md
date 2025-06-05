@@ -1,8 +1,9 @@
-### Robotic Powder Grinding for Laboratory Automation
+# Robotic Powder Grinding for Laboratory Automation
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
 乳棒と乳鉢用いたロボット粉体粉砕のためのROSパッケージです。
 シミュレーション(Gazebo)上での動作とロボット実機での動作ができます。
+[パッケージ解説スライドも公開しています。](https://docs.google.com/presentation/d/1NM6mxm0q2QrHuePchJIvgVollS97jfg_tNNWKQHokds/edit?usp=sharing)
 
 
 **重要なお知らせ (Ubuntu Pro Tokenについて):**
@@ -12,23 +13,20 @@ Dockerコンテナを正常に動作させるためには、**必ず**以下の�
 この設定を行わない場合、一部のROSパッケージがダウンロードできず、ビルドや実行に失敗します。
 
 ## 目次
-- [目次](#目次)
-- [概要](#概要)
-- [対応ロボット](#対応ロボット)
-- [クイックスタート](#クイックスタート)
-  - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
-  - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
-  - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
-  - [モーションのデモ](#モーションのデモ)
-- [既知の課題](#既知の課題)
-- [Future Work](#future-work)
+- [Robotic Powder Grinding for Laboratory Automation](#robotic-powder-grinding-for-laboratory-automation)
+  - [目次](#目次)
+  - [対応ロボット](#対応ロボット)
+  - [クイックスタート](#クイックスタート)
+    - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
+    - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
+    - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
+    - [モーションのデモ](#モーションのデモ)
+  - [既知の課題](#既知の課題)
+  - [Future Work](#future-work)
   - [Citation](#citation)
-- [License](#license)
+  - [License](#license)
 
-## 概要
-**Last Updated:** 2023/10/24  
-This repository focuses on the ROS environment for robot control.
-[パッケージ解説スライドも公開しています。](https://docs.google.com/presentation/d/1NM6mxm0q2QrHuePchJIvgVollS97jfg_tNNWKQHokds/edit?usp=sharing)
+
 
 ## 対応ロボット
 - UR5e
@@ -84,7 +82,7 @@ This repository focuses on the ROS environment for robot control.
 - UR内部もしくは外部の力センサを用いて、乳鉢位置の自動調整を行いたいです。
    - grinding_motion_routinesパッケージの`calibrate_mortar_position.launch`に途中まで作ったものがありますが、まだ完成していないので使う場合はスクリプトを読んで書き換えながら使ってください。
 
-### Citation
+## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
 ```
 @InProceedings{RoboticPowderGrindingWithSoftJig,
