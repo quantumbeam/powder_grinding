@@ -19,6 +19,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+      args:
+        UBUNTU_PRO_TOKEN: ${UBUNTU_PRO_TOKEN}
     volumes:
       # Map ROS workspace folders.
       - ../../:/root/catkin_ws/src/powder_grinding

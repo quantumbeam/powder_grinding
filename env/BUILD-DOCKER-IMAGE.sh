@@ -10,6 +10,15 @@ DOCKER_CONTAINER="${DOCKER_PROJECT}_powder_grinding_ros_1"
 echo "$0: USER=${DOCKER_PROJECT}"
 echo "$0: DOCKER_CONTAINER=${DOCKER_CONTAINER}"
 
+# Check if the UBUNTU_PRO_TOKEN environment variable is set.
+if [ -z "${UBUNTU_PRO_TOKEN}" ]; then
+  echo "Error: UBUNTU_PRO_TOKEN environment variable is not set." >&2
+  echo "Please set UBUNTU_PRO_TOKEN before running this script. For example:" >&2
+  echo "  export UBUNTU_PRO_TOKEN=\"YOUR_TOKEN_HERE\"" >&2
+  exit 1
+fi
+echo "UBUNTU_PRO_TOKEN is set. Proceeding with Docker build."
+
 # Stop and remove the Docker container.
 EXISTING_DOCKER_CONTAINER_ID=`docker ps -aq -f name=${DOCKER_CONTAINER}`
 if [ ! -z "${EXISTING_DOCKER_CONTAINER_ID}" ]; then
