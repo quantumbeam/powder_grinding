@@ -1,10 +1,8 @@
-###  Robotic Powder Grinding for Laboratory Automation
+# Robotic Powder Grinding for Laboratory Automation
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
 乳棒と乳鉢用いたロボット粉体粉砕のためのROSパッケージです。
-シミュレーション(fake jointとRviz)上での動作とロボット実機での動作ができます。
-また、ROSパッケージだけでなくROS環境のDockerコンテナも提供します。
-
+シミュレーション(Gazebo)上での動作とロボット実機での動作ができます。
 [パッケージ解説スライドも公開しています。](https://docs.google.com/presentation/d/1NM6mxm0q2QrHuePchJIvgVollS97jfg_tNNWKQHokds/edit?usp=sharing)
 
 
@@ -14,32 +12,28 @@ Dockerコンテナを正常に動作させるためには、**必ず**以下の�
 `export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"`
 この設定を行わない場合、一部のROSパッケージがダウンロードできず、ビルドや実行に失敗します。
 
+## 目次
+- [Robotic Powder Grinding for Laboratory Automation](#robotic-powder-grinding-for-laboratory-automation)
+  - [目次](#目次)
+  - [対応ロボット](#対応ロボット)
+  - [クイックスタート](#クイックスタート)
+    - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
+    - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
+    - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
+    - [モーションのデモ](#モーションのデモ)
+  - [既知の課題](#既知の課題)
+  - [Future Work](#future-work)
+  - [Citation](#citation)
+  - [License](#license)
 
-### 目次
-- [対応ロボット](#対応ロボット)
-- [クイックスタート](#クイックスタート)
-  - [ソフト治具の作り方](#ソフト治具の作り方)
-  - [PCとロボットとDocker環境のセットアップ](#pcとロボットとdocker環境のセットアップ)
-  - [Dockerコンテナの立ち上げ](#dockerコンテナの立ち上げ)
-  - [Dockerコンテナ内でのROS環境のビルド](#dockerコンテナ内でのros環境のビルド)
-  - [モーションのデモ](#モーションのデモ)
-- [既知の課題](#既知の課題)
-- [Citation](#citation)
-- [License](#license)
+
 
 ## 対応ロボット
-- 実機動作確認済み
-   - UR5e (Universal Robot社)
-   - UR3e (Universal Robot社)
-   - Cobotta (DENSOWAVE社)
-   - FR3 (FAIRINO 社)
-- シミュレーションのみ動作確認済み
-   - Cobotta PRO 900 (DENSOWAVE社)
+- UR5e
+- UR3e
+- Cobotta
 
 ## クイックスタート
-
-### ソフト治具の作り方
-- [こちら](./grinding_descriptions/mesh/3D_print_jig/README_jp.md)を読んでください。
 
 ### PCとロボットとDocker環境のセットアップ
 - [環境セットアップの資料](./env/docker/README_jp.md)を読んで環境セットアップし、終わったらこちらに戻ってきて以下の続きを実行してください。
@@ -65,31 +59,28 @@ Dockerコンテナを正常に動作させるためには、**必ず**以下の�
    roslaunch grinding_robot_bringup ur5e_bringup.launch
    roslaunch grinding_robot_bringup ur3e_bringup.launch
    roslaunch grinding_robot_bringup cobotta_bringup.launch
-   roslaunch grinding_robot_bringup cobotta_pro_900_bringup.launch
-   roslaunch grinding_robot_bringup fr3_bringup.launch
-
    ```
    - シミュレーション使う場合は`sim:=true`で立ち上げてください。
-- 粉砕モーションの実行
+- 粉砕モーションの立ち上げ
    ```
    roslaunch grinding_motion_routines ur3e_grinding_demo.launch
    roslaunch grinding_motion_routines ur5e_grinding_demo.launch
    roslaunch grinding_motion_routines cobotta_grinding_demo.launch
-   roslaunch grinding_motion_routines cobotta_pro_900_grinding_demo.launch
-   roslaunch grinding_motion_routines fr3_grinding_demo.launch
-
    ```
    - コマンド`g`で粉砕の実行準備(g=grinding)、続けて`y`で粉砕実行します。
-   - コマンド`G`でヘラによる粉集めの実行準備(g=gathering)、続けて`y`で粉集め実行します。
+   - コマンド`G`でヘラによる粉集めの実行準備(g=grinding)、続けて`y`で粉集め実行します。
 - 粉砕パラメータの設定
    -  grinding_motion_routinesパッケージ内のconfig内に設定があります。
-- 乳棒長さと乳鉢座標のキャリブレーション
-  - ロボットの手先のフォーストルクセンサを使って乳棒長さと乳鉢座標を自動推定します
-  - コードはただいま準備中です、しばらくお待ち下さい
 
 ## 既知の課題
 - 通常版Cobottaの3Dモデルファイルの .deaファイルはROSで読めない形式になっています。
    - grinding_descriptionsパッケージ内のcobotta_description_converter.pyを使うことでblenderの.dae形式に変換され、ROSで読めるようになります。ただ、blenderのpythonモジュールであるbpyをインストールして使用してください。
+
+## Future Work
+- シミュレータでの粉砕動作
+   - 現時点で製作途中です。
+- UR内部もしくは外部の力センサを用いて、乳鉢位置の自動調整を行いたいです。
+   - grinding_motion_routinesパッケージの`calibrate_mortar_position.launch`に途中まで作ったものがありますが、まだ完成していないので使う場合はスクリプトを読んで書き換えながら使ってください。
 
 ## Citation
 - [Robotic Powder Grinding with a Soft Jig for Laboratory Automation in Material Science](https://doi.org/10.1109/IROS47612.2022.9981081) (IROS 2022)
