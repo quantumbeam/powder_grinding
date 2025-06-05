@@ -126,4 +126,11 @@
     output="screen">
     <rosparam command="load" file="$(arg planning_scene_config)" />
   </node>
+
+  <!-- abs force publisher -->
+  <arg name="wrench_topic" default="/wrench" />
+  <node name="force_z_pub" pkg="grinding_force_torque" type="publish_force_z.py"
+      output="screen" >
+      <param name="wrench_topic" value="$(arg wrench_topic)" />
+  </node>
 </launch>

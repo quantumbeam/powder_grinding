@@ -4,7 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /MotionPlanning1
         - /MotionPlanning1/Scene Robot1
       Splitter Ratio: 0.5175438523292542
     Tree Height: 366
@@ -85,10 +84,16 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          dummy_ee:
+          calibrated_color_optical_frame:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
+          calibrated_depth_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           flange:
             Alpha: 1
             Show Axes: false
@@ -107,6 +112,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
           shoulder_link:
             Alpha: 1
             Show Axes: false
@@ -121,6 +127,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
           spoon:
             Alpha: 1
             Show Axes: false
@@ -130,6 +137,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
           tool0:
             Alpha: 1
             Show Axes: false
@@ -151,10 +159,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          world:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
           wrist_1_link:
             Alpha: 1
             Show Axes: false
@@ -229,10 +233,16 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          dummy_ee:
+          calibrated_color_optical_frame:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
+          calibrated_depth_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           flange:
             Alpha: 1
             Show Axes: false
@@ -251,6 +261,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
           shoulder_link:
             Alpha: 1
             Show Axes: false
@@ -265,6 +276,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
           spoon:
             Alpha: 1
             Show Axes: false
@@ -274,6 +286,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+            Value: true
           tool0:
             Alpha: 1
             Show Axes: false
@@ -295,10 +308,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          world:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
           wrist_1_link:
             Alpha: 1
             Show Axes: false
@@ -322,12 +331,13 @@ Visualization Manager:
     - Buffer length: 100
       Class: jsk_rviz_plugin/Plotter2D
       Enabled: true
-      Name: UR Fz (filtered)
+      Name: UR Force Z
       Show Value: true
-      Topic: /force_z
+      Topic: /wrench/force_z
       Value: true
       auto color change: false
       auto scale: true
+      auto text size in plot: true
       background color: 0; 0; 0
       backround alpha: 0
       border: true
@@ -341,6 +351,7 @@ Visualization Manager:
       min value: -1
       show caption: true
       text size: 12
+      text size in plot: 12
       top: 10
       update interval: 0.03999999910593033
       width: 150
@@ -392,9 +403,9 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000001ca000003a2fc0200000007fb000000100044006900730070006c006100790073010000003b000001a9000000c700fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a0056006900650077007300000003b0000000b0000000a000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006701000001ea000001f30000016900ffffff00000568000003a200000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000001ca000003a2fc0200000007fb000000100044006900730070006c006100790073010000003b000001a9000000c700fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a0056006900650077007300000003b0000000b0000000a000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000001600000016fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006701000001ea000001f30000016900ffffff00000568000003a200000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
   Width: 1848
-  X: 72
-  Y: 27
+  X: 5269
+  Y: 341
