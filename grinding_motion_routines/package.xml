@@ -64,6 +64,7 @@
   <build_depend>tf2_geometry_msgs</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>python3-tk</build_depend>
+  <build_depend>python3-tqdm</build_depend>
 
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>moveit_commander</exec_depend>
@@ -81,6 +82,7 @@
   <exec_depend>tf2_geometry_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>python3-tk</exec_depend>
+  <exec_depend>python3-tqdm</exec_depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 
