@@ -21,23 +21,34 @@
   - FR3 port.
     - ```sudo ufw allow 8083```
 
-1. Network setting
+3. Network setting
 - Set static IP address on LAN adaptor
   - This package default : ```192.168.56.5```
 
 # Setting up robot environments
-## Common
-- Set static IP address on robot LAN adaptor
-  - This package default of UR :  ```192.168.56.42```
-  - This package default of cobotta : ```192.168.56.11```
-
 ## Cobotta
+- Set static IP address on robot network setting
+  - This package default of cobotta : ```192.168.56.11```
+- Set the Executable Token for "Ethernet" to enable control of the Cobotta via Ethernet.
+  - Set static IP address of host PC LAN adaptor on Ethernet Executable Token setting.
+    - This package default of host :```192.168.56.5```
 
 ## Universal Robot
+- Set static IP address on robot network setting
+  - This package default of UR :  ```192.168.56.42```
 - Install ```external control.urcap``` and setting LAN info on UR tablet
   - https://github.com/UniversalRobots/Universal_Robots_ExternalControl_URCap/releases
+- Set static IP, port number and host name of host PC LAN adaptor
+  - This package default of host :```192.168.56.5```
+  - Default Port number : 50002
+
+## FR3(FAIRINO)
+- Set static IP address on robot network setting
+  - This package default of FR3 :  ```192.168.56.42```
 
 # Build docker image of ROS environment on Docker container
+- Add your Ubuntu Pro token to environment variable.
+  - ```export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"```
 - Build docker image.
   - ```cd ./env/docker && ./BUILD-DOCKER-IMAGE.sh```
 - You can run docker container, see "Running Docker Container" on [README.md](../README.md).

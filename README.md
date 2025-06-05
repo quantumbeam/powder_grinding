@@ -1,27 +1,27 @@
-### Robotic Powder Grinding for Laboratory Automation
+# Robotic Powder Grinding for Laboratory Automation
 <img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
 
 Custum ROS packages for robotic powder grinding.
-This package can operate both in simulation (fake joint and Rviz) and on the actual robot.
-And provide Docker containers for the ROS environment.
+This package can operate both in simulation (Gazebo) and on the actual robot.
 
 **Note:** The Docker environment for this package is configured to utilize Ubuntu Pro. Due to ROS Noetic's End-of-Life (EOL), you will need to set the `UBUNTU_PRO_TOKEN` environment variable to ensure access to all necessary packages. Please set it as follows:
 `export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"`
 
-### **Table of Contents**
-- [Supported Robots](#supported-robots)
-- [Quick Start Guide](#quick-start-guide)
-  - [Soft-Jig](#soft-jig)
-  - [Setting up Environments of Host PC, Robot, and Docker](#setting-up-environments-of-host-pc-robot-and-docker)
-  - [Running Docker Container](#running-docker-container)
-  - [Building ROS Packages in Docker Container](#building-ros-packages-in-docker-container)
-  - [Demonstration](#demonstration)
-- [Known Issues](#known-issues)
-- [Release Memo](#release-memo)
-- [Acknowledgement](#acknowledgement)
-- [Citation](#citation)
-- [License](#license)
-
+# **Table of Contents**
+- [Robotic Powder Grinding for Laboratory Automation](#robotic-powder-grinding-for-laboratory-automation)
+- [**Table of Contents**](#table-of-contents)
+  - [Supported Robots](#supported-robots)
+  - [Quick Start Guide](#quick-start-guide)
+    - [Soft-Jig](#soft-jig)
+    - [Setting up Environments of Host PC, Robot, and Docker](#setting-up-environments-of-host-pc-robot-and-docker)
+    - [Running Docker Container](#running-docker-container)
+    - [Building ROS Packages in Docker Container](#building-ros-packages-in-docker-container)
+    - [Demonstration](#demonstration)
+  - [Known Issues](#known-issues)
+  - [Release Memo](#release-memo)
+  - [Acknowledgement](#acknowledgement)
+  - [Citation](#citation)
+  - [License](#license)
 
 ## Supported Robots
 - Confirmed to work with actual machines
@@ -40,7 +40,6 @@ Please read below.
 - [How to make Soft-Jig](./grinding_descriptions/mesh/3D_print_jig/README.md)
 -  [How to make Soft-Jig (Japanese version)](./grinding_descriptions/mesh/3D_print_jig/README_jp.md)
 ### Setting up Environments of Host PC, Robot, and Docker
-Please read below.
 - [Setup Instructions](./env/docker/README.md)
 - [Setup Instructions (Japanese version)](./env/docker/README_jp.md)
 
