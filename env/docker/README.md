@@ -25,14 +25,14 @@
 
 # Setting up robot environments
 ## Cobotta
-- Set static IP address of host PC LAN adaptor
-  - This package default of host :```192.168.56.5```
-- Set static IP address on robot LAN adaptor
+- Set static IP address on robot network setting
   - This package default of cobotta : ```192.168.56.11```
 - Set the Executable Token for "Ethernet" to enable control of the Cobotta via Ethernet.
+  - Set static IP address of host PC LAN adaptor on Ethernet Executable Token setting.
+    - This package default of host :```192.168.56.5```
 
 ## Universal Robot
-- Set static IP address on robot LAN adaptor
+- Set static IP address on robot network setting
   - This package default of UR :  ```192.168.56.42```
 - Install ```external control.urcap``` and setting LAN info on UR tablet
   - https://github.com/UniversalRobots/Universal_Robots_ExternalControl_URCap/releases
