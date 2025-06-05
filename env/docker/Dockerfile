@@ -74,6 +74,7 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-ros-control \
     ros-noetic-ros-controllers \
     ros-noetic-moveit \
+    ros-noetic-jsk-visualization \
     libxmlrpcpp-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
