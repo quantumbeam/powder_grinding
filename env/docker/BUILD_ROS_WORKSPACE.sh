@@ -6,7 +6,7 @@ sudo apt update
 
 
 # Updating ROSDEP and installing dependencies
-rosdep update
+rosdep update --include-eol-distros
 vcs import src < src/powder_grinding/.rosinstall
 vcs pull src
 rosdep install --from-paths src --ignore-src --rosdistro=$ROS_DISTRO -y
