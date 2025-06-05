@@ -52,7 +52,7 @@ def compute_grinding_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
         beginning_position=rospy.get_param("~grinding_pos_beginning"),
         end_position=rospy.get_param("~grinding_pos_end"),
-        beginning_rradiusz=rospy.get_param("~grinding_rz_beginning"),
+        beginning_radius_z=rospy.get_param("~grinding_rz_beginning"),
         end_radius_z=rospy.get_param("~grinding_rz_end"),
         angle_scale=rospy.get_param("~grinding_angle_scale"),
         yaw_bias=rospy.get_param("~grinding_yaw_bias"),
@@ -71,7 +71,7 @@ def compute_gathering_waypoints(motion_generator, debug_type=False):
     waypoints = motion_generator.create_circular_waypoints(
         beginning_position=rospy.get_param("~gathering_pos_beginning"),
         end_position=rospy.get_param("~gathering_pos_end"),
-        beginning_rradiusz=rospy.get_param("~gathering_rz_beginning"),
+        beginning_radius_z=rospy.get_param("~gathering_rz_beginning"),
         end_radius_z=rospy.get_param("~gathering_rz_end"),
         angle_scale=rospy.get_param("~gathering_angle_scale"),
         yaw_bias=rospy.get_param("~gathering_yaw_bias"),
@@ -187,7 +187,7 @@ def main():
     pouring_position[2] += pouring_hight
 
     ################### init planning scene ###################
-    planning_scene = load_planning_scene.PlanningScene(moveit.move_group)
+    planning_scene = load_planning_scene.PlanningSceneLoader(moveit.move_group)
     planning_scene.init_planning_scene()
 
     grinding_sec = rospy.get_param("~grinding_sec_per_rotation") * rospy.get_param(

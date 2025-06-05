@@ -18,7 +18,7 @@ class PlanningSceneLoader:
 
     def __init__(self, move_group):
         """
-        The constructor for PlanningScene class.
+        The constructor for PlanningSceneLoader class.
 
         Parameters:
             move_group (str or MoveGroupCommander): The name of the move group or a MoveGroupCommander instance.

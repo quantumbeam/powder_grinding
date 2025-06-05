@@ -115,7 +115,7 @@ def main():
     moveit = moveit_executor.MoveitExecutor(move_group_name, grinding_ee_link)
 
     ################### init planning scene ###################
-    planning_scene = load_planning_scene.PlanningScene(moveit.move_group)
+    planning_scene = load_planning_scene.PlanningSceneLoader(moveit.move_group)
     planning_scene.init_planning_scene()
 
     ################### init pose ###################
