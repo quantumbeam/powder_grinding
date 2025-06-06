@@ -44,8 +44,8 @@ def display_debug_waypoints(waypoints):
 
 def compute_grinding_waypoints(motion_generator):
     waypoints = motion_generator.create_circular_waypoints(
-        beginning_pradius=rospy.get_param("~grinding_pos_beginning"),
-        end_radiusn=rospy.get_param("~grinding_pos_end"),
+        beginning_position=rospy.get_param("~grinding_pos_beginning"),
+        end_position=rospy.get_param("~grinding_pos_end"),
         beginning_radius_z=rospy.get_param("~grinding_rz_beginning"),
         end_radius_z=rospy.get_param("~grinding_rz_end"),
         angle_scale=rospy.get_param("~grinding_angle_scale"),
@@ -62,8 +62,8 @@ def compute_grinding_waypoints(motion_generator):
 
 def compute_gathering_waypoints(motion_generator):
     waypoints = motion_generator.create_circular_waypoints(
-        beginning_pradius=rospy.get_param("~gathering_pos_beginning"),
-        end_radiusn=rospy.get_param("~gathering_pos_end"),
+        beginning_position=rospy.get_param("~gathering_pos_beginning"),
+        end_position=rospy.get_param("~gathering_pos_end"),
         beginning_radius_z=rospy.get_param("~gathering_rz_beginning"),
         end_radius_z=rospy.get_param("~gathering_rz_end"),
         angle_scale=rospy.get_param("~gathering_angle_scale"),
