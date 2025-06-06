@@ -48,37 +48,6 @@ gathering_rz_beginning : 35
 gathering_rz_end : 35
 gathering_vel_scale : 0.1
 gathering_acc_scale : 0.1
-gathering_number_of_waypoints_per_circle : 100
+gathering_number_of_waypoints_per_circle : 50
 gathering_yaw_bias :  rad(pi)
-gathering_joint_difference_limit_for_motion_planning : 0.03
-
-
-# scooping params 
-# scooping_pos_beginning : 
-#   - -20
-#   - 0
-# scooping_pos_end :
-#   - 20
-#   - 0
-# scooping_rz_beginning : 32.3
-# scooping_rz_end : 32.3
-
-scooping_pos_beginning : 
-  - -20
-  - 0
-scooping_pos_end :
-  - 25
-  - 0
-scooping_rz_beginning : 35
-scooping_rz_end : 35
-scooping_angle_scale : 1
-scooping_vel_scale : 0.1
-scooping_acc_scale : 0.1
-scooping_number_of_waypoints : 20
-scooping_yaw_bias : 0
-
-
-pouring_hight_at_funnel : 0.2
-
-# sound param
-sound_RMS_threshold : 0.03
+gathering_joint_difference_limit_for_motion_planning : 0.1
