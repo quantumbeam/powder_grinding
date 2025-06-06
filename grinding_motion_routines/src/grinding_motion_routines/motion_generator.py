@@ -44,22 +44,21 @@ class MotionGenerator:
 
         # calc yaw angle
         yaw_std = np.arctan2(
-                    self.mortar_top_center_position["y"],
-                    self.mortar_top_center_position["x"],
-                )
+            self.mortar_top_center_position["y"],
+            self.mortar_top_center_position["x"],
+        )
         if yaw_twist != 0:
             if abs(yaw_twist) > self.max_yaw_twist:
-                raise ValueError("yaw_twist is bigger than max_yaw_twist: ",self.max_yaw_twist)
+                raise ValueError(
+                    "yaw_twist is bigger than max_yaw_twist: ", self.max_yaw_twist
+                )
             if yaw_twist < 0:
                 yaw = np.linspace(0, abs(yaw_twist), len(pos_x))
             else:
                 yaw = np.linspace(abs(yaw_twist), 0, len(pos_x))
             yaw += yaw_std
         else:
-            if yaw_bias == None:
-                yaw = yaw_std
-            else:
-                yaw = yaw_bias
+            yaw = yaw_std + yaw_bias
 
             # rotate xy by the amount of yaw angle
             r, theta = self._cartesian_to_polar(normalized_pos_x, normalized_pos_y)
@@ -174,7 +173,7 @@ class MotionGenerator:
         beginning_radius_z,
         end_radius_z,
         angle_scale=0,
-        yaw_bias=None,
+        yaw_bias=0,
         yaw_twist_per_rotation=0,
         number_of_rotations=1,
         number_of_waypoints_per_circle=10,
@@ -215,22 +214,27 @@ class MotionGenerator:
                 "yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior."
             )
 
-
         # calc twist
         total_yaw_twist = yaw_twist_per_rotation * number_of_rotations
 
         # Check if total total_yaw_twist exceeds the limit
         if abs(total_yaw_twist) > self.max_yaw_twist:
             limited_yaw_twist = self.max_yaw_twist
-            limited_number_of_rotations=int(limited_yaw_twist / yaw_twist_per_rotation)
-            iterations = int(number_of_rotations/ limited_number_of_rotations)
-            limited_number_of_waypoints = int(total_number_of_waypoints/ iterations)
+            limited_number_of_rotations = int(
+                limited_yaw_twist / yaw_twist_per_rotation
+            )
+            iterations = int(number_of_rotations / limited_number_of_rotations)
+            limited_number_of_waypoints = int(total_number_of_waypoints / iterations)
             if limited_number_of_waypoints < 1:
                 raise ValueError(
                     "Can't calculate motion, you can choose number_of_waypoints_per_circle >= 1"
                 )
-            warnings.warn(f"Total total_yaw_twist ({total_yaw_twist} rad) exceeds max_yaw_twist ({self.max_yaw_twist} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad).")
-            warnings.warn(f"limited_number_of_rotations: {limited_number_of_rotations}, limited_number_of_waypoints: {limited_number_of_waypoints}")
+            warnings.warn(
+                f"Total total_yaw_twist ({total_yaw_twist} rad) exceeds max_yaw_twist ({self.max_yaw_twist} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad)."
+            )
+            warnings.warn(
+                f"limited_number_of_rotations: {limited_number_of_rotations}, limited_number_of_waypoints: {limited_number_of_waypoints}"
+            )
             #################### calculate position
             # calc xy
             x, y = self._lerp_in_polar(
@@ -259,7 +263,10 @@ class MotionGenerator:
                 )
                 return False
             radius_z = np.linspace(
-                beginning_radius_z, end_radius_z, limited_number_of_waypoints, endpoint=False
+                beginning_radius_z,
+                end_radius_z,
+                limited_number_of_waypoints,
+                endpoint=False,
             )
             z = self._ellipsoid_z_lower(
                 x,
@@ -296,16 +303,15 @@ class MotionGenerator:
                 ]
             ).T
             print(f"partial_waypoints shape: {partial_waypoints.shape}")
-            waypoints=[]
+            waypoints = []
             for i in range(iterations):
                 if i % 2 == 0:
                     waypoints.extend(partial_waypoints[0:-1])
                 else:
                     p = partial_waypoints[::-1]
                     waypoints.extend(p[0:-1])
-                
+
         else:
-                
             #################### calculate position
             # calc xy
             x, y = self._lerp_in_polar(
@@ -334,7 +340,10 @@ class MotionGenerator:
                 )
                 return False
             radius_z = np.linspace(
-                beginning_radius_z, end_radius_z, total_number_of_waypoints, endpoint=False
+                beginning_radius_z,
+                end_radius_z,
+                total_number_of_waypoints,
+                endpoint=False,
             )
             z = self._ellipsoid_z_lower(
                 x,
@@ -371,7 +380,6 @@ class MotionGenerator:
                 ]
             ).T
 
-
         return waypoints
 
     def create_cartesian_waypoints(
@@ -382,7 +390,7 @@ class MotionGenerator:
         end_radius_z,
         angle_scale=0,
         fixed_quaternion=False,
-        yaw_bias=None,
+        yaw_bias=0,
         number_of_waypoints=5,
     ):
         """
@@ -466,7 +474,7 @@ class MotionGenerator:
         end_radius_z,
         angle_scale=0,
         fixed_quaternion=False,
-        yaw_bias=None,
+        yaw_bias=0,
         number_of_waypoints=5,
         motion_counts=1,
     ):
@@ -556,3 +564,92 @@ class MotionGenerator:
             waypoints_list.append(waypoints)
 
         return waypoints_list
+
+    def create_epicycloid_waypoints(
+        self,
+        radius_mm,
+        ratio_R_r,
+        number_of_waypoints=500,
+        angle_scale=0,
+        yaw_bias=0,
+    ):
+        """
+        Create waypoints along an epicycloid curve based on the scale radius and the R/r ratio.
+
+        Parameters:
+            radius_mm (float): The scale radius in millimeters.
+            ratio_R_r (float): The ratio R/r.
+            number_of_waypoints (int, optional): Number of waypoints to generate. Default is 500.
+            angle_scale (float, optional): Parameter for orientation calculation.
+            yaw_bias (float, optional): Yaw bias to be used in orientation calculation.
+
+        Returns:
+            np.ndarray: An array of waypoints, each row containing [x, y, z, qx, qy, qz, qw].
+        """
+        from fractions import Fraction
+
+        # Convert radius_mm from mm to m
+        radius_m = radius_mm * 0.001
+        if radius_m <= 0:
+            raise ValueError("Scale radius must be greater than 0.")
+        if ratio_R_r <= 0:
+            raise ValueError("R/r ratio must be greater than 0.")
+
+        # Calculate r and R (in meters) based on the relation: radius_mm = R + 2r
+        r = radius_m / (ratio_R_r + 2)
+        R = ratio_R_r * r
+
+        # Determine the complete curve range based on the denominator of the reduced fraction of ratio_R_r
+        frac = Fraction(ratio_R_r).limit_denominator(1000)
+        q = frac.denominator
+        theta_max = 2 * np.pi * q
+
+        theta = np.linspace(0, theta_max, number_of_waypoints, endpoint=False)
+
+        # Epicycloid parametric equations:
+        # x(θ) = (R + r)cos(θ) - r*cos(((R + r)/r)*θ)
+        # y(θ) = (R + r)sin(θ) - r*sin(((R + r)/r)*θ)
+        x = (R + r) * np.cos(theta) - r * np.cos(((R + r) / r) * theta)
+        y = (R + r) * np.sin(theta) - r * np.sin(((R + r) / r) * theta)
+        z = self._ellipsoid_z_lower(
+                x,
+                y,
+                [self.mortar_inner_size["x"], self.mortar_inner_size["y"], self.mortar_inner_size["z"]],
+            )
+
+        position = np.array([x, y, z])
+
+        # Shift the positions to the working coordinate using mortar_top_center_position
+        shifted_position = np.array(
+            [
+                position[0] + self.mortar_top_center_position["x"],
+                position[1] + self.mortar_top_center_position["y"],
+                position[2] + self.mortar_top_center_position["z"],
+            ]
+        )
+
+        # Calculate the orientations using the inner wall function.
+        quat = self._calc_quaternion_of_mortar_inner_wall(
+            position=position,
+            angle_scale=angle_scale,
+            yaw_bias=yaw_bias,
+            yaw_twist=0,
+        )
+
+        waypoints = np.stack(
+            [
+                shifted_position[0],
+                shifted_position[1],
+                shifted_position[2],
+                quat.T[0],
+                quat.T[1],
+                quat.T[2],
+                quat.T[3],
+            ]
+        ).T
+
+        # Remove duplicated waypoints and preserve the order
+        waypoints, index = np.unique(waypoints, axis=0, return_index=True)
+        waypoints = waypoints[np.argsort(index)]
+
+        return waypoints
