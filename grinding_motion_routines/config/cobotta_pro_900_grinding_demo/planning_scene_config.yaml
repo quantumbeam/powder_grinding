@@ -7,6 +7,3 @@ table_scale  :  {x: 0.9, y: 0.84, z: 0.1}
 
 mortar_top_position  :  {x:  0.4, y: -0.4, z: 0.05} 
 mortar_inner_size:  {x:  0.04, y: 0.04, z: 0.035} # official infomation says 0.04 * 0.04 * 0.032 but z is more deep actually 
-
-funnel_position  :  {x:  0.0, y: -0.5, z: 0}
-funnel_scale  :  {x:  0.015, y: 0.015, z: 0.15}
