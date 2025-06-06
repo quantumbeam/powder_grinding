@@ -36,7 +36,7 @@
     default="$(find grinding_descriptions)/config/ur3e/default_kinematics.yaml" />
   <arg name="kinematics_params" if="$(arg sim)"
     default="$(find grinding_descriptions)/config/ur3e/default_kinematics.yaml" />
-  <arg name="rviz_config" default="$(find grinding_robot_bringup)/etc/ur.rviz" />
+  <arg name="rviz_config" default="$(find grinding_robot_bringup)/etc/display_for_grinding.rviz" />
 
   <!-- Configrations for  UR hardware -->
   <arg name="robot_description_file"

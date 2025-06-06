@@ -4,11 +4,9 @@
     <arg name="sim" default="false" />
 
     <!-- specify the URDF and SRDF files to be loaded -->
-    <arg name="robot_description_file"
-        default="$(find grinding_descriptions)/urdf/fr3/fr3v6.urdf" />
-        
-    <arg name="controller_config_file"
-        default="$(find grinding_robot_bringup)/config/frrobot_controllers.yaml" />
+    <arg name="robot_description_file" default="$(find grinding_descriptions)/urdf/fr3/fr3v6.urdf" />
+
+    <arg name="controller_config_file" default="$(find grinding_robot_bringup)/config/frrobot_controllers.yaml" />
 
     <!-- GDB functionality -->
     <arg name="debug" default="false" />
@@ -34,6 +32,10 @@
     <arg name="use_gui" default="false" />
     <arg name="use_rviz" default="true" />
 
+    <!-- User Configrations-->
+    <arg name="planning_scene_config" default="$(find grinding_motion_routines)/config/fr3_grinding_demo/planning_scene_config.yaml" />
+    <arg name="rviz_config" default="$(find grinding_robot_bringup)/etc/display_for_grinding.rviz" />
+
     <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
     <include file="$(find fr3v6_moveit_config)/launch/planning_context.launch">
         <arg name="load_robot_description" value="true" />
@@ -49,8 +51,7 @@
     </node>
 
     <!-- Given the published joint states, publish tf for the robot links -->
-    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-    respawn="true" output="screen" /> -->
+    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" /> -->
 
     <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers
     configured by default) -->
@@ -63,10 +64,9 @@
     </include>
 
     <!-- Run Rviz and load the default config to see the state of the move_group node -->
-    <include file="$(find fr3v6_moveit_config)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
-        <arg name="rviz_config" value="$(find fr3v6_moveit_config)/launch/moveit.rviz" />
-        <arg name="debug" value="$(arg debug)" />
-    </include>
+    <!-- launch rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(arg rviz_config)" output="screen"/>
+
 
     <!-- If database loading was enabled, start mongodb as well -->
     <include file="$(find fr3v6_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
@@ -79,26 +79,24 @@
 
     <group ns="frrobot">
         <!-- Load hardware interface -->
-        <node if="$(arg sim)" name="frrobot_hardware_interface" pkg="ros_control_boilerplate"
-            type="sim_hw_main" output="screen" launch-prefix="$(arg launch_prefix)" />
-        <node unless="$(arg sim)" name="frrobot_hardware_interface" pkg="ros_control_boilerplate"
-            type="frrobot_hw_main" output="screen" launch-prefix="$(arg launch_prefix)" />
+        <node if="$(arg sim)" name="frrobot_hardware_interface" pkg="ros_control_boilerplate" type="sim_hw_main" output="screen" launch-prefix="$(arg launch_prefix)" />
+        <node unless="$(arg sim)" name="frrobot_hardware_interface" pkg="ros_control_boilerplate" type="frrobot_hw_main" output="screen" launch-prefix="$(arg launch_prefix)" />
 
         <!-- Load controller settings -->
-        <rosparam
-            file="$(arg controller_config_file)"
-            command="load" />
+        <rosparam file="$(arg controller_config_file)" command="load" />
 
         <!-- Load controller manager -->
-        <node name="ros_control_controller_manager" pkg="controller_manager"
-            type="controller_manager" respawn="false"
-            output="screen" args="spawn joint_state_controller position_trajectory_controller" />
+        <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="spawn joint_state_controller position_trajectory_controller" />
 
         <!-- Convert joint states to /tf tranforms -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
     </group>
 
+    <!-- load planning scene -->
+    <node name="loading_planning_scene" pkg="grinding_descriptions" type="load_planning_scene.py" output="screen">
+        <rosparam command="load" file="$(arg planning_scene_config)" />
+    </node>
 
 </launch>
   
