@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # タイムゾーンを東京に設定
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
-# ROSリポジトリを信頼済みとして追加(ROS1がEOLになった後でもインストールできるようにするための処理、本来は非推奨)
+# ROSリポジトリの公開鍵が25/5/31で切れたため更新処理
 # 既存の ros1-latest.list を削除（競合防止）
 RUN rm -f /etc/apt/sources.list.d/ros1-latest.list
 # 必要なツールをインストール
