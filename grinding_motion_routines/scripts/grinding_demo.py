@@ -111,23 +111,6 @@ def compute_epicycloid_grinding_waypoints(motion_gen, debug_type=False):
         display_debug_waypoints(waypoints, debug_type)
     return waypoints
 
-
-def compute_scooping_waypoints(motion_generator, debug_type=False):
-    waypoints = motion_generator.create_cartesian_waypoints(
-        beginning_position=rospy.get_param("~scooping_pos_beginning"),
-        end_position=rospy.get_param("~scooping_pos_end"),
-        beginning_radius_z=rospy.get_param("~scooping_rz_beginning"),
-        end_radius_z=rospy.get_param("~scooping_rz_end"),
-        angle_scale=rospy.get_param("~scooping_angle_scale"),
-        yaw_bias=rospy.get_param("~scooping_yaw_bias"),
-        number_of_waypoints=rospy.get_param("~scooping_number_of_waypoints"),
-    )
-    if debug_type != False:
-        display_debug_waypoints(waypoints, debug_type)
-
-    return waypoints
-
-
 def exit_process(msg=""):
     if msg != "":
         rospy.loginfo(msg)
@@ -156,15 +139,12 @@ def main():
     ################### motion generator ###################
     mortar_top_pos = rospy.get_param("~mortar_top_position", None)
     mortar_inner_size = rospy.get_param("~mortar_inner_size", None)
-    funnel_position = rospy.get_param("~funnel_position", None)
-    pouring_hight = rospy.get_param("~pouring_hight_at_funnel", None)
     motion_gen = motion_generator.MotionGenerator(mortar_top_pos, mortar_inner_size)
 
     ################### motion executor ###################
     move_group_name = rospy.get_param("~move_group_name", None)
     grinding_ee_link = rospy.get_param("~grinding_ee_link", None)
     gathering_ee_link = rospy.get_param("~gathering_ee_link", None)
-    scooping_ee_link = rospy.get_param("~scooping_ee_link", None)
     grinding_joint_difference_limit_for_motion_planning = rospy.get_param(
         "~grinding_joint_difference_limit_for_motion_planning", None
     )
@@ -220,8 +200,6 @@ def main():
         ft_topic=None,
         ik_solver=ik_solver,
     )
-    pouring_position = copy.deepcopy(list(funnel_position.values()))
-    pouring_position[2] += pouring_hight
 
     ################### init planning scene ###################
     planning_scene = load_planning_scene.PlanningSceneLoader(moveit.move_group)
