@@ -156,9 +156,9 @@ class JointTrajectoryControllerExecutor(Arm):
                         rospy.logerr("IK not found, Please check the pose")
                         return None
                     joint_difference = np.sum(np.abs(np.array(start_joint[0:-1]) - np.array(ik_joint[0:-1])))
+                    joint_difference_list.append(joint_difference)
                     if joint_difference > joint_difference_limit:
                         retry_count += 1  # 再試行カウントを増やす
-                        joint_difference_list.append(joint_difference)
                         if retry_count >= max_attempts:
                             rospy.logerr(
                                 f"Waypoint {i + 1}/{total_waypoints} failed after {max_attempts} trials, "
@@ -170,7 +170,7 @@ class JointTrajectoryControllerExecutor(Arm):
                         start_joint = ik_joint
                         joint_trajectory.append(list(ik_joint))
                         break
-
+        rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(joint_difference_list),4)} min diff:{round(min(joint_difference_list),4)})")
         return joint_trajectory if joint_trajectory else None
 
     def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
