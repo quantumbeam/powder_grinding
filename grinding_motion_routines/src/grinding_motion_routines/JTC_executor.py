@@ -124,7 +124,7 @@ class JointTrajectoryControllerExecutor(Arm):
         joint_trajectory = []
         start_joint = self.joint_angles()
         total_waypoints = len(waypoints)  # 全体のwaypoints数を取得
-
+        success_joint_difference_list=[]
         for i, pose in tqdm(
             enumerate(waypoints),
             total=total_waypoints,
@@ -162,15 +162,16 @@ class JointTrajectoryControllerExecutor(Arm):
                         if retry_count >= max_attempts:
                             rospy.logerr(
                                 f"Waypoint {i + 1}/{total_waypoints} failed after {max_attempts} trials, "
-                                f"Joint difference was too large (min diff:{min(joint_difference_list)})"
+                                f"Joint difference was too large (min diff:{round(min(joint_difference_list),4)})"
                             )
                             return None
                         continue
                     else:
                         start_joint = ik_joint
                         joint_trajectory.append(list(ik_joint))
+                        success_joint_difference_list.append(joint_difference)
                         break
-        rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(joint_difference_list),4)} min diff:{round(min(joint_difference_list),4)})")
+        rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(success_joint_difference_list),4)} min diff:{round(min(success_joint_difference_list),4)})")
         return joint_trajectory if joint_trajectory else None
 
     def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
