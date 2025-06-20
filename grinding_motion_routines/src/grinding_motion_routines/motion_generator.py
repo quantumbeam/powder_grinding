@@ -38,6 +38,9 @@ class MotionGenerator:
 
         # normalized position
         norm = np.sqrt(pos_x**2 + pos_y**2 + pos_z**2)
+        # 0で割るのを防ぐ
+        norm[norm == 0] = 1.0
+
         normalized_pos_x = pos_x / norm
         normalized_pos_y = pos_y / norm
         normalized_pos_z = pos_z / norm
@@ -105,10 +108,12 @@ class MotionGenerator:
         return quats
 
     def _ellipsoid_z_lower(self, x, y, radius):
-        # x^2/rx^2+y^2/ry^2+z^2/rz^2=1より z = sqrt(rz^2(-x^2/rx^2-y^2/ry^2+1))
+        # x^2/rx^2+y^2/ry^2+z^2/rz^2=1より z = -sqrt(rz^2 * (1 - x^2/rx^2 - y^2/ry^2))
         rx, ry, rz = radius[0], radius[1], radius[2]
 
+        # 根号の中が負にならないようにクリップする
         buf = 1 - ((x**2) / (rx**2)) - ((y**2) / (ry**2))
+        buf = np.maximum(buf, 0)
         z = -np.sqrt(rz**2 * buf)  # 楕円体の下半分(lower)なのでマイナスつける
         return z
 
@@ -133,11 +138,18 @@ class MotionGenerator:
         dy = abs(ed_y - st_y)
         if dx > dy:
             x = np.linspace(st_x, ed_x, points, endpoint=False)
-            y = st_y + (ed_y - st_y) * (x - st_x) / (ed_x - st_x)
-
+            # st_xとed_xが同じ場合、0除算を避ける
+            if ed_x - st_x != 0:
+                y = st_y + (ed_y - st_y) * (x - st_x) / (ed_x - st_x)
+            else:
+                y = np.full_like(x, st_y)
         else:
             y = np.linspace(st_y, ed_y, points, endpoint=False)
-            x = st_x + (ed_x - st_x) * (y - st_y) / (ed_y - st_y)
+            # st_yとed_yが同じ場合、0除算を避ける
+            if ed_y - st_y != 0:
+                x = st_x + (ed_x - st_x) * (y - st_y) / (ed_y - st_y)
+            else:
+                x = np.full_like(y, st_x)
 
         return x, y
 
@@ -154,10 +166,16 @@ class MotionGenerator:
 
         if dr > d_theta:
             r = np.linspace(st_r, ed_r, points, endpoint=False)
-            theta = st_theta + (ed_theta - st_theta) * (r - st_r) / (ed_r - st_r)
+            if ed_r - st_r != 0:
+                theta = st_theta + (ed_theta - st_theta) * (r - st_r) / (ed_r - st_r)
+            else:
+                theta = np.linspace(st_theta, ed_theta, points, endpoint=False)
         else:
             theta = np.linspace(st_theta, ed_theta, points, endpoint=False)
-            r = st_r + (ed_r - st_r) * (theta - st_theta) / (ed_theta - st_theta)
+            if ed_theta - st_theta != 0:
+                r = st_r + (ed_r - st_r) * (theta - st_theta) / (ed_theta - st_theta)
+            else:
+                r = np.full_like(theta, st_r)
         x = r * np.cos(theta)
         y = r * np.sin(theta)
 
@@ -261,7 +279,7 @@ class MotionGenerator:
                 raise ValueError(
                     "Calc error: beginning radius z is bigger than end radius z."
                 )
-                return False
+
             radius_z = np.linspace(
                 beginning_radius_z,
                 end_radius_z,
@@ -338,7 +356,7 @@ class MotionGenerator:
                 raise ValueError(
                     "Calc error: beginning radius z is bigger than end radius z."
                 )
-                return False
+
             radius_z = np.linspace(
                 beginning_radius_z,
                 end_radius_z,
@@ -395,17 +413,14 @@ class MotionGenerator:
     ):
         """
         supported type
-        beginning_theta : float
-        end_tehta : float
-        beginning_length_from_center : float
-        end_length_from_center : float
+        beginning_position : list [x,y]
+        end_position : list [x,y]
         beginning_radius_z : float
         end_radius_z : float
         angle_scale : float
         fixed_quaternion : bool
         yaw_bias : float
         number_of_waypoints : int
-        motion_counts : int
         """
         if number_of_waypoints < 1:
             raise ValueError(
@@ -425,7 +440,9 @@ class MotionGenerator:
         radius_z = np.linspace(
             beginning_radius_z, end_radius_z, number_of_waypoints, endpoint=False
         )
-        z = self._ellipsoid_z_lower(x, y, radius_z)
+        z = self._ellipsoid_z_lower(
+            x, y, [self.mortar_inner_size["x"], self.mortar_inner_size["y"], radius_z]
+        )
         position = np.array([x, y, z])
 
         # shift to work pos
@@ -442,7 +459,7 @@ class MotionGenerator:
             position=position,
             angle_scale=angle_scale,
             yaw_bias=yaw_bias,
-            grinding_yaw_twist_per_rotation=0,
+            yaw_twist=0,
             fixed_quaternion=fixed_quaternion,
         )
 
@@ -514,16 +531,18 @@ class MotionGenerator:
         )
 
         waypoints_list = []
-        for beginning_x, beginning_y, end_x, end_y in zip(
+        for bx, by, ex, ey in zip(
             beginning_x, beginning_y, end_x, end_y
         ):
             #################### calculate position
-            beginning_position = [beginning_x, beginning_y]
-            end_position = [end_x, end_y]
+            beginning_position = [bx, by]
+            end_position = [ex, ey]
             x, y = self._lerp_in_cartesian(
                 beginning_position, end_position, number_of_waypoints
             )
-            z = self._ellipsoid_z_lower(x, y, radius_z)
+            z = self._ellipsoid_z_lower(
+                x, y, [self.mortar_inner_size["x"], self.mortar_inner_size["y"], radius_z]
+            )
             position = np.array([x, y, z])
 
             # shift to work pos
@@ -539,8 +558,8 @@ class MotionGenerator:
             quat = self._calc_quaternion_of_mortar_inner_wall(
                 position=position,
                 angle_scale=angle_scale,
-                yaw=yaw_bias,
-                grinding_yaw_twist_per_rotation=0,
+                yaw_bias=yaw_bias,
+                yaw_twist=0,
                 fixed_quaternion=fixed_quaternion,
             )
 
@@ -569,19 +588,31 @@ class MotionGenerator:
         self,
         radius_mm,
         ratio_R_r,
+        ratio_d_r=1.0,
         number_of_waypoints=500,
         angle_scale=0,
         yaw_bias=0,
+        equidistant_points=True,
     ):
         """
-        Create waypoints along an epicycloid curve based on the scale radius and the R/r ratio.
+        Create waypoints along an epitrochoid curve.
+        An epitrochoid is traced by a point at a distance 'd' from the center of a circle of radius 'r'
+        that rolls around the outside of a fixed circle of radius 'R'.
+        If d = r, the curve is a standard epicycloid.
 
         Parameters:
-            radius_mm (float): The scale radius in millimeters.
-            ratio_R_r (float): The ratio R/r.
+            radius_mm (float): The scale radius in millimeters, defined as R + 2r.
+            ratio_R_r (float): The ratio R/r of the fixed circle radius to the rolling circle radius.
+            ratio_d_r (float, optional): The ratio d/r of the tracing point distance to the rolling circle radius.
+                                         d=r (ratio_d_r=1.0) gives a standard epicycloid.
+                                         d<r (ratio_d_r<1.0) gives a curtate epicycloid.
+                                         d>r (ratio_d_r>1.0) gives a prolate epicycloid.
+                                         Default is 1.0.
             number_of_waypoints (int, optional): Number of waypoints to generate. Default is 500.
             angle_scale (float, optional): Parameter for orientation calculation.
             yaw_bias (float, optional): Yaw bias to be used in orientation calculation.
+            equidistant_points (bool, optional): If True, arranges the points to be equidistant in Cartesian space.
+                                                 This may increase computation time. Defaults to False.
 
         Returns:
             np.ndarray: An array of waypoints, each row containing [x, y, z, qx, qy, qz, qw].
@@ -594,28 +625,56 @@ class MotionGenerator:
             raise ValueError("Scale radius must be greater than 0.")
         if ratio_R_r <= 0:
             raise ValueError("R/r ratio must be greater than 0.")
+        if ratio_d_r <= 0:
+            raise ValueError("d/r ratio must be greater than 0.")
 
-        # Calculate r and R (in meters) based on the relation: radius_mm = R + 2r
+        # Calculate r, R and d (in meters)
         r = radius_m / (ratio_R_r + 2)
         R = ratio_R_r * r
+        d = r * ratio_d_r
 
-        # Determine the complete curve range based on the denominator of the reduced fraction of ratio_R_r
+        # Determine the complete curve range for theta
         frac = Fraction(ratio_R_r).limit_denominator(1000)
         q = frac.denominator
         theta_max = 2 * np.pi * q
 
-        theta = np.linspace(0, theta_max, number_of_waypoints, endpoint=False)
+        if equidistant_points:
+            # --- Generate equidistant points ---
+            # 1. Generate a high-density set of points by oversampling theta
+            oversampling_factor = 20
+            num_oversampled_points = max(10000, number_of_waypoints * oversampling_factor)
+            theta_oversampled = np.linspace(0, theta_max, num_oversampled_points, endpoint=True)
 
-        # Epicycloid parametric equations:
-        # x(θ) = (R + r)cos(θ) - r*cos(((R + r)/r)*θ)
-        # y(θ) = (R + r)sin(θ) - r*sin(((R + r)/r)*θ)
-        x = (R + r) * np.cos(theta) - r * np.cos(((R + r) / r) * theta)
-        y = (R + r) * np.sin(theta) - r * np.sin(((R + r) / r) * theta)
+            x_oversampled = (R + r) * np.cos(theta_oversampled) - d * np.cos(((R + r) / r) * theta_oversampled)
+            y_oversampled = (R + r) * np.sin(theta_oversampled) - d * np.sin(((R + r) / r) * theta_oversampled)
+
+            # 2. Calculate the cumulative arc length along the curve
+            distances = np.sqrt(np.diff(x_oversampled)**2 + np.diff(y_oversampled)**2)
+            cumulative_distance = np.insert(np.cumsum(distances), 0, 0)
+            
+            # 3. Create a new set of points by interpolating at equidistant intervals
+            # Use endpoint=False to avoid duplicating the start/end point on a closed curve
+            target_distances = np.linspace(0, cumulative_distance[-1], number_of_waypoints, endpoint=False)
+            
+            x = np.interp(target_distances, cumulative_distance, x_oversampled)
+            y = np.interp(target_distances, cumulative_distance, y_oversampled)
+
+        else:
+            # --- Generate points with equidistant theta (original method) ---
+            theta = np.linspace(0, theta_max, number_of_waypoints, endpoint=False)
+            x = (R + r) * np.cos(theta) - d * np.cos(((R + r) / r) * theta)
+            y = (R + r) * np.sin(theta) - d * np.sin(((R + r) / r) * theta)
+
+        # --- Common part for both methods ---
         z = self._ellipsoid_z_lower(
-                x,
-                y,
-                [self.mortar_inner_size["x"], self.mortar_inner_size["y"], self.mortar_inner_size["z"]],
-            )
+            x,
+            y,
+            [
+                self.mortar_inner_size["x"],
+                self.mortar_inner_size["y"],
+                self.mortar_inner_size["z"],
+            ],
+        )
 
         position = np.array([x, y, z])
 
