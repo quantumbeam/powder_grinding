@@ -33,8 +33,8 @@ import numpy as np
 from grinding_motion_routines import spalg, utils, filters, conversions
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
-
 from geometry_msgs.msg import WrenchStamped, Wrench
+from std_msgs.msg import Float32
 
 
 class FTsensor(object):
@@ -77,6 +77,9 @@ class FTsensor(object):
         self.pub = rospy.Publisher(self.out_topic, WrenchStamped, queue_size=10)
         # Publish a wrench transformed/converted to a TCP point
         self.pub_tcp = rospy.Publisher(self.out_tcp_topic, WrenchStamped, queue_size=10)
+        # Publish force Z
+        self.pub_force_z = rospy.Publisher(self.out_topic + "/force_z", Float32, queue_size=10)
+        rospy.loginfo("Publishing force_z to %s/force_z" % self.out_topic)
 
         # Service for zeroing the filtered signal
         rospy.Service(self.out_topic + "zero_ftsensor", Empty, self._srv_zeroing)
@@ -124,6 +127,11 @@ class FTsensor(object):
                 pub_msg.header = msg.header
                 pub_msg.wrench = conversions.to_wrench(data)
                 self.pub.publish(pub_msg)
+
+                # publish force Z for Rviz
+                force_z_msg = Float32()
+                force_z_msg.data = data[2]
+                self.pub_force_z.publish(force_z_msg)
 
                 if rospy.has_param(self.out_tcp_topic + "/pose_sensor_to_tcp"):
                     # Convert torques to force at a TCP point
