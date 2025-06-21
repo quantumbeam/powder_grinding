@@ -3,7 +3,7 @@
 import rospy
 import tf2_ros
 import geometry_msgs.msg
-import tf.transformations # tfパッケージのクォータニオン変換関数を利用
+import tf.transformations 
 
 class FTSensorFrameBroadcaster:
     """
