@@ -589,7 +589,7 @@ class MotionGenerator:
         radius_mm,
         ratio_R_r,
         ratio_d_r=1.0,
-        waypoints_step_mm=1.0,
+        waypoints_step_mm=0.5,
         angle_scale=0,
         yaw_bias=0,
         equidistant_points=True,
