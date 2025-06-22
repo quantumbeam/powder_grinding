@@ -94,6 +94,7 @@ def compute_epicycloid_grinding_waypoints(motion_gen, debug_type=False):
       ~epicycloid_waypoints_step_mm : Step size between waypoints in millimeters.
       ~epicycloid_angle_scale     : Angle scale parameter (default 0).
       ~epicycloid_yaw_bias        : Yaw bias value.
+      ~epicycloid_yaw_twist_vel_rad_per_sec : Yaw twist velocity in rad/sec.
     """
     radius_mm = rospy.get_param("~epicycloid_radius_mm")
     ratio_R_r = rospy.get_param("~epicycloid_ratio_R_r")
@@ -101,7 +102,9 @@ def compute_epicycloid_grinding_waypoints(motion_gen, debug_type=False):
     waypoints_step_mm = rospy.get_param("~epicycloid_waypoints_step_mm")
     angle_scale = rospy.get_param("~epicycloid_angle_scale")
     yaw_bias = rospy.get_param("~epicycloid_yaw_bias")
-
+    yaw_twist_vel_rad_per_sec = rospy.get_param("~epicycloid_yaw_twist_vel_rad_per_sec")
+    motion_velocity_mm_per_sec = rospy.get_param("~epicycloid_grinding_vel_mm_per_sec", 50)
+    
     waypoints = motion_gen.create_epicycloid_waypoints(
         radius_mm=radius_mm,
         ratio_R_r=ratio_R_r,
@@ -109,6 +112,9 @@ def compute_epicycloid_grinding_waypoints(motion_gen, debug_type=False):
         waypoints_step_mm=waypoints_step_mm,
         angle_scale=angle_scale,
         yaw_bias=yaw_bias,
+        yaw_twist_vel_rad_per_sec=yaw_twist_vel_rad_per_sec,
+        motion_velocity_mm_per_sec=motion_velocity_mm_per_sec,
+        
     )
     if debug_type:
         display_debug_waypoints(waypoints, debug_type)

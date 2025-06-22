@@ -592,6 +592,8 @@ class MotionGenerator:
         waypoints_step_mm=0.5,
         angle_scale=0,
         yaw_bias=0,
+        yaw_twist_vel_rad_per_sec=0,
+        motion_velocity_mm_per_sec=50.0,
         equidistant_points=True,
     ):
         """
@@ -611,6 +613,7 @@ class MotionGenerator:
             waypoints_step_mm (float, optional): Step size between waypoints in millimeters. Default is 1.0.
             angle_scale (float, optional): Parameter for orientation calculation.
             yaw_bias (float, optional): Yaw bias to be used in orientation calculation.
+            yaw_twist_vel_rad_per_sec (float, optional): Yaw twist velocity in radians per second. Default is 0.
             equidistant_points (bool, optional): If True, arranges the points to be equidistant in Cartesian space.
                                                  This may increase computation time. Defaults to False.
 
@@ -692,29 +695,148 @@ class MotionGenerator:
             ]
         )
 
-        # Calculate the orientations using the inner wall function.
-        quat = self._calc_quaternion_of_mortar_inner_wall(
-            position=position,
-            angle_scale=angle_scale,
-            yaw_bias=yaw_bias,
-            yaw_twist=0,
-        )
+        # Calculate yaw twist based on velocity and estimated execution time
+        total_yaw_twist = 0
+        if yaw_twist_vel_rad_per_sec != 0:
+            # Estimate total execution time based on distance and motion velocity
+            estimated_execution_time = total_distance_mm / motion_velocity_mm_per_sec
+            total_yaw_twist = yaw_twist_vel_rad_per_sec * estimated_execution_time
+            
+            # Check if total yaw twist exceeds the limit
+            if abs(total_yaw_twist) > self.max_yaw_twist:
+                limited_yaw_twist = self.max_yaw_twist
+                # Calculate how many iterations we need
+                iterations = int(np.ceil(abs(total_yaw_twist) / self.max_yaw_twist))
+                limited_number_of_waypoints = int(number_of_waypoints / iterations)
+                
+                if limited_number_of_waypoints < 1:
+                    raise ValueError(
+                        "Can't calculate motion, waypoints per iteration would be less than 1"
+                    )
+                
+                warnings.warn(
+                    f"Total yaw_twist ({total_yaw_twist:.3f} rad) exceeds max_yaw_twist ({self.max_yaw_twist} rad). Dividing the motion into {iterations} iterations with limited_yaw_twist ({limited_yaw_twist:.2f} rad)."
+                )
+                warnings.warn(
+                    f"iterations: {iterations}, limited_number_of_waypoints: {limited_number_of_waypoints}"
+                )
+                
+                # Create waypoints for each iteration
+                if equidistant_points:
+                    # Calculate cumulative arc length for limited waypoints
+                    cumulative_distance = np.insert(np.cumsum(distances), 0, 0)
+                    target_distances = np.linspace(0, cumulative_distance[-1], limited_number_of_waypoints, endpoint=False)
+                    
+                    x_limited = np.interp(target_distances, cumulative_distance, x_oversampled)
+                    y_limited = np.interp(target_distances, cumulative_distance, y_oversampled)
+                else:
+                    # Generate limited waypoints with equidistant theta
+                    theta_limited = np.linspace(0, theta_max, limited_number_of_waypoints, endpoint=False)
+                    x_limited = (R + r) * np.cos(theta_limited) - d * np.cos(((R + r) / r) * theta_limited)
+                    y_limited = (R + r) * np.sin(theta_limited) - d * np.sin(((R + r) / r) * theta_limited)
+                
+                z_limited = self._ellipsoid_z_lower(
+                    x_limited,
+                    y_limited,
+                    [
+                        self.mortar_inner_size["x"],
+                        self.mortar_inner_size["y"],
+                        self.mortar_inner_size["z"],
+                    ],
+                )
+                
+                position_limited = np.array([x_limited, y_limited, z_limited])
+                
+                # Shift to work position
+                shifted_position_limited = np.array(
+                    [
+                        position_limited[0] + self.mortar_top_center_position["x"],
+                        position_limited[1] + self.mortar_top_center_position["y"],
+                        position_limited[2] + self.mortar_top_center_position["z"],
+                    ]
+                )
+                
+                # Calculate orientation for limited waypoints
+                quat_limited = self._calc_quaternion_of_mortar_inner_wall(
+                    position_limited, angle_scale, yaw_bias, limited_yaw_twist
+                )
+                
+                # Create partial waypoints
+                partial_waypoints = np.stack(
+                    [
+                        shifted_position_limited[0],
+                        shifted_position_limited[1],
+                        shifted_position_limited[2],
+                        quat_limited.T[0],
+                        quat_limited.T[1],
+                        quat_limited.T[2],
+                        quat_limited.T[3],
+                    ]
+                ).T
+                
+                print(f"partial_waypoints shape: {partial_waypoints.shape}")
+                waypoints = []
+                for i in range(iterations):
+                    if i % 2 == 0:
+                        # Forward direction
+                        waypoints.extend(partial_waypoints[0:-1])
+                    else:
+                        # Reverse direction (yaw folding)
+                        p = partial_waypoints[::-1]
+                        waypoints.extend(p[0:-1])
+                
+                waypoints = np.array(waypoints)
+                
+            else:
+                # Normal case: yaw twist within limits
+                # Calculate the orientations using the inner wall function.
+                quat = self._calc_quaternion_of_mortar_inner_wall(
+                    position=position,
+                    angle_scale=angle_scale,
+                    yaw_bias=yaw_bias,
+                    yaw_twist=total_yaw_twist,
+                )
 
-        waypoints = np.stack(
-            [
-                shifted_position[0],
-                shifted_position[1],
-                shifted_position[2],
-                quat.T[0],
-                quat.T[1],
-                quat.T[2],
-                quat.T[3],
-            ]
-        ).T
+                waypoints = np.stack(
+                    [
+                        shifted_position[0],
+                        shifted_position[1],
+                        shifted_position[2],
+                        quat.T[0],
+                        quat.T[1],
+                        quat.T[2],
+                        quat.T[3],
+                    ]
+                ).T
+                
+                # Remove duplicated waypoints and preserve the order
+                waypoints, index = np.unique(waypoints, axis=0, return_index=True)
+                waypoints = waypoints[np.argsort(index)]
+        else:
+            # No yaw twist case
+            # Calculate the orientations using the inner wall function.
+            quat = self._calc_quaternion_of_mortar_inner_wall(
+                position=position,
+                angle_scale=angle_scale,
+                yaw_bias=yaw_bias,
+                yaw_twist=0,
+            )
 
-        # Remove duplicated waypoints and preserve the order
-        waypoints, index = np.unique(waypoints, axis=0, return_index=True)
-        waypoints = waypoints[np.argsort(index)]
+            waypoints = np.stack(
+                [
+                    shifted_position[0],
+                    shifted_position[1],
+                    shifted_position[2],
+                    quat.T[0],
+                    quat.T[1],
+                    quat.T[2],
+                    quat.T[3],
+                ]
+            ).T
+            
+            # Remove duplicated waypoints and preserve the order
+            waypoints, index = np.unique(waypoints, axis=0, return_index=True)
+            waypoints = waypoints[np.argsort(index)]
 
         print(
             f"Generated {len(waypoints)} waypoints for the epicycloid with radius {radius_mm} mm, R/r ratio {ratio_R_r}, d/r ratio {ratio_d_r}, and step size {waypoints_step_mm} mm."
