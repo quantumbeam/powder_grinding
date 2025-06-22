@@ -589,7 +589,7 @@ class MotionGenerator:
         radius_mm,
         ratio_R_r,
         ratio_d_r=1.0,
-        number_of_waypoints=500,
+        waypoints_step_mm=1.0,
         angle_scale=0,
         yaw_bias=0,
         equidistant_points=True,
@@ -608,7 +608,7 @@ class MotionGenerator:
                                          d<r (ratio_d_r<1.0) gives a curtate epicycloid.
                                          d>r (ratio_d_r>1.0) gives a prolate epicycloid.
                                          Default is 1.0.
-            number_of_waypoints (int, optional): Number of waypoints to generate. Default is 500.
+            waypoints_step_mm (float, optional): Step size between waypoints in millimeters. Default is 1.0.
             angle_scale (float, optional): Parameter for orientation calculation.
             yaw_bias (float, optional): Yaw bias to be used in orientation calculation.
             equidistant_points (bool, optional): If True, arranges the points to be equidistant in Cartesian space.
@@ -638,29 +638,34 @@ class MotionGenerator:
         q = frac.denominator
         theta_max = 2 * np.pi * q
 
+        # First, calculate the total arc length by generating high-density points
+        num_oversampled_points = 20000  # High density for accurate arc length calculation
+        theta_oversampled = np.linspace(0, theta_max, num_oversampled_points, endpoint=True)
+        
+        x_oversampled = (R + r) * np.cos(theta_oversampled) - d * np.cos(((R + r) / r) * theta_oversampled)
+        y_oversampled = (R + r) * np.sin(theta_oversampled) - d * np.sin(((R + r) / r) * theta_oversampled)
+
+        # Calculate the total arc length
+        distances = np.sqrt(np.diff(x_oversampled)**2 + np.diff(y_oversampled)**2)
+        total_distance_m = np.sum(distances)
+        total_distance_mm = total_distance_m * 1000  # Convert to mm
+
+        # Calculate number of waypoints based on step size
+        number_of_waypoints = max(1, int(np.ceil(total_distance_mm / waypoints_step_mm)))
+
         if equidistant_points:
             # --- Generate equidistant points ---
-            # 1. Generate a high-density set of points by oversampling theta
-            oversampling_factor = 20
-            num_oversampled_points = max(10000, number_of_waypoints * oversampling_factor)
-            theta_oversampled = np.linspace(0, theta_max, num_oversampled_points, endpoint=True)
-
-            x_oversampled = (R + r) * np.cos(theta_oversampled) - d * np.cos(((R + r) / r) * theta_oversampled)
-            y_oversampled = (R + r) * np.sin(theta_oversampled) - d * np.sin(((R + r) / r) * theta_oversampled)
-
-            # 2. Calculate the cumulative arc length along the curve
-            distances = np.sqrt(np.diff(x_oversampled)**2 + np.diff(y_oversampled)**2)
+            # Calculate cumulative arc length
             cumulative_distance = np.insert(np.cumsum(distances), 0, 0)
             
-            # 3. Create a new set of points by interpolating at equidistant intervals
-            # Use endpoint=False to avoid duplicating the start/end point on a closed curve
+            # Create target distances at specified step intervals
             target_distances = np.linspace(0, cumulative_distance[-1], number_of_waypoints, endpoint=False)
             
             x = np.interp(target_distances, cumulative_distance, x_oversampled)
             y = np.interp(target_distances, cumulative_distance, y_oversampled)
 
         else:
-            # --- Generate points with equidistant theta (original method) ---
+            # --- Generate points with equidistant theta ---
             theta = np.linspace(0, theta_max, number_of_waypoints, endpoint=False)
             x = (R + r) * np.cos(theta) - d * np.cos(((R + r) / r) * theta)
             y = (R + r) * np.sin(theta) - d * np.sin(((R + r) / r) * theta)
@@ -710,5 +715,9 @@ class MotionGenerator:
         # Remove duplicated waypoints and preserve the order
         waypoints, index = np.unique(waypoints, axis=0, return_index=True)
         waypoints = waypoints[np.argsort(index)]
+
+        print(
+            f"Generated {len(waypoints)} waypoints for the epicycloid with radius {radius_mm} mm, R/r ratio {ratio_R_r}, d/r ratio {ratio_d_r}, and step size {waypoints_step_mm} mm."
+        )
 
         return waypoints

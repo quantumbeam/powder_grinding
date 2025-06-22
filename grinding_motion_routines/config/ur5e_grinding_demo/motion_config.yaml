@@ -51,3 +51,12 @@ gathering_acc_scale : 0.1
 gathering_number_of_waypoints_per_circle : 50
 gathering_yaw_bias :  rad(pi)
 gathering_joint_difference_limit_for_motion_planning : 0.1
+
+epicycloid_radius_mm: 8
+epicycloid_ratio_R_r: 0.58823529411 # 50 / 85 を計算した値
+epicycloid_ratio_d_r: 2 # 170 / 85 を計算した値
+epicycloid_waypoints_step_mm: 1.0
+epicycloid_angle_scale: 0.3
+epicycloid_yaw_bias: 0
+epicycloid_grinding_vel_mm_per_sec: 50
+epicycloid_grinding_joint_difference_limit_for_motion_planning: 0.1

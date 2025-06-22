@@ -88,22 +88,25 @@ def compute_gathering_waypoints(motion_generator, debug_type=False):
 def compute_epicycloid_grinding_waypoints(motion_gen, debug_type=False):
     """
     Compute grinding waypoints based on an epicycloid curve. The ROS parameters used are:
-      ~epicycloid_scale_radius   : Scale radius in millimeters (R + 2r).
+      ~epicycloid_radius_mm       : Scale radius in millimeters (R + 2r).
       ~epicycloid_ratio_R_r       : The ratio R/r.
-      ~epicycloid_num_waypoints   : Number of waypoints to generate.
+      ~epicycloid_ratio_d_r       : The ratio d/r of the tracing point distance.
+      ~epicycloid_waypoints_step_mm : Step size between waypoints in millimeters.
       ~epicycloid_angle_scale     : Angle scale parameter (default 0).
       ~epicycloid_yaw_bias        : Yaw bias value.
     """
-    radius_mm = rospy.get_param("~epicycloid_radius_mm", 8)
-    ratio_R_r = rospy.get_param("~epicycloid_ratio_R_r", 200 / 87)
-    num_waypoints = rospy.get_param("~epicycloid_num_waypoints", 5000)
-    angle_scale = rospy.get_param("~epicycloid_angle_scale", 0.3)
-    yaw_bias = rospy.get_param("~epicycloid_yaw_bias", 0)
+    radius_mm = rospy.get_param("~epicycloid_radius_mm")
+    ratio_R_r = rospy.get_param("~epicycloid_ratio_R_r")
+    ratio_d_r = rospy.get_param("~epicycloid_ratio_d_r")
+    waypoints_step_mm = rospy.get_param("~epicycloid_waypoints_step_mm")
+    angle_scale = rospy.get_param("~epicycloid_angle_scale")
+    yaw_bias = rospy.get_param("~epicycloid_yaw_bias")
 
     waypoints = motion_gen.create_epicycloid_waypoints(
         radius_mm=radius_mm,
         ratio_R_r=ratio_R_r,
-        number_of_waypoints=num_waypoints,
+        ratio_d_r=ratio_d_r,
+        waypoints_step_mm=waypoints_step_mm,
         angle_scale=angle_scale,
         yaw_bias=yaw_bias,
     )
@@ -276,10 +279,16 @@ def main():
                 )
                 exec = command_to_execute(key)
                 if exec:
+                    # Calculate grinding time based on waypoints and velocity
+                    waypoints = compute_epicycloid_grinding_waypoints(motion_gen)
+                    grinding_vel_mm_per_sec = rospy.get_param("~epicycloid_grinding_vel_mm_per_sec", 50)
+                    waypoints_step_mm = rospy.get_param("~epicycloid_waypoints_step_mm")
+                    estimated_grinding_sec = (len(waypoints) * waypoints_step_mm) / grinding_vel_mm_per_sec
+                    
                     primitive.execute_grinding(
-                        compute_epicycloid_grinding_waypoints(motion_gen),
-                        grinding_sec=10,
-                        joint_difference_limit=0.1,
+                        waypoints,
+                        grinding_sec=estimated_grinding_sec,
+                        joint_difference_limit=rospy.get_param("~epicycloid_grinding_joint_difference_limit_for_motion_planning", 0.1),
                         max_attempts=100,
                         ee_link=grinding_ee_link,
                     )
