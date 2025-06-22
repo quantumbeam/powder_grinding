@@ -60,4 +60,4 @@ epicycloid_angle_scale: 0.3
 epicycloid_yaw_bias: 0
 epicycloid_grinding_vel_mm_per_sec: 50
 epicycloid_yaw_twist_vel_rad_per_sec: 0 # 0.5
-picycloid_grinding_joint_difference_limit_for_motion_planning: 0.1
+epicycloid_grinding_joint_difference_limit_for_motion_planning: 0.1
