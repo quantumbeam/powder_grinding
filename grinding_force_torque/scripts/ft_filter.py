@@ -47,7 +47,7 @@ class FTsensor(object):
         cutoff=2.5,
         order=3,
         data_window=100,
-        timeout=3.0,
+        timeout=10.0,
         enable_publish=True,
         enable_filtering=True,
     ):
@@ -221,6 +221,9 @@ def main():
     parser.add_argument(
         "-df", "--disable_filtering", action="store_false", help="Disable filtering"
     )
+    parser.add_argument(
+        "--timeout", type=float, help="Timeout for waiting topic", default=10.0
+    )
 
     args, unknown = parser.parse_known_args()
 
@@ -236,6 +239,7 @@ def main():
         cutoff=args.cutoff,
         order=args.order,
         data_window=args.data_window,
+        timeout=args.timeout,
         enable_publish=args.disable_publish,
         enable_filtering=args.disable_filtering,
     )
