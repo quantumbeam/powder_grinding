@@ -138,7 +138,7 @@ def main():
     joint_trajectory_controller_name = rospy.get_param(
         "~joint_trajectory_controller_name", None
     )
-    ns = rospy.get_param("~ns", None)
+    ns = rospy.get_param("~controller_ns", None)
     motion_planner_id = rospy.get_param("~motion_planner_id", None)
     planning_time = rospy.get_param("~planning_time", None)
 

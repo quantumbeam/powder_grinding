@@ -8,7 +8,7 @@ gathering_ee_link: "spatula_tip"
 robot_urdf_pkg: "grinding_descriptions"
 robot_urdf_file_name: "cobotta"
 joint_trajectory_controller_name: "arm_controller"
-ns: "cobotta"
+controller_ns: "cobotta"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
 planning_time : 20 # planning time to timeout in MoveIt motion planning 
