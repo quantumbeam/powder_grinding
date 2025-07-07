@@ -547,9 +547,9 @@ class JointTrajectoryController(JointControllerBase):
             point.velocities = [0] * self._num_joints
         else:
             point.velocities = copy.deepcopy(velocities)
-        if type(accelerations) == type(None):
+        if type(accelerations) == type(None) and type(velocities) == type(None):
             point.accelerations = [0] * self._num_joints
-        else:
+        elif type(accelerations) != type(None):
             point.accelerations = copy.deepcopy(accelerations)
         point.time_from_start = rospy.Duration(time)
         self._goal.trajectory.points.append(point)
