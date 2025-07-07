@@ -7,7 +7,7 @@ JOINT_STATE_SUBSCRIBER = "joint_states"
 FT_SUBSCRIBER = "wrench"
 
 BASE_LINK = "base_link"
-EE_LINK = "tool0"
+EE_LINK = "pestle_tip"
 FT_LINK = "tool0"
 
 # RESULT_CODE
