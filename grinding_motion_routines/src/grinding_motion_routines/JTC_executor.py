@@ -4,6 +4,9 @@ import numpy as np
 import rospy
 from grinding_motion_routines.arm import Arm
 from tqdm import tqdm
+from scipy.spatial.transform import Rotation
+from scipy.spatial.transform import Slerp
+
 
 
 class JointTrajectoryControllerExecutor(Arm):
@@ -174,8 +177,21 @@ class JointTrajectoryControllerExecutor(Arm):
         rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(success_joint_difference_list),4)} min diff:{round(min(success_joint_difference_list),4)})")
         return joint_trajectory if joint_trajectory else None
 
-    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0):
-        self.set_joint_trajectory(joint_trajectory, t=time_to_reach)
+    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0,strict_velocity_control=False):
+        
+        if strict_velocity_control:
+            waypoints = []
+            for joints in tqdm(joint_trajectory, desc="Generating waypoints from joint trajectory"):
+                pose = self.kdl.forward(joints)
+                waypoints.append(pose)
+            constant_velocity_vector_list = self.generate_constant_velocity_vector(
+                waypoints,
+                joint_trajectory,
+                time_to_reach,
+            )
+        else:
+            constant_velocity_vector_list = None
+        self.set_joint_trajectory(joint_trajectory, velocities=constant_velocity_vector_list, t=time_to_reach)
 
     def execute_by_waypoints(
         self,
@@ -184,7 +200,8 @@ class JointTrajectoryControllerExecutor(Arm):
         ee_link="",
         time_to_reach=5.0,
         max_attempts=1000,
-        max_attempts_for_first_waypoint=100
+        max_attempts_for_first_waypoint=100,
+        strict_velocity_control=False,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
 
@@ -195,7 +212,15 @@ class JointTrajectoryControllerExecutor(Arm):
             max_attempts=max_attempts,
             max_attempts_for_first_waypoint=max_attempts_for_first_waypoint
         )
-        self.set_joint_trajectory(joint_trajectory, t=time_to_reach)
+        if strict_velocity_control:
+            constant_velocity_vector_list = self.generate_constant_velocity_vector(
+                waypoints,
+                joint_trajectory,
+                time_to_reach,
+            )
+        else:   
+            constant_velocity_vector_list = None
+        self.set_joint_trajectory(joint_trajectory,velocities=constant_velocity_vector_list, t=time_to_reach)
 
     def execute_to_joint_goal(self, joint_goal, time_to_reach=5.0, wait=True):
         self.set_joint_positions(joint_goal, t=time_to_reach, wait=wait)
@@ -212,3 +237,103 @@ class JointTrajectoryControllerExecutor(Arm):
             else self.joint_names_prefix + new_ee_link
         )
         self._init_ik_solver(self.base_link, self.ee_link, self.solve_type)
+    def generate_constant_velocity_vector(
+        self,
+        waypoints,
+        joint_trajectory,
+        time_to_reach,
+    ):
+        """
+        各ウェイポイント区間の目標手先速度を達成するための、代表的な関節速度を計算します。
+
+        この関数は、手先がウェイポイント間を一定の並進速度で移動することを想定しています。
+        各区間の関節速度は、その区間の開始時点の関節角度におけるヤコビアンを用いて計算されます。
+        これは、区間内でのヤコビアンの変化は小さいという近似に基づいています。
+
+        Args:
+            waypoints (list):
+                手先の姿勢を表すリストのリスト。各要素は [x, y, z, qx, qy, qz, qw] の形式。
+                クォータニオンは [x, y, z, w] の順です。
+            joint_trajectory (list):
+                各ウェイポイントに対応する関節角度(rad)のリスト。
+            time_to_reach (float):
+                全ウェイポイントを通過するための合計目標時間（秒）。
+
+        Returns:
+            list or None:
+                各区間に対する関節速度ベクトル(np.ndarray)のリスト。
+                計算不可能な場合はNoneを返します。
+        """
+        # 1. 全体の並進移動距離を計算
+        total_linear_distance = 0.0
+        segment_distances = []
+        for i in range(len(waypoints) - 1):
+            pos_start = np.array(waypoints[i][0:3])
+            pos_end = np.array(waypoints[i+1][0:3])
+            dist = np.linalg.norm(pos_end - pos_start)
+            total_linear_distance += dist
+            segment_distances.append(dist)
+
+        if total_linear_distance <= 1e-6:
+            rospy.logwarn("ウェイポイント間の合計距離がほぼゼロです。計算をスキップします。")
+            return None
+
+        # 2. 全体で一定となる目標並進速度の大きさを計算
+        linear_velocity_magnitude = total_linear_distance / time_to_reach
+
+        joint_velocities_list = []
+        for i in range(len(waypoints) - 1):
+            # --- セグメントiの情報を設定 ---
+            start_pos = np.array(waypoints[i][0:3])
+            start_quat = np.array(waypoints[i][3:])
+            end_pos = np.array(waypoints[i+1][0:3])
+            end_quat = np.array(waypoints[i+1][3:])
+
+            rotations = Rotation.from_quat([start_quat, end_quat])
+
+            # --- このセグメントの目標速度を計算 ---
+            # セグメントの移動にかかる時間を計算
+            segment_duration = segment_distances[i] / linear_velocity_magnitude
+            if segment_duration < 1e-6:
+                # 移動時間が非常に短い場合はゼロ速度として扱う
+                joint_velocities_list.append(np.zeros(len(joint_trajectory[i])))
+                continue
+
+            # 目標並進速度ベクトル v = 距離 / 時間
+            v_target = (end_pos - start_pos) / segment_duration
+
+            # 目標角速度ベクトル ω = 回転(rad) / 時間
+            relative_rotation = rotations[1] * rotations[0].inv()
+            angle_axis = relative_rotation.as_rotvec()  # 回転ベクトル [axis*angle]
+            omega_target = angle_axis / segment_duration
+
+            # 6次元の目標手先速度ベクトルを作成
+            cartesian_target_velocity = np.concatenate([v_target, omega_target])
+
+            # --- 関節速度を計算 ---
+            try:
+                # 注意: この区間の開始点(i)の関節角度でヤコビアンを計算しています。
+                # これは、区間が短く、ヤコビアンの変化が小さいという前提での近似です。
+                jacobian_inv = self.kdl.jacobian_pseudo_inverse(joint_trajectory[i])
+
+                # ヤコビアンの擬似逆行列を用いて関節速度を計算
+                joint_velocities = jacobian_inv @ cartesian_target_velocity
+                joint_velocities = np.array(joint_velocities).flatten()
+            except np.linalg.LinAlgError:
+                rospy.logwarn(f"警告: 区間{i}のヤコビアン計算でエラー。速度をゼロにします。")
+                joint_velocities = np.zeros(len(joint_trajectory[i]))
+            
+            joint_velocities_list.append(joint_velocities.tolist())
+
+        # 計算された関節速度の統計情報をログに出力
+        if joint_velocities_list:
+            all_velocities = np.array(joint_velocities_list)
+            max_velocity = np.max(np.abs(all_velocities))
+            rospy.loginfo(f"Calculated Joint Velocities - Max(abs): {max_velocity:.4f} rad/s")
+
+        # 最初のポイントに0速度を追加（軌道の開始時は静止状態）
+        if joint_velocities_list:
+            first_zero_velocity = [0.0] * len(joint_velocities_list[0])
+            joint_velocities_list.insert(0, first_zero_velocity)
+            
+        return joint_velocities_list

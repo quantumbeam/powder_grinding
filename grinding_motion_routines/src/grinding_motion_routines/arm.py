@@ -50,6 +50,7 @@ from grinding_motion_routines.controllers import (
     GripperController,
 )
 from trac_ik_python.trac_ik import IK as TRACK_IK_SOLVER
+from ur_pykdl import ur_kinematics
 
 cprint = utils.TextColors()
 
@@ -159,6 +160,13 @@ class Arm(object):
     def _init_ik_solver(self, base_link, ee_link, solve_type):
         self.base_link = base_link
         self.ee_link = ee_link
+        
+        if rospy.has_param("robot_description"):
+            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link)
+        else:
+            self.kdl = ur_kinematics(base_link=base_link, ee_link=ee_link, robot=self._robot_urdf_file_name, prefix=self.joint_names_prefix, rospackage=self._robot_urdf_package)
+
+        
         if self.ik_solver == TRAC_IK:
             try:
                 if not rospy.has_param("robot_description"):
@@ -393,18 +401,20 @@ class Arm(object):
         self, trajectory, velocities=None, accelerations=None, t=5.0
     ):
         dt = float(t) / float(len(trajectory))
-
-        vel = None
-        acc = None
-
-        if velocities is not None:
-            vel = velocities
-        if accelerations is not None:
-            acc = accelerations
+        
         for i, q in enumerate(trajectory):
+            if velocities is None:
+                vel = None
+            else:
+                vel = velocities[i]
+            if accelerations is None:
+                acc = None
+            else:
+                acc = accelerations[i]
             self.joint_traj_controller.add_point(
                 positions=q, time=(i + 1) * dt, velocities=vel, accelerations=acc
             )
+        rospy.loginfo( "Executing Joint Trajectory with %d points", len(trajectory))
         self.joint_traj_controller.start(delay=0.01, wait=True)
         self.joint_traj_controller.clear_points()
 
