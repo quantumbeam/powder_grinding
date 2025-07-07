@@ -177,7 +177,7 @@ class JointTrajectoryControllerExecutor(Arm):
         rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(success_joint_difference_list),4)} min diff:{round(min(success_joint_difference_list),4)})")
         return joint_trajectory if joint_trajectory else None
 
-    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0,strict_velocity_control=False):
+    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0,strict_velocity_control=True):
         
         if strict_velocity_control:
             waypoints = []
@@ -189,6 +189,7 @@ class JointTrajectoryControllerExecutor(Arm):
                 joint_trajectory,
                 time_to_reach,
             )
+            self._plot_joint_velocities_and_positions(constant_velocity_vector_list, joint_trajectory, time_to_reach)
         else:
             constant_velocity_vector_list = None
         self.set_joint_trajectory(joint_trajectory, velocities=constant_velocity_vector_list, t=time_to_reach)
@@ -237,6 +238,7 @@ class JointTrajectoryControllerExecutor(Arm):
             else self.joint_names_prefix + new_ee_link
         )
         self._init_ik_solver(self.base_link, self.ee_link, self.solve_type)
+    
     def generate_constant_velocity_vector(
         self,
         waypoints,
@@ -244,96 +246,155 @@ class JointTrajectoryControllerExecutor(Arm):
         time_to_reach,
     ):
         """
-        各ウェイポイント区間の目標手先速度を達成するための、代表的な関節速度を計算します。
+        時間ベースでリサンプリングされた軌道に対し、手先等速運動を実現する関節速度を計算します。
 
-        この関数は、手先がウェイポイント間を一定の並進速度で移動することを想定しています。
-        各区間の関節速度は、その区間の開始時点の関節角度におけるヤコビアンを用いて計算されます。
-        これは、区間内でのヤコビアンの変化は小さいという近似に基づいています。
+        軌道全体の開始・終了姿勢と所要時間から、一定の目標手先速度（並進・角）を算出します。
+        その後、軌道上の各点において、その時点でのヤコビアンと、算出した一定の目標手先速度を
+        用いて関節速度を計算します。これにより、数値微分によるノイズの増幅を防ぎます。
 
         Args:
             waypoints (list):
-                手先の姿勢を表すリストのリスト。各要素は [x, y, z, qx, qy, qz, qw] の形式。
+                リサンプリングされた手先姿勢のリスト。各要素は [x, y, z, qx, qy, qz, qw]。
                 クォータニオンは [x, y, z, w] の順です。
             joint_trajectory (list):
-                各ウェイポイントに対応する関節角度(rad)のリスト。
+                リサンプリングされた関節角度(rad)のリスト。waypointsと長さが一致している必要があります。
             time_to_reach (float):
                 全ウェイポイントを通過するための合計目標時間（秒）。
 
         Returns:
             list or None:
-                各区間に対する関節速度ベクトル(np.ndarray)のリスト。
-                計算不可能な場合はNoneを返します。
+                各時刻における関節速度ベクトル(np.ndarray)のリスト。
         """
-        # 1. 全体の並進移動距離を計算
-        total_linear_distance = 0.0
-        segment_distances = []
-        for i in range(len(waypoints) - 1):
-            pos_start = np.array(waypoints[i][0:3])
-            pos_end = np.array(waypoints[i+1][0:3])
-            dist = np.linalg.norm(pos_end - pos_start)
-            total_linear_distance += dist
-            segment_distances.append(dist)
-
-        if total_linear_distance <= 1e-6:
-            rospy.logwarn("ウェイポイント間の合計距離がほぼゼロです。計算をスキップします。")
+        if not waypoints or not joint_trajectory:
+            rospy.logwarn("ウェイポイントまたは関節軌道が空です。")
+            return None
+        
+        if time_to_reach <= 0:
+            rospy.logwarn("time_to_reachは正の値である必要があります。")
             return None
 
-        # 2. 全体で一定となる目標並進速度の大きさを計算
-        linear_velocity_magnitude = total_linear_distance / time_to_reach
+        # --- 1. 軌道全体で一定となる目標手先速度を計算 ---
+        # 軌道の開始と終了の姿勢を取得
+        start_pos = np.array(waypoints[0][0:3])
+        start_quat = np.array(waypoints[0][3:])
+        end_pos = np.array(waypoints[-1][0:3])
+        end_quat = np.array(waypoints[-1][3:])
+
+        # 目標並進速度ベクトル v = (P_end - P_start) / T_total
+        v_target = (end_pos - start_pos) / time_to_reach
+
+        # 目標角速度ベクトル ω = (AngleAxis_total) / T_total
+        rotations = Rotation.from_quat([start_quat, end_quat])
+        relative_rotation = rotations[1] * rotations[0].inv()
+        angle_axis = relative_rotation.as_rotvec()
+        omega_target = angle_axis / time_to_reach
+
+        # 6次元の目標手先速度ベクトル（この値はループ内で不変）
+        cartesian_target_velocity = np.concatenate([v_target, omega_target])
+        rospy.loginfo(f"Constant Target Cartesian Velocity: v={v_target.round(3)}, ω={omega_target.round(3)}")
 
         joint_velocities_list = []
-        for i in range(len(waypoints) - 1):
-            # --- セグメントiの情報を設定 ---
-            start_pos = np.array(waypoints[i][0:3])
-            start_quat = np.array(waypoints[i][3:])
-            end_pos = np.array(waypoints[i+1][0:3])
-            end_quat = np.array(waypoints[i+1][3:])
+        condition_numbers = []
 
-            rotations = Rotation.from_quat([start_quat, end_quat])
-
-            # --- このセグメントの目標速度を計算 ---
-            # セグメントの移動にかかる時間を計算
-            segment_duration = segment_distances[i] / linear_velocity_magnitude
-            if segment_duration < 1e-6:
-                # 移動時間が非常に短い場合はゼロ速度として扱う
-                joint_velocities_list.append(np.zeros(len(joint_trajectory[i])))
-                continue
-
-            # 目標並進速度ベクトル v = 距離 / 時間
-            v_target = (end_pos - start_pos) / segment_duration
-
-            # 目標角速度ベクトル ω = 回転(rad) / 時間
-            relative_rotation = rotations[1] * rotations[0].inv()
-            angle_axis = relative_rotation.as_rotvec()  # 回転ベクトル [axis*angle]
-            omega_target = angle_axis / segment_duration
-
-            # 6次元の目標手先速度ベクトルを作成
-            cartesian_target_velocity = np.concatenate([v_target, omega_target])
-
-            # --- 関節速度を計算 ---
+        # --- 2. 各時刻の関節角度から関節速度を計算 ---
+        for i, joint_angles in enumerate(joint_trajectory):
             try:
-                # 注意: この区間の開始点(i)の関節角度でヤコビアンを計算しています。
-                # これは、区間が短く、ヤコビアンの変化が小さいという前提での近似です。
-                jacobian_inv = self.kdl.jacobian_pseudo_inverse(joint_trajectory[i])
+                # 現在の関節角度におけるヤコビアンを取得
+                jacobian = self.kdl.jacobian(joint_angles)
+                cond_num = np.linalg.cond(jacobian)
+                condition_numbers.append(cond_num)
 
-                # ヤコビアンの擬似逆行列を用いて関節速度を計算
+                # 擬似逆行列を計算
+                jacobian_inv = np.linalg.pinv(jacobian)
+                
+                #【重要】ループの外で計算した一定の目標手先速度を常に使用する
                 joint_velocities = jacobian_inv @ cartesian_target_velocity
                 joint_velocities = np.array(joint_velocities).flatten()
+
             except np.linalg.LinAlgError:
-                rospy.logwarn(f"警告: 区間{i}のヤコビアン計算でエラー。速度をゼロにします。")
-                joint_velocities = np.zeros(len(joint_trajectory[i]))
+                rospy.logwarn(f"警告: インデックス{i}のヤコビアン計算でエラー。速度をゼロにします。")
+                joint_velocities = np.zeros(len(joint_angles))
             
             joint_velocities_list.append(joint_velocities.tolist())
 
-        # 計算された関節速度の統計情報をログに出力
+        # --- 3. 統計情報の出力 ---
         if joint_velocities_list:
             all_velocities = np.array(joint_velocities_list)
             max_velocity = np.max(np.abs(all_velocities))
             rospy.loginfo(f"Calculated Joint Velocities - Max(abs): {max_velocity:.4f} rad/s")
 
-        # 最初のポイントに0速度を追加（軌道の開始時は静止状態）
-        if joint_velocities_list:
-            first_zero_velocity = [0.0] * len(joint_velocities_list[0])
-            joint_velocities_list.insert(0, first_zero_velocity)
+        if condition_numbers:
+            cond_array = np.array(condition_numbers)
+            rospy.loginfo(f"Jacobian Condition Number Stats - "
+                          f"Max: {np.max(cond_array):.2f}, "
+                          f"Min: {np.min(cond_array):.2f}, "
+                          f"Avg: {np.mean(cond_array):.2f}")
+            if np.max(cond_array) > 100:
+                rospy.logwarn("High condition number detected, indicating proximity to a singularity.")
             
         return joint_velocities_list
+    
+    def _plot_joint_velocities_and_positions(self, velocity_list, position_list, time_to_reach):
+        """
+        関節速度と位置をプロットする。
+        
+        Args:
+            velocity_list (list): 各ポイントの関節速度のリスト
+            position_list (list): 各ポイントの関節位置のリスト
+            time_to_reach (float): 総実行時間
+        """
+        if not velocity_list or not position_list:
+            rospy.logwarn("No velocities or positions to plot.")
+            return
+            
+        try:
+            import matplotlib.pyplot as plt
+            import numpy as np
+            
+            # 時間軸を作成
+            time_points_vel = np.linspace(0, time_to_reach, len(velocity_list))
+            time_points_pos = np.linspace(0, time_to_reach, len(position_list))
+            
+            # 関節数を取得
+            num_joints = len(velocity_list[0])
+            
+            # データを配列に変換
+            velocities = np.array(velocity_list)
+            positions = np.array(position_list)
+            
+            # プロット作成
+            plt.figure(figsize=(15, 12))
+            
+            # 速度プロット
+            for joint_idx in range(num_joints):
+                plt.subplot(2, num_joints, joint_idx + 1)
+                plt.plot(time_points_vel, velocities[:, joint_idx], 'b-', alpha=0.7, label='Line')
+                plt.scatter(time_points_vel, velocities[:, joint_idx], c='red', s=8, alpha=0.6, label='Points')
+                plt.title(f'Joint {joint_idx} Velocity')
+                plt.xlabel('Time (s)')
+                plt.ylabel('Velocity (rad/s)')
+                plt.grid(True)
+                if joint_idx == 0:
+                    plt.legend()
+            
+            # 位置プロット
+            for joint_idx in range(num_joints):
+                plt.subplot(2, num_joints, num_joints + joint_idx + 1)
+                plt.plot(time_points_pos, positions[:, joint_idx], 'g-', alpha=0.7, label='Line')
+                plt.scatter(time_points_pos, positions[:, joint_idx], c='orange', s=8, alpha=0.6, label='Points')
+                plt.title(f'Joint {joint_idx} Position')
+                plt.xlabel('Time (s)')
+                plt.ylabel('Position (rad)')
+                plt.grid(True)
+                if joint_idx == 0:
+                    plt.legend()
+                
+            plt.tight_layout()
+            plt.savefig('/tmp/joint_velocities_and_positions_plot.png', dpi=150, bbox_inches='tight')
+            plt.show()
+            rospy.loginfo("Joint velocity and position plot saved to /tmp/joint_velocities_and_positions_plot.png")
+            
+        except ImportError:
+            rospy.logwarn("matplotlib not available. Skipping velocity and position plot.")
+        except Exception as e:
+            rospy.logerr(f"Error plotting joint velocities and positions: {e}")
