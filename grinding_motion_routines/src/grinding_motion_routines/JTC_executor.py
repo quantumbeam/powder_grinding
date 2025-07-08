@@ -177,7 +177,7 @@ class JointTrajectoryControllerExecutor(Arm):
         rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(success_joint_difference_list),4)} min diff:{round(min(success_joint_difference_list),4)})")
         return joint_trajectory if joint_trajectory else None
 
-    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0,strict_velocity_control=True):
+    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0,strict_velocity_control=False):
         
         if strict_velocity_control:
             waypoints = []
