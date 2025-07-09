@@ -113,7 +113,17 @@ class MoveitExecutor(object):
     def change_planner_id(self, planner_id):
         self.move_group.set_planner_id(planner_id)
         rospy.loginfo("============ Planner ID: %s" % planner_id)
+    
+    def get_current_pose(self, ee_link=""):
+        """Get current pose of end effector link."""
+        if ee_link == "":
+            ee_link = self.move_group.get_end_effector_link()
+        if self.move_group.get_end_effector_link() != ee_link:
+            self._change_end_effector_link(ee_link)
 
+        current_pose = self.move_group.get_current_pose(ee_link)
+        return self._pose_stamped_to_list(current_pose)
+    
     def execute_to_goal_pose(
         self,
         goal_pose,
