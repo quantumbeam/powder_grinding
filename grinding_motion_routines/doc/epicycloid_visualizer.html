@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トロコイドプロッター</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1200px; /* Increased max-width */
+            width: 100%;
+        }
+        .canvas-container {
+            background-color: #ffffff;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+            padding: 1.5rem; /* p-6 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px; /* Adjust as needed for larger area */
+            position: relative; /* For animation elements */
+            overflow: hidden; /* Hide anything drawn outside the canvas */
+        }
+        canvas {
+            display: block;
+            background-color: #fefefe; /* Slightly off-white for canvas */
+            border-radius: 0.75rem; /* rounded-lg */
+            border: 1px solid #e2e8f0; /* border-gray-200 */
+        }
+        .controls {
+            background-color: #ffffff;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+            padding: 1.5rem; /* p-6 */
+            display: grid;
+            gap: 1.5rem; /* gap-6 */
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem; /* gap-2 */
+        }
+        .control-group label {
+            font-weight: 600; /* font-semibold */
+            color: #334155; /* text-slate-700 */
+        }
+        .control-group input[type="range"],
+        .control-group input[type="number"],
+        .control-group select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #cbd5e1; /* border-slate-300 */
+            border-radius: 0.5rem; /* rounded-md */
+            background-color: #f8fafc; /* bg-slate-50 */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .control-group input[type="range"]:focus,
+        .control-group input[type="number"]:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #6366f1; /* focus:border-indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* focus:ring focus:ring-indigo-200 */
+        }
+        .description {
+            font-size: 0.875rem; /* text-sm */
+            color: #64748b; /* text-slate-500 */
+            margin-top: 0.5rem;
+        }
+
+        /* Hide R_fixed for cycloid type */
+        .R-fixed-group.hidden {
+            display: none;
+        }
+
+        .llm-output-section, .animation-controls {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .llm-button, .animation-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #6366f1; /* Indigo-500 */
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .llm-button:hover, .animation-button:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .llm-button:active, .animation-button:active {
+            background-color: #4338ca; /* Indigo-700 */
+        }
+        .animation-button.reset {
+            background-color: #ef4444; /* Red-500 */
+        }
+        .animation-button.reset:hover {
+            background-color: #dc2626; /* Red-600 */
+        }
+
+        .llm-output-area {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 80px;
+            color: #334155;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animation-button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-slate-800 mb-6">トロコイドプロッター</h1>
+
+        <div class="canvas-container">
+            <canvas id="trochoidCanvas"></canvas>
+        </div>
+
+        <div class="animation-controls">
+            <div class="animation-button-group">
+                <button id="playPauseBtn" class="animation-button">再生</button>
+                <button id="resetBtn" class="animation-button reset">リセット</button>
+            </div>
+            <div class="control-group">
+                <label for="animationSpeed">アニメーション速度</label>
+                <input type="range" id="animationSpeed" min="0.1" max="5" step="0.1" value="1">
+                <input type="number" id="animationSpeed_num" min="0.1" max="5" step="0.1" value="1">
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="trochoidType">トロコイドの種類</label>
+                <select id="trochoidType" class="form-select">
+                    <option value="cycloid">サイクロイド (Cycloid)</option>
+                    <option value="curtate">カーテートトロコイド (Curtate Trochoid)</option>
+                    <option value="prolate">プロレートトロコイド (Prolate Trochoid)</option>
+                    <option value="epicycloid">エピサイクロイド (Epicycloid)</option>
+                    <option value="hypocycloid">ハイポサイクロイド (Hypocycloid)</option>
+                </select>
+                <p class="description" id="typeDescription"></p>
+            </div>
+
+            <div class="control-group R-fixed-group">
+                <label for="R_fixed">固定円の半径 (R)</label>
+                <input type="range" id="R_fixed" min="50" max="400" value="150">
+                <input type="number" id="R_fixed_num" min="50" max="400" value="150">
+                <p class="description">転がされる円の半径（エピサイクロイド、ハイポサイクロイドの場合）または基準線。</p>
+            </div>
+
+            <div class="control-group">
+                <label for="r_rolling">転がる円の半径 (r)</label>
+                <input type="range" id="r_rolling" min="10" max="200" value="50">
+                <input type="number" id="r_rolling_num" min="10" max="200" value="50">
+                <p class="description">転がる円の半径。</p>
+            </div>
+
+            <div class="control-group">
+                <label for="d_point">点の中心からの距離 (d)</label>
+                <input type="range" id="d_point" min="0" max="200" value="50">
+                <input type="number" id="d_point_num" min="0" max="200" value="50">
+                <p class="description" id="dPointDescription">転がる円の中心から、軌跡を描く点までの距離。</p>
+            </div>
+        </div>
+
+    <script>
+        // Get canvas and context
+        const canvas = document.getElementById('trochoidCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Get control elements
+        const trochoidTypeSelect = document.getElementById('trochoidType');
+        const RFixedRange = document.getElementById('R_fixed');
+        const RFixedNum = document.getElementById('R_fixed_num');
+        const rRollingRange = document.getElementById('r_rolling');
+        const rRollingNum = document.getElementById('r_rolling_num');
+        const dPointRange = document.getElementById('d_point');
+        const dPointNum = document.getElementById('d_point_num');
+        const RFixedGroup = document.querySelector('.R-fixed-group');
+        const typeDescription = document.getElementById('typeDescription');
+        const dPointDescription = document.getElementById('dPointDescription'); // New description element for d
+
+        // LLM related elements
+        const explainCurveBtn = document.getElementById('explainCurveBtn');
+        const llmOutput = document.getElementById('llmOutput');
+        const llmButtonText = document.getElementById('llmButtonText');
+        const llmLoadingSpinner = document.getElementById('llmLoadingSpinner');
+
+        // Animation control elements
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const animationSpeedRange = document.getElementById('animationSpeed');
+        const animationSpeedNum = document.getElementById('animationSpeed_num');
+
+        // Animation variables
+        let animationFrameId;
+        let isPlaying = false;
+        let currentTheta = 0; // Current angle for animation
+        let points = []; // Stores plotted points for the trail
+
+        // Canvas dimensions - make it responsive
+        let CANVAS_WIDTH, CANVAS_HEIGHT;
+        let CENTER_X, CENTER_Y;
+
+        /**
+         * Adjusts canvas size and recalculates center based on container size.
+         */
+        function adjustCanvasSize() {
+            const container = canvas.parentElement;
+            // Use clientWidth to fill the container, subtracting padding
+            CANVAS_WIDTH = container.clientWidth - (1.5 * 16 * 2); // container padding (1.5rem * 2)
+            // Maintain a reasonable aspect ratio, or simply set a max height if needed
+            CANVAS_HEIGHT = Math.min(CANVAS_WIDTH * 0.7, window.innerHeight * 0.7); // Adjust aspect ratio for wider view
+
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+
+            CENTER_X = CANVAS_WIDTH / 2;
+            CENTER_Y = CANVAS_HEIGHT / 2;
+
+            // Reset animation when canvas size changes to redraw correctly
+            resetAnimation();
+        }
+
+        // Initial canvas adjustment and adjust on resize
+        window.addEventListener('resize', adjustCanvasSize);
+        adjustCanvasSize(); // Initial call
+
+        /**
+         * Calculates and draws the trochoid curve based on current parameters.
+         * If `animateDraw` is true, it only draws up to `currentTheta` and shows rolling elements.
+         */
+        function drawTrochoid(animateDraw = false) {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // Clear canvas
+
+            // Get current parameter values
+            const type = trochoidTypeSelect.value;
+            let R = parseFloat(RFixedRange.value); // Radius of fixed circle (or conceptual radius for cycloid)
+            const r = parseFloat(rRollingRange.value); // Radius of rolling circle
+            const d = parseFloat(dPointRange.value); // Distance of point from rolling circle's center
+
+            // Update description based on type
+            let descriptionText = '';
+            let dDescriptionText = '転がる円の中心から、軌跡を描く点までの距離。';
+            RFixedGroup.classList.remove('hidden'); // Show R_fixed by default
+            dPointRange.disabled = false; // Enable d controls by default
+            dPointNum.disabled = false;
+
+            switch (type) {
+                case 'cycloid':
+                    RFixedGroup.classList.add('hidden'); // Hide R_fixed for cycloid
+                    descriptionText = "円が直線上を転がるとき、円周上の点(d=r)が描く軌跡です。";
+                    dDescriptionText = "d=r (円周上の点) に自動設定されます。";
+                    dPointRange.disabled = true; // Disable d controls for auto-set types
+                    dPointNum.disabled = true;
+                    break;
+                case 'curtate':
+                    descriptionText = "円が直線上を転がるとき、円の内部の点(d<r)が描く軌跡です。";
+                    dDescriptionText = "d<r (円の内部の点) に自動設定されます。";
+                    RFixedGroup.classList.add('hidden');
+                    dPointRange.disabled = true;
+                    dPointNum.disabled = true;
+                    break;
+                case 'prolate':
+                    descriptionText = "円が直線上を転がるとき、円の外部の点(d>r)が描く軌跡です。";
+                    dDescriptionText = "d>r (円の外部の点) に自動設定されます。";
+                    RFixedGroup.classList.add('hidden');
+                    dPointRange.disabled = true;
+                    dPointNum.disabled = true;
+                    break;
+                case 'epicycloid':
+                    descriptionText = "円が別の円の外側を転がるときに、転がる円上の点(d=r)が描く軌跡です。";
+                    break;
+                case 'hypocycloid':
+                    descriptionText = "円が別の円の内側を転がるときに、転がる円上の点(d=r)が描く軌跡です。";
+                    break;
+            }
+            typeDescription.textContent = descriptionText;
+            dPointDescription.textContent = dDescriptionText;
+
+
+            // Define total angle for the full curve for static drawing or reset
+            let totalAngle;
+            if (type === 'epicycloid') {
+                const commonDivisor = gcd(R, r);
+                totalAngle = 2 * Math.PI * (R / commonDivisor + r / commonDivisor);
+            } else if (type === 'hypocycloid') {
+                const commonDivisor = gcd(R, r);
+                totalAngle = 2 * Math.PI * (R / commonDivisor - r / commonDivisor);
+            } else { // Cycloid, Curtate, Prolate (on a line)
+                totalAngle = 4 * Math.PI; // Draw 2 cycles for better visualization
+            }
+
+            // Draw the full path if not animating, or the trail if animating
+            if (!animateDraw || points.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#3b82f6'; // Blue-500
+                ctx.lineWidth = 2;
+                if (animateDraw) {
+                    ctx.moveTo(points[0].x, points[0].y);
+                    for (let i = 1; i < points.length; i++) {
+                        ctx.lineTo(points[i].x, points[i].y);
+                    }
+                } else {
+                    const numPoints = 1000;
+                    for (let i = 0; i <= numPoints; i++) {
+                        let theta = (totalAngle * i) / numPoints;
+                        let [x, y] = getTrochoidCoords(theta, type, R, r, d);
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                }
+                ctx.stroke();
+            }
+
+            // If animating, draw the rolling circle and the point
+            if (animateDraw) {
+                let [pointX, pointY, rollingCenterX, rollingCenterY] = getTrochoidCoords(currentTheta, type, R, r, d, true);
+
+                // Draw rolling circle
+                ctx.beginPath();
+                ctx.arc(rollingCenterX, rollingCenterY, r, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#64748b'; // Slate-500
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw line from rolling center to point
+                ctx.beginPath();
+                ctx.moveTo(rollingCenterX, rollingCenterY);
+                ctx.lineTo(pointX, pointY);
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw the point
+                ctx.beginPath();
+                ctx.arc(pointX, pointY, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#ef4444'; // Red-500
+                ctx.fill();
+
+                // Draw fixed circle for epicycloid/hypocycloid
+                if (type === 'epicycloid' || type === 'hypocycloid') {
+                    ctx.beginPath();
+                    ctx.arc(CENTER_X, CENTER_Y, R, 0, 2 * Math.PI);
+                    ctx.strokeStyle = '#6b7280'; // Gray-500
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                } else { // Draw ground line for cycloid, curtate, prolate
+                    ctx.beginPath();
+                    ctx.moveTo(0, CANVAS_HEIGHT - 20);
+                    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT - 20);
+                    ctx.strokeStyle = '#6b7280'; // Gray-500
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        /**
+         * Calculates coordinates for a given theta.
+         * Returns [x, y] or [pointX, pointY, rollingCenterX, rollingCenterY] if detailed is true.
+         */
+        function getTrochoidCoords(theta, type, R, r, d, detailed = false) {
+            let x, y;
+            let rollingCenterX, rollingCenterY;
+
+            if (type === 'cycloid' || type === 'curtate' || type === 'prolate') {
+                const yOffset = CANVAS_HEIGHT - r - 20; // Offset from bottom for line
+                
+                rollingCenterX = r * theta;
+                rollingCenterY = yOffset; // Center of the rolling circle is always at yOffset
+
+                x = rollingCenterX - d * Math.sin(theta);
+                y = rollingCenterY + d * Math.cos(theta); // Point moves from top of circle
+                
+                // Adjust for canvas coordinate system and center the curve
+                const offsetX = (CANVAS_WIDTH / 2) - (4 * Math.PI * r / 2); // Center 2 full cycles
+                x += offsetX;
+                rollingCenterX += offsetX;
+
+            } else if (type === 'epicycloid') {
+                rollingCenterX = (R + r) * Math.cos(theta);
+                rollingCenterY = (R + r) * Math.sin(theta);
+
+                x = rollingCenterX - d * Math.cos(((R + r) / r) * theta);
+                y = rollingCenterY - d * Math.sin(((R + r) / r) * theta);
+
+                x += CENTER_X;
+                y += CENTER_Y;
+                rollingCenterX += CENTER_X;
+                rollingCenterY += CENTER_Y;
+
+            } else if (type === 'hypocycloid') {
+                rollingCenterX = (R - r) * Math.cos(theta);
+                rollingCenterY = (R - r) * Math.sin(theta);
+
+                x = rollingCenterX + d * Math.cos(((R - r) / r) * theta);
+                y = rollingCenterY - d * Math.sin(((R - r) / r) * theta);
+
+                x += CENTER_X;
+                y += CENTER_Y;
+                rollingCenterX += CENTER_X;
+                rollingCenterY += CENTER_Y;
+            }
+
+            if (detailed) {
+                return [x, y, rollingCenterX, rollingCenterY];
+            }
+            return [x, y];
+        }
+
+        /**
+         * Helper function to calculate Greatest Common Divisor (GCD) for closing curves
+         * Uses Euclidean algorithm.
+         */
+        function gcd(a, b) {
+            // Ensure inputs are positive for GCD, and handle floating points by scaling
+            a = Math.abs(a);
+            b = Math.abs(b);
+
+            // Scale up to integers to avoid floating point precision issues for GCD
+            let scale = 1;
+            while (a !== Math.floor(a) || b !== Math.floor(b)) {
+                a *= 10;
+                b *= 10;
+                scale *= 10;
+            }
+
+            a = Math.round(a); // Round to nearest integer after scaling
+            b = Math.round(b);
+
+            while (b) {
+                [a, b] = [b, a % b];
+            }
+            return a / scale; // Scale back down
+        }
+
+        /**
+         * Animation loop function.
+         */
+        function animate() {
+            if (!isPlaying) return;
+
+            const animationSpeed = parseFloat(animationSpeedRange.value);
+            currentTheta += 0.05 * animationSpeed; // Increment theta based on speed
+
+            const type = trochoidTypeSelect.value;
+            let R = parseFloat(RFixedRange.value);
+            const r = parseFloat(rRollingRange.value);
+            const d = parseFloat(dPointRange.value); // Use current d, even if auto-set
+
+            let [x, y] = getTrochoidCoords(currentTheta, type, R, r, d);
+            points.push({ x, y }); // Add current point to trail
+
+            drawTrochoid(true); // Draw animated state
+
+            let totalAngle;
+            if (type === 'epicycloid') {
+                const commonDivisor = gcd(R, r);
+                totalAngle = 2 * Math.PI * (R / commonDivisor + r / commonDivisor);
+            } else if (type === 'hypocycloid') {
+                const commonDivisor = gcd(R, r);
+                totalAngle = 2 * Math.PI * (R / commonDivisor - r / commonDivisor);
+            } else {
+                totalAngle = 4 * Math.PI;
+            }
+
+            // Loop animation when currentTheta exceeds totalAngle
+            if (currentTheta >= totalAngle && totalAngle !== 0) {
+                if (type === 'epicycloid' || type === 'hypocycloid') {
+                    currentTheta %= totalAngle;
+                    points = []; // Clear points to redraw for next cycle
+                } else {
+                    // For cycloids, allow it to continue for a few cycles
+                    // Could add a reset button to manually restart
+                }
+            }
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        /**
+         * Starts or pauses the animation.
+         */
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                playPauseBtn.textContent = '一時停止';
+                // Controls related to d are handled by updateDValueForType()
+                // Other controls (R, r, type) are disabled
+                toggleControls(false);
+                animate();
+            } else {
+                playPauseBtn.textContent = '再生';
+                cancelAnimationFrame(animationFrameId);
+                toggleControls(true);
+            }
+        }
+
+        /**
+         * Resets the animation to the beginning.
+         */
+        function resetAnimation() {
+            cancelAnimationFrame(animationFrameId);
+            isPlaying = false;
+            playPauseBtn.textContent = '再生';
+            currentTheta = 0;
+            points = []; // Clear all stored points
+            
+            updateDValueForType(); // Ensure d is correctly set for the current type
+            drawTrochoid(false); // Draw static full curve
+            toggleControls(true); // Ensure controls are enabled
+        }
+
+        /**
+         * Toggles the disabled state of various control elements.
+         */
+        function toggleControls(enable) {
+            trochoidTypeSelect.disabled = !enable;
+            RFixedRange.disabled = !enable;
+            RFixedNum.disabled = !enable;
+            rRollingRange.disabled = !enable;
+            rRollingNum.disabled = !enable;
+            // dPointRange and dPointNum are handled by updateDValueForType
+            // Animation speed can still be changed during play
+        }
+
+        /**
+         * Updates the 'd' parameter based on the selected trochoid type (cycloid, curtate, prolate).
+         * Disables 'd' controls if auto-set.
+         */
+        function updateDValueForType() {
+            const type = trochoidTypeSelect.value;
+            const r = parseFloat(rRollingRange.value);
+
+            if (type === 'cycloid') {
+                dPointRange.value = r;
+                dPointNum.value = r;
+                dPointRange.disabled = true;
+                dPointNum.disabled = true;
+            } else if (type === 'curtate') {
+                dPointRange.value = Math.max(1, r * 0.5); // Set to 50% of r, minimum 1
+                dPointNum.value = Math.max(1, r * 0.5);
+                dPointRange.disabled = true;
+                dPointNum.disabled = true;
+            } else if (type === 'prolate') {
+                dPointRange.value = r * 1.5; // Set to 150% of r
+                dPointNum.value = r * 1.5;
+                dPointRange.disabled = true;
+                dPointNum.disabled = true;
+            } else { // epicycloid, hypocycloid
+                dPointRange.disabled = false;
+                dPointNum.disabled = false;
+            }
+            // Ensure d_point range reflects r_rolling for manual adjustment
+            dPointRange.max = r * 2;
+            dPointNum.max = r * 2;
+        }
+
+
+        // --- Event Listeners for controls ---
+        trochoidTypeSelect.addEventListener('change', () => {
+            updateDValueForType(); // Update d value and enable/disable d controls
+            resetAnimation();
+        });
+
+        // Sync range and number inputs and redraw
+        RFixedRange.addEventListener('input', () => {
+            RFixedNum.value = RFixedRange.value;
+            resetAnimation();
+        });
+        RFixedNum.addEventListener('input', () => {
+            const val = parseFloat(RFixedNum.value);
+            if (!isNaN(val) && val >= parseFloat(RFixedNum.min) && val <= parseFloat(RFixedNum.max)) {
+                RFixedRange.value = val;
+            }
+            resetAnimation();
+        });
+
+        rRollingRange.addEventListener('input', () => {
+            rRollingNum.value = rRollingRange.value;
+            updateDValueForType(); // Recalculate d if type is cycloid/curtate/prolate based on new r
+            resetAnimation();
+        });
+        rRollingNum.addEventListener('input', () => {
+            const val = parseFloat(rRollingNum.value);
+            if (!isNaN(val) && val >= parseFloat(rRollingNum.min) && val <= parseFloat(rRollingNum.max)) {
+                rRollingRange.value = val;
+                updateDValueForType(); // Recalculate d if type is cycloid/curtate/prolate based on new r
+            }
+            resetAnimation();
+        });
+
+        dPointRange.addEventListener('input', () => {
+            dPointNum.value = dPointRange.value;
+            resetAnimation();
+        });
+        dPointNum.addEventListener('input', () => {
+            const val = parseFloat(dPointNum.value);
+            if (!isNaN(val) && val >= parseFloat(dPointNum.min) && val <= parseFloat(dPointNum.max)) {
+                dPointRange.value = val;
+            }
+            resetAnimation();
+        });
+
+        animationSpeedRange.addEventListener('input', () => {
+            animationSpeedNum.value = animationSpeedRange.value;
+        });
+        animationSpeedNum.addEventListener('input', () => {
+            const val = parseFloat(animationSpeedNum.value);
+            if (!isNaN(val) && val >= parseFloat(animationSpeedNum.min) && val <= parseFloat(animationSpeedNum.max)) {
+                animationSpeedRange.value = val;
+            }
+        });
+
+
+        // Animation buttons
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        resetBtn.addEventListener('click', resetAnimation);
+
+
+        
+        // Initial draw on load
+        window.onload = () => {
+            adjustCanvasSize(); // Ensure canvas is sized correctly
+            updateDValueForType(); // Set initial d based on default type
+            drawTrochoid(false); // Draw initial static curve
+        };
+
+    </script>
+</body>
+</html>
