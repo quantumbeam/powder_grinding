@@ -262,6 +262,10 @@ class MoveitExecutor(object):
             self.move_group.stop()
         self.move_group.clear_pose_targets()
 
+    def get_current_joint_values(self):
+        """Get current joint positions of the robot."""
+        return self.move_group.get_current_joint_values()
+
     def _change_end_effector_link(self, new_ee_link):
         old_ee_link = self.move_group.get_end_effector_link()
         rospy.loginfo(
