@@ -112,5 +112,5 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
 RUN echo "source /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
 RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> /root/.bashrc
 RUN echo "export ROS_HOSTNAME=localhost" >> /root/.bashrc
-
+RUN echo "alias b='cd ~/onolab_ros1/catkin_ws; catkin build; source devel/setup.bash'" >> /root/.bashrc
 

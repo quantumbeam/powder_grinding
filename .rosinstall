@@ -4,15 +4,31 @@
 # USE THE rosinstall TOOL INSTEAD.
 # IF YOU CHANGE IT, USE rosinstall FOR THE CHANGES TO TAKE EFFECT
 
-- git: {local-name: third_party/Universal_Robots_ROS_Driver, uri: 'https://github.com/UniversalRobots/Universal_Robots_ROS_Driver.git',
-    version: master}
-- git: {local-name: third_party/Universal_Robots_MoveIt_and_Gazebo, uri: 'https://github.com/ros-industrial/universal_robot.git',
-version: noetic-devel}
-- git: {local-name: third_party/DENSO_ROS, uri: 'https://github.com/DENSORobot/denso_robot_ros.git',
-version: master}
-- git: {local-name: third_party/FR_ROS, uri: 'https://github.com/YusakuNakajima/frcobot_ros.git',
-version: master}
-- git: {local-name: third_party/fake_joint, uri: 'https://github.com/tork-a/fake_joint.git',
-version: master}
-- git:  {local-name: third_party/trac_ik,uri: https://bitbucket.org/traclabs/trac_ik.git, 
-version: master }
+- git:
+      local-name: third_party/Universal_Robots_ROS_Driver
+      uri: "https://github.com/UniversalRobots/Universal_Robots_ROS_Driver.git"
+      version: master
+- git:
+      local-name: third_party/Universal_Robots_MoveIt_and_Gazebo
+      uri: "https://github.com/ros-industrial/universal_robot.git"
+      version: noetic-devel
+- git:
+      local-name: third_party/DENSO_ROS
+      uri: "https://github.com/DENSORobot/denso_robot_ros.git"
+      version: master
+- git:
+      local-name: third_party/FR_ROS
+      uri: "https://github.com/YusakuNakajima/frcobot_ros.git"
+      version: master
+- git:
+      local-name: third_party/fake_joint
+      uri: "https://github.com/tork-a/fake_joint.git"
+      version: master
+- git:
+      local-name: third_party/trac_ik
+      uri: https://bitbucket.org/traclabs/trac_ik.git
+      version: master
+- git:
+      local-name: third_party/xarm_ros
+      uri: "https://github.com/Kai0528Kawasaki/xarm_ros.git"
+      version: master
