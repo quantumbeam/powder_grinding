@@ -1,4 +1,4 @@
-experiment_time : 90
+experiment_time: 90
 
 # end effector params
 grinding_ee_link: "pestle_tip"
@@ -6,49 +6,49 @@ gathering_ee_link: "spatula_tip"
 
 # ik and motion planner params
 robot_urdf_pkg: "grinding_descriptions"
-robot_urdf_file_name: "fr3_robot"
-joint_trajectory_controller_name: "position_trajectory_controller"
-controller_ns: "frrobot"
+robot_urdf_file_name: "uf850"
+joint_trajectory_controller_name: "uf850_traj_controller"
+controller_ns: "ufactory"
 ik_solver: "trac_ik" # only "trac_ik" is supported, "ikfast" will be supported in the future
 motion_planner_id: "TRRT" # recommended "TRRT"(highly optimal but long planning time) or "RRTConnect" (low optimal but fast planning)
-planning_time : 20 # timeout for motion planning
-max_attempts : 1000
+planning_time: 20 # timeout for motion planning
+max_attempts: 1000
 
 # grinding params
-grinding_pos_beginning : 
+grinding_pos_beginning:
   - -8
   - 0
-grinding_pos_end :
+grinding_pos_end:
   - -8
   - 0.0001
 grinding_center_pos:
   - 0
   - 0
-grinding_number_of_rotation : 5
-grinding_sec_per_rotation : 0.5 # 0.5 >
-grinding_angle_scale : 0.3 #0 - 0.3
-grinding_rz_beginning : 35
-grinding_rz_end : 35
-grinding_vel_scale : 1
-grinding_acc_scale : 1
-grinding_number_of_waypoints_per_circle : 100
-grinding_yaw_bias : rad(pi)
-grinding_joint_difference_limit_for_motion_planning : 0.03
+grinding_number_of_rotation: 10
+grinding_sec_per_rotation: 0.5 # 0.5 >
+grinding_angle_scale: 0.3 #0 - 0.3
+grinding_rz_beginning: 35
+grinding_rz_end: 35
+grinding_vel_scale: 1
+grinding_acc_scale: 1
+grinding_number_of_waypoints_per_circle: 100
+grinding_yaw_bias: rad(pi)
+grinding_joint_difference_limit_for_motion_planning: 0.03
 
-# circular gathering params 
-gathering_pos_beginning : 
+# circular gathering params
+gathering_pos_beginning:
   - -30
   - 0
-gathering_pos_end :
+gathering_pos_end:
   - -18
   - 0.0001
-gathering_number_of_rotation : 8
-gathering_sec_per_rotation : 2
-gathering_angle_scale : 0
-gathering_rz_beginning : 35
-gathering_rz_end : 35
-gathering_vel_scale : 0.1
-gathering_acc_scale : 0.1
-gathering_number_of_waypoints_per_circle : 50
-gathering_yaw_bias :  rad(pi)
-gathering_joint_difference_limit_for_motion_planning : 0.1
+gathering_number_of_rotation: 8
+gathering_sec_per_rotation: 2
+gathering_angle_scale: 0
+gathering_rz_beginning: 35
+gathering_rz_end: 35
+gathering_vel_scale: 0.1
+gathering_acc_scale: 0.1
+gathering_number_of_waypoints_per_circle: 50
+gathering_yaw_bias: rad(pi)
+gathering_joint_difference_limit_for_motion_planning: 0.1
