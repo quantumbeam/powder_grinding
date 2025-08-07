@@ -1,5 +1,5 @@
 # Robotic Powder Grinding for Laboratory Automation
-<img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
+<img src="https://github.com/quantumbeam/powder_grinding/blob/develop/wiki/grinding_demo.mp4" alt="UR powder grinding" width="500">
 
 Custum ROS packages for robotic powder grinding.
 This package can operate both in simulation (Gazebo) and on the actual robot.
