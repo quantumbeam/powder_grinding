@@ -37,10 +37,14 @@
   <arg name="kinematics_params" if="$(arg sim)"
     default="$(find grinding_descriptions)/config/ur5e/default_kinematics.yaml" />
   <arg name="rviz_config" default="$(find grinding_robot_bringup)/etc/display_for_grinding.rviz" />
+  <arg name="pestle_length" default="0.1205"
+    doc="The length of the pestle.  This is used to calculate the position of the pestle tip" />
+  <arg name="spatula_length" default="0.087"
+    doc="The length of the spatula.  This is used to calculate the position of the spatula tip" />
 
   <!-- Configrations for  UR hardware -->
   <arg name="robot_description_file"
-    default="$(find grinding_descriptions)/launch/load_ur5e.launch.xml"
+    default="$(find grinding_descriptions)/launch/load_ur5e_with_pestle.launch"
     doc="Robot description launch file." />
   <arg name="controller_config_file" unless="$(arg sim)"
     default="$(find grinding_robot_bringup)/config/ur5e_controllers.yaml" />
@@ -56,11 +60,13 @@
     default="$(find grinding_motion_routines)/config/ur5e_grinding_demo/planning_scene_config.yaml" />
 
   <!-- Load the URDF, SRDF and joint_limits configuration -->
-  <include file="$(find grinding_descriptions)/launch/load_ur5e.launch.xml">
+  <include file="$(arg robot_description_file)">
     <arg name="joint_limit_params" value="$(arg joint_limit_params)" />
     <arg name="physical_params" value="$(arg physical_params)" />
     <arg name="visual_params" value="$(arg visual_params)" />
     <arg name="kinematics_params" value="$(arg kinematics_params)" />
+    <arg name="pestle_length" value="$(arg pestle_length)" />
+    <arg name="spatula_length" value="$(arg spatula_length)" />
   </include>
 
   <!-- Running the real robot driver or fake driver -->
@@ -73,7 +79,10 @@
     <node name="fake_joint_driver" pkg="fake_joint_driver" type="fake_joint_driver_node" />
   </group>
   <group unless="$(arg sim)">
-    <include file="$(find ur_robot_driver)/launch/ur_common.launch" pass_all_args="true">
+    <!-- Convert joint states to /tf tranforms -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <!-- Launch ur_robot_driver -->
+    <include file="$(find ur_robot_driver)/launch/ur_control.launch" pass_all_args="true">
       <arg name="kinematics_config" value="$(arg kinematics_params)" />
     </include>
   </group>

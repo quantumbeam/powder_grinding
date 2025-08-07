@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<robot name="ur5e" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Includes -->
+    <xacro:include filename="$(find ur_description)/urdf/inc/ur5e_macro.xacro" />
+
+    <!-- parameters -->
+    <xacro:arg name="prefix" default="" />
+    <xacro:arg name="joint_limit_params" default="$(find grinding_descriptions)/config/ur5e/joint_limits.yaml" />
+    <xacro:arg name="kinematics_params" default="$(find grinding_descriptions)/config/ur5e/default_kinematics.yaml" />
+    <xacro:arg name="physical_params" default="$(find grinding_descriptions)/config/ur5e/physical_parameters.yaml" />
+    <xacro:arg name="visual_params" default="$(find grinding_descriptions)/config/ur5e/visual_parameters.yaml" />
+    <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface" />
+    <xacro:arg name="safety_limits" default="false" />
+    <xacro:arg name="safety_pos_margin" default="0.15" />
+    <xacro:arg name="safety_k_position" default="20"  />
+    <xacro:arg name="pestle_length" default="0.1174" />
+    <xacro:arg name="spatula_length" default="0.089" />
+
+    <!-- Create robot instances -->
+    <xacro:ur5e_robot
+        prefix="$(arg prefix)"
+        joint_limits_parameters_file="$(arg joint_limit_params)"
+        kinematics_parameters_file="$(arg kinematics_params)"
+        physical_parameters_file="$(arg physical_params)"
+        visual_parameters_file="$(arg visual_params)"
+        transmission_hw_interface="$(arg transmission_hw_interface)"
+        safety_limits="$(arg safety_limits)"
+        safety_pos_margin="$(arg safety_pos_margin)"
+        safety_k_position="$(arg safety_k_position)" />
+
+    <!-- Connect robot to world -->
+    <link name="world" />
+    <joint name="world_joint" type="fixed">
+        <parent link="world" />
+        <child link="base_link" />
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    </joint>
+
+    <!-- Add end effector frames -->
+    <xacro:macro name="end_effectors" params="prefix pestle_length spatula_length">
+        <!-- default toolframe: X+ left, Y+ up, Z+ front -->
+        <link name="${prefix}tool1" />
+        <joint name="${prefix}tool0-tool1" type="fixed">
+            <origin xyz="0 0.0432 0.0075" rpy="${-pi/2.0} 0 0" />
+            <parent link="${prefix}tool0" />
+            <child link="${prefix}tool1" />
+        </joint>
+        <link name="${prefix}tool2" />
+        <joint name="${prefix}tool0-tool2" type="fixed">
+            <origin xyz="0.0432 0 0.0075" rpy="${-pi/2.0} 0 ${-pi/2.0}" />
+            <parent link="${prefix}tool0" />
+            <child link="${prefix}tool2" />
+        </joint>
+        <link name="${prefix}tool3" />
+        <joint name="${prefix}tool0-tool3" type="fixed">
+            <origin xyz="0 -0.0432 0.0075" rpy="${-pi/2.0} 0 ${pi}" />
+            <parent link="${prefix}tool0" />
+            <child link="${prefix}tool3" />
+        </joint>
+
+        <!-- Add end effector frames -->
+        <link name="${prefix}pestle">
+            <!-- 0.0001 means avoiding collision-->
+            <visual>
+                <origin xyz="0 0 0.0001" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://grinding_descriptions/mesh/end_effector/pestle_ur.stl" />
+                </geometry>
+            </visual>
+            <!-- Collision is same as visual -->
+        </link>
+        <joint name="${prefix}joint_pestle" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <parent link="${prefix}tool0" />
+            <child link="${prefix}pestle" />
+        </joint>
+        <link name="${prefix}pestle_tip" />
+        <joint name="${prefix}joint_pestle_tip" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 ${pestle_length}" />
+            <parent link="${prefix}pestle" />
+            <child link="${prefix}pestle_tip" />
+        </joint>
+
+        <link name="${prefix}spatula">
+            <!-- 0.0001 means avoiding collision-->
+            <visual>
+                <origin xyz="0 0 0.0001" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://grinding_descriptions/mesh/end_effector/spatula.stl" />
+                </geometry>
+            </visual>
+            <!-- Collision is same as visual -->
+        </link>
+        <joint name="${prefix}joint_spatula" type="fixed">
+            <origin rpy="0 ${-pi/2} 0" xyz="-0.03655 0 0.0135" />
+            <parent link="${prefix}tool0" />
+            <child link="${prefix}spatula" />
+        </joint>
+        <link name="${prefix}spatula_tip" />
+        <joint name="${prefix}joint_spatula_tip" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 ${spatula_length}" />
+            <parent link="${prefix}spatula" />
+            <child link="${prefix}spatula_tip" />
+        </joint>
+
+        <link name="${prefix}spoon">
+            <!-- 0.0001 means avoiding collision between spoon and wrist3 -->
+            <visual>
+                <origin xyz="0 0 0.0001" rpy="0 0 0" />
+                <geometry>
+                    <box size="0 0 0" />
+                    <!-- <mesh
+                filename="package://grinding_descriptions/mesh/end_effector/spatula_short_for_Rviz.stl"
+                /> -->
+                </geometry>
+            </visual>
+            <!-- Collision is same as visual -->
+        </link>
+        <joint name="${prefix}joint_spoon" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <parent link="${prefix}tool2" />
+            <child link="${prefix}spoon" />
+        </joint>
+        <link name="${prefix}spoon_tip" />
+        <joint name="${prefix}joint_spoon_tip" type="fixed">
+            <origin rpy="0 0 ${pi}" xyz="0 -0.025 0.145" />
+            <parent link="${prefix}spoon" />
+            <child link="${prefix}spoon_tip" />
+        </joint>
+
+        <link name="${prefix}dummy_ee" />
+        <joint name="${prefix}joint_dummy_ee" type="fixed">
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <parent link="${prefix}tool0" />
+            <child link="${prefix}dummy_ee" />
+        </joint>
+    </xacro:macro>
+    <xacro:end_effectors prefix="$(arg prefix)" pestle_length="$(arg pestle_length)"
+        spatula_length="$(arg spatula_length)" />
+
+
+</robot>
