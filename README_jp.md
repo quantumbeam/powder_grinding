@@ -1,5 +1,5 @@
 # Robotic Powder Grinding for Laboratory Automation
-<img src="https://github.com/quantumbeam/powder_grinding/blob/main/wiki/grinding_demo.gif?raw=true" alt="UR powder grinding" width="500">
+<img src="https://github.com/quantumbeam/powder_grinding/blob/develop/wiki/grinding_demo.mp4" alt="UR powder grinding" width="500">
 
 乳棒と乳鉢用いたロボット粉体粉砕のためのROSパッケージです。
 シミュレーション(Gazebo)上での動作とロボット実機での動作ができます。
