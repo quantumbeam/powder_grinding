@@ -2,7 +2,7 @@
 [grinding_demo.webm](https://github.com/user-attachments/assets/3c9d4a10-4f70-4daa-aab4-e9b99195d0d6)
 
 Custum ROS packages for robotic powder grinding.
-This package can operate both in simulation (Gazebo) and on the actual robot.
+This package can operate both in simulation (fake_joint) and on the actual robot.
 
 **Note:** The Docker environment for this package is configured to utilize Ubuntu Pro. Due to ROS Noetic's End-of-Life (EOL), you will need to set the `UBUNTU_PRO_TOKEN` environment variable to ensure access to all necessary packages. Please set it as follows:
 `export UBUNTU_PRO_TOKEN="YOUR_TOKEN_HERE"`
