@@ -28,6 +28,7 @@ services:
       - /dev/:/dev/
     network_mode: "host"
     extra_hosts:
+      - "powder_grinding_ros:127.0.0.1" # Self-reference for ROS networking
       - "host:127.0.0.1" # Seems that this might be needed for ROS networking
       - "host:192.168.56.5" # The host PC
       - "ur:192.168.56.42" # UR IP
