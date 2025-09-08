@@ -17,8 +17,8 @@ from grinding_motion_routines import (
     moveit_executor,
     JTC_executor,
     motion_primitive,
-    marker_display,
-    tf_publisher,
+    marker_array_publisher,
+    pose_array_publisher,
 )
 
 from grinding_descriptions import load_planning_scene
@@ -33,18 +33,18 @@ initial_experiment_time = 0
 TIMEOUT_SEC = 0.1
 
 # debug class
-debug_marker = marker_display.MarkerDisplay("debug_marker")
-debug_tf = tf_publisher.TFPublisher()
+debug_markers = marker_array_publisher.MarkerArrayPublisher()
+debug_poses = pose_array_publisher.PoseArrayPublisher()
 
 
 def display_debug_waypoints(waypoints, debug_type, tf_name="debug"):
     if debug_type == "mk":
-        rospy.loginfo("Display waypoints marker")
-        debug_marker.display_waypoints(waypoints, clear=True)
-    elif debug_type == "tf":
-        rospy.loginfo("Display waypoints tf")
-        debug_tf.broadcast_tf_with_waypoints(
-            waypoints, parent_link="base_link", child_link=tf_name + "_waypoints"
+        rospy.loginfo("Display waypoints as MarkerArray")
+        debug_markers.display_waypoints(waypoints, clear=True)
+    elif debug_type == "pose":
+        rospy.loginfo("Display waypoints as PoseArray")
+        debug_poses.publish_pose_array_with_waypoints(
+            waypoints, frame_id="base_link"
         )
 
 
@@ -134,7 +134,7 @@ def command_to_execute(cmd):
         return True
     elif cmd == "mk":
         return False
-    elif cmd == "tf":
+    elif cmd == "pose":
         return False
     else:
         return None
@@ -251,7 +251,7 @@ def main():
 
             elif motion_command == "g":
                 key = input(
-                    "Start grinding demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
+                    "Start grinding demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints PoseArray = 'pose', canncel = other\n"
                 )
                 exec = command_to_execute(key)
                 if exec:
@@ -266,7 +266,7 @@ def main():
                     compute_grinding_waypoints(motion_gen, debug_type=key)
             elif motion_command == "G":
                 key = input(
-                    "Start circular gathering demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
+                    "Start circular gathering demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints PoseArray = 'pose', canncel = other\n"
                 )
                 exec = command_to_execute(key)
                 if exec:
@@ -281,7 +281,7 @@ def main():
                     compute_gathering_waypoints(motion_gen, debug_type=key)
             elif motion_command == "EPG":
                 key = input(
-                    "Start epicycloid grinding demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints tf = 'tf', canncel = other\n"
+                    "Start epicycloid grinding demo.\n execute = 'y', show waypoints marker = 'mk', show waypoints PoseArray = 'pose', canncel = other\n"
                 )
                 exec = command_to_execute(key)
                 if exec:

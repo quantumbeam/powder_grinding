@@ -9,11 +9,11 @@ from geometry_msgs.msg import Quaternion
 import numpy as np
 
 
-class MarkerDisplay(object):
+class MarkerArrayPublisher(object):
     last_index = 0
 
-    def __init__(self, marker_publisher_name):
-        self.pub = rospy.Publisher(marker_publisher_name, MarkerArray, queue_size=10)
+    def __init__(self, marker_array_publisher_name="/debug_markerss") -> None:
+        self.pub = rospy.Publisher(marker_array_publisher_name, MarkerArray, queue_size=10)
 
     def clear_marker(self):
         marker = Marker()
@@ -22,7 +22,7 @@ class MarkerDisplay(object):
         marker_array.markers.append(marker)
         self.pub.publish(marker_array)
 
-    def display_waypoints(self, waypoints, scale=0.003, type=None, clear=False):
+    def display_waypoints(self, waypoints, scale=0.003,frame_id="base_link", ns="",type=None, clear=False):
         if clear:
             self.clear_marker()
 
@@ -36,9 +36,9 @@ class MarkerDisplay(object):
         last_index = self.last_index
         # while not rospy.is_shutdown():
         for index, pose in enumerate(waypoints):
-            marker.header.frame_id = "base_link"
+            marker.header.frame_id = frame_id
             marker.header.stamp = rospy.Time.now()
-            marker.ns = "waypoints"
+            marker.ns = ns
             marker.id = last_index + index
             marker.action = Marker.ADD
 

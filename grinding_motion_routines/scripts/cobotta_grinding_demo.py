@@ -14,8 +14,8 @@ from grinding_motion_routines import (
     motion_generator,
     motion_primitive,
     moveit_executor,
-    marker_display,
-    tf_publisher,
+    marker_array_publisher,
+    pose_array_publisher,
 )
 from grinding_descriptions import load_planning_scene
 
@@ -29,17 +29,17 @@ initial_experiment_time = 0
 TIMEOUT_SEC = 0.1
 
 # debug class
-debug_marker = marker_display.MarkerDisplay("debug_marker")
-debug_tf = tf_publisher.TFPublisher()
+debug_markers = marker_array_publisher.MarkerArrayPublisher()
+debug_poses = pose_array_publisher.PoseArrayPublisher()
 
 vel_scale = 0.9
 acc_scale = 0.9
 
 
 def display_debug_waypoints(waypoints):
-    rospy.loginfo("Display debug marker and/or TF.")
-    # debug_marker.display_waypoints(waypoints)
-    debug_tf.broadcast_tf_with_waypoints(waypoints, "base_link")
+    rospy.loginfo("Display debug MarkerArray and/or PoseArray.")
+    # debug_markers.display_waypoints(waypoints)
+    debug_poses.publish_pose_array_with_waypoints(waypoints, "base_link")
 
 
 def compute_grinding_waypoints(motion_generator):
