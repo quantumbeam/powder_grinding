@@ -24,6 +24,136 @@ class MotionGenerator:
     def _calc_quaternion_of_mortar_inner_wall(
         self, position, angle_scale, yaw_bias, yaw_twist, fixed_quaternion=False
     ):
+        """乳鉢の内壁に沿ったツールの姿勢（クォータニオン）を計算します。
+
+        このメソッドは、垂直な姿勢（angle_scale=0）と壁面に対して垂直な姿勢（angle_scale=1）の間を
+        球面線形補間（Slerp）します。
+        
+        主な特徴:
+        - グラム・シュミットの正規直交化法に基づき、傾きに関わらずヨー角が常に一定に保たれます。
+          これにより、angle_scaleを変化させても滑らかな傾斜（チルト）動作のみが行われます。
+        - `yaw_twist`引数により、意図したツールZ軸周りの回転を追加できます。
+
+        Args:
+            position (np.ndarray): 乳鉢のローカル座標系におけるツール先端位置の配列。形状は (3, N)。
+            angle_scale (float): 垂直姿勢(0.0)と法線姿勢(1.0)の間の補間係数。
+            yaw_bias (float): 全体に適用される固定のヨー角オフセット（ラジアン）。
+            yaw_twist (float): 軌道全体でツールZ軸周りに追加するねじり回転の合計量（ラジアン）。
+            fixed_quaternion (bool): Trueの場合、全ての出力姿勢を軌道開始点の姿勢に統一します。
+
+        Returns:
+            np.ndarray: 計算された各点における姿勢のクォータニオン配列。形状は (N, 4)。
+        """
+        num_points = position.shape[1]
+        t = np.clip(abs(angle_scale), 0.0, 1.0)
+
+        # --- 基準となるヨー角と、それに基づくワールド座標系での「基準X方向」を定義 ---
+        base_yaw = np.arctan2(
+            self.mortar_top_center_position["y"],
+            self.mortar_top_center_position["x"],
+        ) + yaw_bias
+        
+        ref_x_direction = np.tile([np.cos(base_yaw), np.sin(base_yaw), 0.0], (num_points, 1))
+
+        # --- 座標系を構築する共通関数を定義 ---
+        def build_frame(z_axis, ref_x):
+            # グラム・シュミットの正規直交化法を用いて、ヨーのねじれを防ぐ
+            # 1. 基準X方向からZ軸と平行な成分を引く
+            dot_product = np.sum(ref_x * z_axis, axis=1, keepdims=True)
+            x_axis = ref_x - dot_product * z_axis
+            
+            # 2. 正規化して最終的なX軸を決定
+            norm = np.linalg.norm(x_axis, axis=1, keepdims=True)
+            # 特異点（Z軸と基準Xが平行）の場合のフォールバック
+            parallel_indices = (norm < 1e-6).flatten()
+            if np.any(parallel_indices):
+                # Y方向を基準に再計算
+                ref_y = np.tile([-np.sin(base_yaw), np.cos(base_yaw), 0.0], (num_points, 1))
+                y_axis_fallback = np.cross(z_axis[parallel_indices], ref_y[parallel_indices])
+                x_axis[parallel_indices] = np.cross(y_axis_fallback, z_axis[parallel_indices])
+                norm = np.linalg.norm(x_axis, axis=1, keepdims=True)
+
+            x_axis = np.divide(x_axis, norm, out=np.zeros_like(x_axis), where=norm!=0)
+            
+            # 3. Z軸とX軸からY軸を計算
+            y_axis = np.cross(z_axis, x_axis)
+            
+            return Rotation.from_matrix(np.stack([x_axis, y_axis, z_axis], axis=2))
+
+        # --- 垂直姿勢（Vertical Pose）を計算 ---
+        z_axis_vert = np.tile([0.0, 0.0, -1.0], (num_points, 1))
+        rotations_vertical = build_frame(z_axis_vert, ref_x_direction)
+
+        # --- 法線姿勢（Normal Pose）を計算 ---
+        pos_x, pos_y, pos_z = position[0], position[1], position[2]
+        rx2 = self.mortar_inner_size["x"] ** 2
+        ry2 = self.mortar_inner_size["y"] ** 2
+        rz2 = self.mortar_inner_size["z"] ** 2
+
+        normal_vec = np.stack([
+            2 * pos_x / rx2 if rx2 > 0 else np.zeros(num_points),
+            2 * pos_y / ry2 if ry2 > 0 else np.zeros(num_points),
+            2 * pos_z / rz2 if rz2 > 0 else np.full(num_points, -1.0)
+        ], axis=1)
+        
+        z_axis_normal = normal_vec
+        norm = np.linalg.norm(z_axis_normal, axis=1, keepdims=True)
+        z_axis_normal = np.divide(z_axis_normal, norm, out=np.zeros_like(z_axis_normal), where=norm!=0)
+        z_axis_normal[norm.flatten() == 0] = [0.0, 0.0, -1.0]
+        
+        base_rotations_normal = build_frame(z_axis_normal, ref_x_direction)
+
+        # 意図した追加のねじり（yaw_twist）を適用
+        if yaw_twist != 0:
+            twist_angles = np.linspace(0, yaw_twist, num_points)
+            local_twist_rotation = Rotation.from_euler('z', twist_angles)
+            rotations_normal = base_rotations_normal * local_twist_rotation
+        else:
+            rotations_normal = base_rotations_normal
+            
+        # Slerpで2つの姿勢を補間
+        quats = []
+        for i in range(num_points):
+            rot_v = rotations_vertical[i]
+            rot_n = rotations_normal[i]
+            
+            key_rotations = Rotation.from_quat([rot_v.as_quat(), rot_n.as_quat()])
+            slerp = Slerp([0, 1], key_rotations)
+            slerp_quat = slerp(t).as_quat()
+            quats.append(slerp_quat)
+            
+        quats = np.array(quats)
+
+        # オプションに応じて出力を調整
+        if fixed_quaternion and len(quats) > 0:
+            first_quat = quats[0]
+            quats = np.tile(first_quat, (len(quats), 1))
+
+        return quats
+    
+    def _calc_quaternion_of_mortar_inner_wall_by_euler_angle(
+        self, position, angle_scale, yaw_bias, yaw_twist, fixed_quaternion=False
+    ):
+        """乳鉢の内壁に沿ったツールの姿勢（クォータニオン）を計算します。
+
+        このメソッドは、垂直な姿勢（angle_scale=0）と壁面に対して垂直な姿勢（angle_scale=1）の間を
+        球面線形補間（Slerp）します。
+        
+        - 過去の実装記録用の旧実装版です、使用は非推奨です
+        - オイラー角を用いて加速度センサの値から姿勢推定を行う式を応用し姿勢計算しています
+        - 姿勢の傾きが大きい(angle_acaleが1に近づく)ほど姿勢の誤差が乗るため、誤差が小さくなるグラムシュミットの直行化法を現在は使っています
+
+        Args:
+            position (np.ndarray): 乳鉢のローカル座標系におけるツール先端位置の配列。形状は (3, N)。
+            angle_scale (float): 垂直姿勢(0.0)と法線姿勢(1.0)の間の補間係数。
+            yaw_bias (float): 全体に適用される固定のヨー角オフセット（ラジアン）。
+            yaw_twist (float): 軌道全体でツールZ軸周りに追加するねじり回転の合計量（ラジアン）。
+            fixed_quaternion (bool): Trueの場合、全ての出力姿勢を軌道開始点の姿勢に統一します。
+
+        Returns:
+            np.ndarray: 計算された各点における姿勢のクォータニオン配列。形状は (N, 4)。
+        """
+        
         quats = []
 
         pos_x = np.array(position[0])
@@ -606,10 +736,10 @@ class MotionGenerator:
             radius_mm (float): The scale radius in millimeters, defined as R + 2r.
             ratio_R_r (float): The ratio R/r of the fixed circle radius to the rolling circle radius.
             ratio_d_r (float, optional): The ratio d/r of the tracing point distance to the rolling circle radius.
-                                         d=r (ratio_d_r=1.0) gives a standard epicycloid.
-                                         d<r (ratio_d_r<1.0) gives a curtate epicycloid.
-                                         d>r (ratio_d_r>1.0) gives a prolate epicycloid.
-                                         Default is 1.0.
+                                          d=r (ratio_d_r=1.0) gives a standard epicycloid.
+                                          d<r (ratio_d_r<1.0) gives a curtate epicycloid.
+                                          d>r (ratio_d_r>1.0) gives a prolate epicycloid.
+                                          Default is 1.0.
             waypoints_step_mm (float, optional): Step size between waypoints in millimeters. Default is 1.0.
             angle_scale (float, optional): Parameter for orientation calculation.
             yaw_bias (float, optional): Yaw bias to be used in orientation calculation.
