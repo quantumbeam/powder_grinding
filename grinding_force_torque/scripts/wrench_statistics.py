@@ -3,6 +3,9 @@
 import rospy
 import tf
 import numpy as np
+import csv
+import os
+from datetime import datetime
 from geometry_msgs.msg import WrenchStamped, Point
 from grinding_force_torque.srv import (
     WrenchStatistics,
@@ -17,10 +20,14 @@ forces_z = []
 torques_x = []
 torques_y = []
 torques_z = []
+timestamps = []
+csv_writer = None
+csv_file = None
 
 
 def handle_start_stop(req):
     global is_recording, forces_x, forces_y, forces_z, torques_x, torques_y, torques_z
+    global timestamps, csv_writer, csv_file
     print(f"Request: {req.command}")
     if req.command == "start":
         is_recording = True
@@ -30,10 +37,36 @@ def handle_start_stop(req):
         torques_x.clear()
         torques_y.clear()
         torques_z.clear()
+        timestamps.clear()
+
+        # Create CSV file for raw data logging
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_filename = f"{timestamp}_wrench_raw_data.csv"
+
+        # Get save directory from rosparam, default to home directory
+        save_dir = rospy.get_param("~save_dir", os.path.expanduser("~"))
+
+        # Create directory if it doesn't exist
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        csv_filepath = os.path.join(save_dir, csv_filename)
+        csv_file = open(csv_filepath, 'w', newline='')
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(['timestamp', 'force_x', 'force_y', 'force_z', 'torque_x', 'torque_y', 'torque_z'])
+
+        rospy.loginfo(f"Started recording wrench data to: {csv_filepath}")
+
         # Assuming WrenchStatisticsResponse is updated to include torque fields
         return WrenchStatisticsResponse(True, 0,0,0,0,0,0, 0,0,0,0,0,0) # Added placeholders for torque
     elif req.command == "stop":
         is_recording = False
+
+        # Close CSV file
+        if csv_file:
+            csv_file.close()
+            rospy.loginfo("Stopped recording and closed CSV file")
+
         # Compute the averages and return
         (avg_fx, avg_fy, avg_fz, var_fx, var_fy, var_fz,
          avg_tx, avg_ty, avg_tz, var_tx, var_ty, var_tz) = compute_statistics()
@@ -72,6 +105,7 @@ def compute_statistics():
 
 def wrench_callback(wrench_msg):
     global forces_x, forces_y, forces_z, torques_x, torques_y, torques_z, is_recording
+    global timestamps, csv_writer
 
     if is_recording:
         try:
@@ -81,6 +115,19 @@ def wrench_callback(wrench_msg):
             torques_x.append(wrench_msg.wrench.torque.x)
             torques_y.append(wrench_msg.wrench.torque.y)
             torques_z.append(wrench_msg.wrench.torque.z)
+            timestamps.append(wrench_msg.header.stamp.to_sec())
+
+            # Write to CSV file
+            if csv_writer:
+                csv_writer.writerow([
+                    wrench_msg.header.stamp.to_sec(),
+                    wrench_msg.wrench.force.x,
+                    wrench_msg.wrench.force.y,
+                    wrench_msg.wrench.force.z,
+                    wrench_msg.wrench.torque.x,
+                    wrench_msg.wrench.torque.y,
+                    wrench_msg.wrench.torque.z
+                ])
 
         except (
             tf.LookupException,
