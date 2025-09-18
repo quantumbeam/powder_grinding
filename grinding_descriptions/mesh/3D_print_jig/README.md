@@ -4,8 +4,9 @@
   - https://axel.as-1.co.jp/asone/d/2-888-05/
 - Bearing: NTN 608ZZ
 - Spatula: Sato Metal Industrial Silicone Rubber Spatula, Size S
-- Gel: MISUMI Super Low Hardness Urethane, Sheet Type, Thickness 10mm
-  - https://jp.misumi-ec.com/vona2/detail/110300278970/?HissuCode=SUTLLA&PNSearch=SUTLLA&KWSearch=SUTLLA&searchFlow=results2products&list=PageSearchResult
+- Gel
+  - [5~10N: MISUMI Super Low Hardness Urethane, Sheet Type, Thickness 10mm (SUTLLA10-100-100)](https://jp.misumi-ec.com/vona2/detail/110300278970/?HissuCode=SUTLLA&PNSearch=SUTLLA&KWSearch=SUTLLA&searchFlow=results2products&list=PageSearchResult)
+  - [10~20N: MISUMI Standard Urethane, Sheet Type, Thickness 10mm (UTSLLA10-100-100)](https://jp.misumi-ec.com/vona2/detail/110302682610/)
 - Adhesive: Aron Alpha EXTRA Quick Multipurpose
 
 ## List of Fixtures to be Printed with 3D Printer (1 each)
