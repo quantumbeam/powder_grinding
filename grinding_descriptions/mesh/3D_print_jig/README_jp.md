@@ -5,8 +5,9 @@
   - https://axel.as-1.co.jp/asone/d/2-888-05/
 - ベアリング：NTN 608ZZ
 - ヘラ：佐藤金属興業 シリコンゴムヘラ Sサイズ
-- ゲル：MISUMI 超低硬度ウレタン　シートタイプ　厚み10mm
-  - https://jp.misumi-ec.com/vona2/detail/110300278970/?HissuCode=SUTLLA&PNSearch=SUTLLA&KWSearch=SUTLLA&searchFlow=results2products&list=PageSearchResult
+- ゲル
+    - [5~10N: MISUMI 超低硬度ウレタン　シートタイプ　厚み10mm (SUTLLA10-100-100)](https://jp.misumi-ec.com/vona2/detail/110300278970/?HissuCode=SUTLLA&PNSearch=SUTLLA&KWSearch=SUTLLA&searchFlow=results2products&list=PageSearchResult)
+    - [10~20N: MISUMI 標準ウレタン　シートタイプ　厚み10mm (UTSLLA10-100-100)](https://jp.misumi-ec.com/vona2/detail/110302682610/)
 - 接着剤：アロンアルファ EXTRA 速攻多用途
 - よく切れるハサミ(ゲルシートの切断はカッターよりもハサミが便利です)
 
