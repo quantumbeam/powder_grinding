@@ -48,12 +48,27 @@ class MotionGenerator:
         t = np.clip(abs(angle_scale), 0.0, 1.0)
 
         # --- 基準となるヨー角と、それに基づくワールド座標系での「基準X方向」を定義 ---
-        base_yaw = np.arctan2(
+        # Calculate yaw angle similar to _calc_quaternion_of_mortar_inner_wall_by_euler_angle
+        yaw_std = np.arctan2(
             self.mortar_top_center_position["y"],
             self.mortar_top_center_position["x"],
-        ) + yaw_bias
-        
-        ref_x_direction = np.tile([np.cos(base_yaw), np.sin(base_yaw), 0.0], (num_points, 1))
+        )
+
+        if np.any(yaw_twist != 0):
+            # yaw_twistが配列の場合とスカラーの場合を処理
+            if np.isscalar(yaw_twist):
+                if yaw_twist < 0:
+                    yaw_angles = np.linspace(0, abs(yaw_twist), num_points)
+                else:
+                    yaw_angles = np.linspace(abs(yaw_twist), 0, num_points)
+            else:
+                # 配列の場合はそのまま使用
+                yaw_angles = yaw_twist
+            yaw_angles += yaw_std
+        else:
+            yaw_angles = np.full(num_points, yaw_std + yaw_bias)
+
+        ref_x_direction = np.column_stack([np.cos(yaw_angles), np.sin(yaw_angles), np.zeros(num_points)])
 
         # --- 座標系を構築する共通関数を定義 ---
         def build_frame(z_axis, ref_x):
@@ -103,17 +118,8 @@ class MotionGenerator:
         
         base_rotations_normal = build_frame(z_axis_normal, ref_x_direction)
 
-        # 意図した追加のねじり（yaw_twist）を適用
-        if np.any(yaw_twist != 0):
-            # yaw_twistが配列の場合とスカラーの場合を処理
-            if np.isscalar(yaw_twist):
-                twist_angles = np.linspace(0, yaw_twist, num_points)
-            else:
-                twist_angles = yaw_twist if len(yaw_twist) == num_points else np.linspace(0, yaw_twist[-1], num_points)
-            local_twist_rotation = Rotation.from_euler('z', twist_angles)
-            rotations_normal = base_rotations_normal * local_twist_rotation
-        else:
-            rotations_normal = base_rotations_normal
+        # yaw_twistは既にref_x_directionに適用済みなので、追加のtwist回転は不要
+        rotations_normal = base_rotations_normal
             
         # Slerpで2つの姿勢を補間
         quats = []
@@ -619,11 +625,14 @@ class MotionGenerator:
         )
 
         #################### calculate orientation
+        # Calculate yaw twist distribution across waypoints
+        yaw_twist_distribution = np.linspace(0, yaw_twists, number_of_waypoints, endpoint=False)
+
         quat = self._calc_quaternion_of_mortar_inner_wall(
             position=position,
             angle_scale=angle_scale,
             yaw_bias=yaw_bias,
-            yaw_twist=yaw_twists,
+            yaw_twist=yaw_twist_distribution,
             fixed_quaternion=fixed_quaternion,
         )
 
