@@ -351,6 +351,8 @@ class MotionGenerator:
         end_radius_z = float(end_radius_z) * 0.001
         circular_center_position = np.array(center_position).astype(np.float64) * 0.001
         total_number_of_waypoints = number_of_rotations * number_of_waypoints_per_circle
+        total_yaw_twist = yaw_twist_per_rotation * number_of_rotations
+
 
         # Special case: if number_of_rotations is 0, use cartesian waypoints instead
         if number_of_rotations == 0:
@@ -367,7 +369,7 @@ class MotionGenerator:
                 end_radius_z=end_radius_z_mm,
                 angle_scale=angle_scale,
                 yaw_bias=yaw_bias,
-                yaw_twists=yaw_twist_per_rotation,  # Use as total yaw twist
+                yaw_twists=yaw_twist_per_rotation,
                 number_of_waypoints=number_of_waypoints_per_circle,
             )
 
@@ -385,9 +387,7 @@ class MotionGenerator:
                 "yaw_twist_per_rotation exceeds 180 deg/rot, which may be too fast for most robots and could lead to unexpected behavior."
             )
 
-        # calc twist
-        total_yaw_twist = yaw_twist_per_rotation * number_of_rotations
-
+        
         # Check if total total_yaw_twist exceeds the limit
         if abs(total_yaw_twist) > self.max_yaw_twist:
             limited_yaw_twist = self.max_yaw_twist
@@ -582,10 +582,14 @@ class MotionGenerator:
                 "Can't calculate motion, you can choose number_of_waypoints >= 1"
             )
 
-        if yaw_twists > np.pi:
+        # Clip yaw_twists to be within yaw_twist_limit
+        if abs(yaw_twists) > self.max_yaw_twist:
+            clipped_yaw_twists = self.max_yaw_twist
+            print(f"yaw_twists ({yaw_twists:.3f} rad) exceeds max_yaw_twist ({self.max_yaw_twist:.3f} rad). Clipping to {clipped_yaw_twists:.3f} rad.")
             warnings.warn(
-                "yaw_twists exceeds 180 deg, which may be too fast for most robots and could lead to unexpected behavior."
+                f"yaw_twists ({yaw_twists:.3f} rad) exceeds max_yaw_twist ({self.max_yaw_twist:.3f} rad). Clipping to {clipped_yaw_twists:.3f} rad."
             )
+            yaw_twists = clipped_yaw_twists
 
         # chnage unit from mm to m
         beginning_position = np.array(beginning_position).astype(np.float64) * 0.001
@@ -615,14 +619,11 @@ class MotionGenerator:
         )
 
         #################### calculate orientation
-        # Calculate yaw twist distribution across waypoints
-        yaw_twist_distribution = np.linspace(0, yaw_twists, number_of_waypoints, endpoint=False)
-
         quat = self._calc_quaternion_of_mortar_inner_wall(
             position=position,
             angle_scale=angle_scale,
             yaw_bias=yaw_bias,
-            yaw_twist=yaw_twist_distribution,
+            yaw_twist=yaw_twists,
             fixed_quaternion=fixed_quaternion,
         )
 
