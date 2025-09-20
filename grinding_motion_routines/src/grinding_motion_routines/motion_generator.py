@@ -104,8 +104,12 @@ class MotionGenerator:
         base_rotations_normal = build_frame(z_axis_normal, ref_x_direction)
 
         # 意図した追加のねじり（yaw_twist）を適用
-        if yaw_twist != 0:
-            twist_angles = np.linspace(0, yaw_twist, num_points)
+        if np.any(yaw_twist != 0):
+            # yaw_twistが配列の場合とスカラーの場合を処理
+            if np.isscalar(yaw_twist):
+                twist_angles = np.linspace(0, yaw_twist, num_points)
+            else:
+                twist_angles = yaw_twist if len(yaw_twist) == num_points else np.linspace(0, yaw_twist[-1], num_points)
             local_twist_rotation = Rotation.from_euler('z', twist_angles)
             rotations_normal = base_rotations_normal * local_twist_rotation
         else:
@@ -348,6 +352,25 @@ class MotionGenerator:
         circular_center_position = np.array(center_position).astype(np.float64) * 0.001
         total_number_of_waypoints = number_of_rotations * number_of_waypoints_per_circle
 
+        # Special case: if number_of_rotations is 0, use cartesian waypoints instead
+        if number_of_rotations == 0:
+            # Convert back to original mm units before passing to create_cartesian_waypoints
+            beginning_pos_mm = beginning_position * 1000  # Convert back to mm
+            end_pos_mm = end_position * 1000  # Convert back to mm
+            beginning_radius_z_mm = beginning_radius_z * 1000  # Convert back to mm
+            end_radius_z_mm = end_radius_z * 1000  # Convert back to mm
+
+            return self.create_cartesian_waypoints(
+                beginning_position=beginning_pos_mm.tolist(),
+                end_position=end_pos_mm.tolist(),
+                beginning_radius_z=beginning_radius_z_mm,
+                end_radius_z=end_radius_z_mm,
+                angle_scale=angle_scale,
+                yaw_bias=yaw_bias,
+                yaw_twists=yaw_twist_per_rotation,  # Use as total yaw twist
+                number_of_waypoints=number_of_waypoints_per_circle,
+            )
+
         if number_of_rotations < 1:
             raise ValueError(
                 "Can't define end θ, you can choose number_of_rotations >= 1"
@@ -539,6 +562,7 @@ class MotionGenerator:
         angle_scale=0,
         fixed_quaternion=False,
         yaw_bias=0,
+        yaw_twists=0,
         number_of_waypoints=5,
     ):
         """
@@ -550,11 +574,17 @@ class MotionGenerator:
         angle_scale : float
         fixed_quaternion : bool
         yaw_bias : float
+        yaw_twists : float
         number_of_waypoints : int
         """
         if number_of_waypoints < 1:
             raise ValueError(
                 "Can't calculate motion, you can choose number_of_waypoints >= 1"
+            )
+
+        if yaw_twists > np.pi:
+            warnings.warn(
+                "yaw_twists exceeds 180 deg, which may be too fast for most robots and could lead to unexpected behavior."
             )
 
         # chnage unit from mm to m
@@ -585,11 +615,14 @@ class MotionGenerator:
         )
 
         #################### calculate orientation
+        # Calculate yaw twist distribution across waypoints
+        yaw_twist_distribution = np.linspace(0, yaw_twists, number_of_waypoints, endpoint=False)
+
         quat = self._calc_quaternion_of_mortar_inner_wall(
             position=position,
             angle_scale=angle_scale,
             yaw_bias=yaw_bias,
-            yaw_twist=0,
+            yaw_twist=yaw_twist_distribution,
             fixed_quaternion=fixed_quaternion,
         )
 
