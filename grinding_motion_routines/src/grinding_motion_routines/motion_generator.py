@@ -52,36 +52,33 @@ class MotionGenerator:
             self.mortar_top_center_position["y"],
             self.mortar_top_center_position["x"],
         )
-        # In the old implementation, yaw_bias was ignored when yaw_twist was specified.
-        # This behavior is replicated here.
-        if yaw_twist == 0:
-            base_yaw = base_yaw_offset + yaw_bias
+
+        # ワールド座標系でのヨー角を軌道に沿って変化させる
+        if yaw_twist != 0:
+            yaw_angles = np.linspace(0, yaw_twist, num_points) + base_yaw_offset
         else:
-            base_yaw = base_yaw_offset
-        
-        ref_x_direction = np.tile([np.cos(base_yaw), np.sin(base_yaw), 0.0], (num_points, 1))
+            yaw_angles = np.full(num_points, base_yaw_offset + yaw_bias)
+
+        ref_x_direction = np.stack([np.cos(yaw_angles), np.sin(yaw_angles), np.zeros(num_points)], axis=1)
 
         # --- 座標系を構築する共通関数を定義 ---
         def build_frame(z_axis, ref_x):
-            # グラム・シュミットの正規直交化法を用いて、ヨーのねじれを防ぐ
-            # 1. 基準X方向からZ軸と平行な成分を引く
             dot_product = np.sum(ref_x * z_axis, axis=1, keepdims=True)
             x_axis = ref_x - dot_product * z_axis
             
-            # 2. 正規化して最終的なX軸を決定
             norm = np.linalg.norm(x_axis, axis=1, keepdims=True)
+            
             # 特異点（Z軸と基準Xが平行）の場合のフォールバック
             parallel_indices = (norm < 1e-6).flatten()
             if np.any(parallel_indices):
-                # Y方向を基準に再計算
-                ref_y = np.tile([-np.sin(base_yaw), np.cos(base_yaw), 0.0], (num_points, 1))
-                y_axis_fallback = np.cross(z_axis[parallel_indices], ref_y[parallel_indices])
-                x_axis[parallel_indices] = np.cross(y_axis_fallback, z_axis[parallel_indices])
-                norm = np.linalg.norm(x_axis, axis=1, keepdims=True)
+                # base_yaw_offsetを直接参照する
+                ref_y = np.tile([-np.sin(base_yaw_offset), np.cos(base_yaw_offset), 0.0], (np.sum(parallel_indices), 1))
+                z_axis_parallel = z_axis[parallel_indices]
+                y_axis_fallback = np.cross(z_axis_parallel, ref_y)
+                x_axis[parallel_indices] = np.cross(y_axis_fallback, z_axis_parallel)
+                norm[parallel_indices] = np.linalg.norm(x_axis[parallel_indices], axis=1, keepdims=True)
 
             x_axis = np.divide(x_axis, norm, out=np.zeros_like(x_axis), where=norm!=0)
-            
-            # 3. Z軸とX軸からY軸を計算
             y_axis = np.cross(z_axis, x_axis)
             
             return Rotation.from_matrix(np.stack([x_axis, y_axis, z_axis], axis=2))
@@ -107,16 +104,9 @@ class MotionGenerator:
         z_axis_normal = np.divide(z_axis_normal, norm, out=np.zeros_like(z_axis_normal), where=norm!=0)
         z_axis_normal[norm.flatten() == 0] = [0.0, 0.0, -1.0]
         
-        base_rotations_normal = build_frame(z_axis_normal, ref_x_direction)
+        # ワールドヨーで姿勢を計算
+        rotations_normal = build_frame(z_axis_normal, ref_x_direction)
 
-        # 意図した追加のねじり（yaw_twist）を適用
-        if yaw_twist != 0:
-            twist_angles = np.linspace(0, yaw_twist, num_points)
-            local_twist_rotation = Rotation.from_euler('z', twist_angles)
-            rotations_normal = base_rotations_normal * local_twist_rotation
-        else:
-            rotations_normal = base_rotations_normal
-            
         # Slerpで2つの姿勢を補間
         quats = []
         for i in range(num_points):
