@@ -63,9 +63,11 @@ def handle_start_stop(req):
         is_recording = False
 
         # Close CSV file
-        if csv_file:
+        if csv_file and not csv_file.closed:
             csv_file.close()
             rospy.loginfo("Stopped recording and closed CSV file")
+        csv_writer = None
+        csv_file = None
 
         # Compute the averages and return
         (avg_fx, avg_fy, avg_fz, var_fx, var_fy, var_fz,
@@ -118,7 +120,7 @@ def wrench_callback(wrench_msg):
             timestamps.append(wrench_msg.header.stamp.to_sec())
 
             # Write to CSV file
-            if csv_writer:
+            if csv_writer and csv_file and not csv_file.closed:
                 csv_writer.writerow([
                     wrench_msg.header.stamp.to_sec(),
                     wrench_msg.wrench.force.x,
