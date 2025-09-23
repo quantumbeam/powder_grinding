@@ -48,10 +48,16 @@ class MotionGenerator:
         t = np.clip(abs(angle_scale), 0.0, 1.0)
 
         # --- 基準となるヨー角と、それに基づくワールド座標系での「基準X方向」を定義 ---
-        base_yaw = np.arctan2(
+        base_yaw_offset = np.arctan2(
             self.mortar_top_center_position["y"],
             self.mortar_top_center_position["x"],
-        ) + yaw_bias
+        )
+        # In the old implementation, yaw_bias was ignored when yaw_twist was specified.
+        # This behavior is replicated here.
+        if yaw_twist == 0:
+            base_yaw = base_yaw_offset + yaw_bias
+        else:
+            base_yaw = base_yaw_offset
         
         ref_x_direction = np.tile([np.cos(base_yaw), np.sin(base_yaw), 0.0], (num_points, 1))
 
