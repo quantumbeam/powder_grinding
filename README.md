@@ -83,6 +83,9 @@ Please read below.
 
 ## Known Issues
 - Cobotta's .dea file is unreadable for Rviz (use fixed .dae file from cobotta_description_converter.py in grinding_descriptions pkg).
+- Incorrect pestle orientation with `_calc_quaternion_of_mortar_inner_wall()`
+  - In the specific use case of controlling the pestle's Z-axis with force control while simultaneously controlling the Z-axis rotation with position control, the `_calc_quaternion_of_mortar_inner_wall()` function calculates an incorrect orientation for the twisting motion.
+  - **Workaround:** The previous implementation, `_calc_quaternion_of_mortar_inner_wall_by_euler_angle()`, functions correctly in this scenario.
 
 ## Release Memo
 - v1.0.0 (2025/02/01)
