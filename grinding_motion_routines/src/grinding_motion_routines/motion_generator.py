@@ -22,24 +22,23 @@ class MotionGenerator:
         self.max_yaw_twist = yaw_twist_limit[1]
 
     def _calc_quaternion_of_mortar_inner_wall(
-        self, position, angle_scale, yaw_bias, yaw_twist, fixed_quaternion=False
+        self,
+        position,
+        angle_scale,
+        yaw_bias,
+        yaw_twist,
+        fixed_quaternion=False,
+        orthogonal_angle_rad=0.0,
     ):
         """乳鉢の内壁に沿ったツールの姿勢（クォータニオン）を計算します。
 
-        このメソッドは、垂直な姿勢（angle_scale=0）と壁面に対して垂直な姿勢（angle_scale=1）の間を
-        球面線形補間（Slerp）します。
-        
-        主な特徴:
-        - グラム・シュミットの正規直交化法に基づき、傾きに関わらずヨー角が常に一定に保たれます。
-          これにより、angle_scaleを変化させても滑らかな傾斜（チルト）動作のみが行われます。
-        - `yaw_twist`引数により、意図したツールZ軸周りの回転を追加できます。
-
         Args:
             position (np.ndarray): 乳鉢のローカル座標系におけるツール先端位置の配列。形状は (3, N)。
-            angle_scale (float): 垂直姿勢(0.0)と法線姿勢(1.0)の間の補間係数。
+            angle_scale (float): 垂直姿勢(0.0)と法線姿勢(1.0)の間の補間係数（メインの傾き）。
             yaw_bias (float): 全体に適用される固定のヨー角オフセット（ラジアン）。
             yaw_twist (float): 軌道全体でツールZ軸周りに追加するねじり回転の合計量（ラジアン）。
             fixed_quaternion (bool): Trueの場合、全ての出力姿勢を軌道開始点の姿勢に統一します。
+            orthogonal_angle_rad (float or np.ndarray): angle_scaleによる傾きに対して直交する方向（ローカルX軸/接線周り）の傾き（ラジアン）。
 
         Returns:
             np.ndarray: 計算された各点における姿勢のクォータニオン配列。形状は (N, 4)。
@@ -54,33 +53,44 @@ class MotionGenerator:
         )
 
         # ワールド座標系でのヨー角を軌道に沿って変化させる
-        if yaw_twist != 0:
+        if hasattr(yaw_twist, "__iter__"):
+             # yaw_twistが配列の場合（create_cartesian_waypointsなどで分布が渡されるケース）
+            yaw_angles = yaw_twist + base_yaw_offset
+        elif yaw_twist != 0:
             yaw_angles = np.linspace(0, yaw_twist, num_points) + base_yaw_offset
         else:
             yaw_angles = np.full(num_points, base_yaw_offset + yaw_bias)
 
-        ref_x_direction = np.stack([np.cos(yaw_angles), np.sin(yaw_angles), np.zeros(num_points)], axis=1)
+        ref_x_direction = np.stack(
+            [np.cos(yaw_angles), np.sin(yaw_angles), np.zeros(num_points)], axis=1
+        )
 
         # --- 座標系を構築する共通関数を定義 ---
         def build_frame(z_axis, ref_x):
             dot_product = np.sum(ref_x * z_axis, axis=1, keepdims=True)
             x_axis = ref_x - dot_product * z_axis
-            
+
             norm = np.linalg.norm(x_axis, axis=1, keepdims=True)
-            
+
             # 特異点（Z軸と基準Xが平行）の場合のフォールバック
             parallel_indices = (norm < 1e-6).flatten()
             if np.any(parallel_indices):
-                # base_yaw_offsetを直接参照する
-                ref_y = np.tile([-np.sin(base_yaw_offset), np.cos(base_yaw_offset), 0.0], (np.sum(parallel_indices), 1))
+                ref_y = np.tile(
+                    [-np.sin(base_yaw_offset), np.cos(base_yaw_offset), 0.0],
+                    (np.sum(parallel_indices), 1),
+                )
                 z_axis_parallel = z_axis[parallel_indices]
                 y_axis_fallback = np.cross(z_axis_parallel, ref_y)
                 x_axis[parallel_indices] = np.cross(y_axis_fallback, z_axis_parallel)
-                norm[parallel_indices] = np.linalg.norm(x_axis[parallel_indices], axis=1, keepdims=True)
+                norm[parallel_indices] = np.linalg.norm(
+                    x_axis[parallel_indices], axis=1, keepdims=True
+                )
 
-            x_axis = np.divide(x_axis, norm, out=np.zeros_like(x_axis), where=norm!=0)
+            x_axis = np.divide(
+                x_axis, norm, out=np.zeros_like(x_axis), where=norm != 0
+            )
             y_axis = np.cross(z_axis, x_axis)
-            
+
             return Rotation.from_matrix(np.stack([x_axis, y_axis, z_axis], axis=2))
 
         # --- 垂直姿勢（Vertical Pose）を計算 ---
@@ -93,32 +103,54 @@ class MotionGenerator:
         ry2 = self.mortar_inner_size["y"] ** 2
         rz2 = self.mortar_inner_size["z"] ** 2
 
-        normal_vec = np.stack([
-            2 * pos_x / rx2 if rx2 > 0 else np.zeros(num_points),
-            2 * pos_y / ry2 if ry2 > 0 else np.zeros(num_points),
-            2 * pos_z / rz2 if rz2 > 0 else np.full(num_points, -1.0)
-        ], axis=1)
-        
+        normal_vec = np.stack(
+            [
+                2 * pos_x / rx2 if rx2 > 0 else np.zeros(num_points),
+                2 * pos_y / ry2 if ry2 > 0 else np.zeros(num_points),
+                2 * pos_z / rz2 if rz2 > 0 else np.full(num_points, -1.0),
+            ],
+            axis=1,
+        )
+
         z_axis_normal = normal_vec
         norm = np.linalg.norm(z_axis_normal, axis=1, keepdims=True)
-        z_axis_normal = np.divide(z_axis_normal, norm, out=np.zeros_like(z_axis_normal), where=norm!=0)
+        z_axis_normal = np.divide(
+            z_axis_normal,
+            norm,
+            out=np.zeros_like(z_axis_normal),
+            where=norm != 0,
+        )
         z_axis_normal[norm.flatten() == 0] = [0.0, 0.0, -1.0]
-        
+
         # ワールドヨーで姿勢を計算
         rotations_normal = build_frame(z_axis_normal, ref_x_direction)
 
         # Slerpで2つの姿勢を補間
-        quats = []
+        # Rotationオブジェクトのリストを作成
+        base_rotations = [] 
+
         for i in range(num_points):
             rot_v = rotations_vertical[i]
             rot_n = rotations_normal[i]
-            
+
             key_rotations = Rotation.from_quat([rot_v.as_quat(), rot_n.as_quat()])
             slerp = Slerp([0, 1], key_rotations)
-            slerp_quat = slerp(t).as_quat()
-            quats.append(slerp_quat)
-            
-        quats = np.array(quats)
+            slerp_rot = slerp(t)
+            base_rotations.append(slerp_rot)
+        
+        # --- ここで直交方向のアングルを追加 ---
+        # base_rotations を Rotation オブジェクトの配列として結合
+        base_rotations = Rotation.from_quat([r.as_quat() for r in base_rotations])
+
+        # 直交方向の回転を作成 (ローカルX軸周りの回転)
+        # scalarの場合は自動でブロードキャスト、配列の場合は要素ごとに適用されます
+        orthogonal_rot = Rotation.from_euler('x', orthogonal_angle_rad, degrees=False)
+
+        # 現在の姿勢(base)に対して、ローカル軸で回転(orthogonal)を掛ける
+        # SciPyのRotation乗算: R_new = R_current * R_local
+        final_rotations = base_rotations * orthogonal_rot
+        
+        quats = final_rotations.as_quat()
 
         # オプションに応じて出力を調整
         if fixed_quaternion and len(quats) > 0:
@@ -322,6 +354,7 @@ class MotionGenerator:
         number_of_rotations=1,
         number_of_waypoints_per_circle=10,
         center_position=np.array([0, 0]),
+        orthogonal_angle_rad=0.0,
     ):
         """
         supported type
@@ -363,6 +396,7 @@ class MotionGenerator:
                 yaw_bias=yaw_bias,
                 yaw_twists=yaw_twist_per_rotation,
                 number_of_waypoints=number_of_waypoints_per_circle,
+                orthogonal_angle_rad=orthogonal_angle_rad,
             )
 
         if number_of_rotations < 1:
@@ -450,7 +484,11 @@ class MotionGenerator:
 
             #################### calculate orientation
             quat = self._calc_quaternion_of_mortar_inner_wall(
-                position, angle_scale, yaw_bias, limited_yaw_twist
+                position, 
+                angle_scale, 
+                yaw_bias, 
+                limited_yaw_twist,
+                orthogonal_angle_rad=orthogonal_angle_rad
             )
 
             #################### create waypoints
@@ -527,7 +565,11 @@ class MotionGenerator:
 
             #################### calculate orientation
             quat = self._calc_quaternion_of_mortar_inner_wall(
-                position, angle_scale, yaw_bias, total_yaw_twist
+                position, 
+                angle_scale, 
+                yaw_bias, 
+                total_yaw_twist,
+                orthogonal_angle_rad=orthogonal_angle_rad
             )
 
             #################### create waypoints
@@ -556,6 +598,7 @@ class MotionGenerator:
         yaw_bias=0,
         yaw_twists=0,
         number_of_waypoints=5,
+        orthogonal_angle_rad=0.0,
     ):
         """
         supported type
@@ -620,6 +663,7 @@ class MotionGenerator:
             yaw_bias=yaw_bias,
             yaw_twist=yaw_twist_distribution,
             fixed_quaternion=fixed_quaternion,
+            orthogonal_angle_rad=orthogonal_angle_rad,
         )
 
         #################### create waypoints
@@ -653,6 +697,7 @@ class MotionGenerator:
         yaw_bias=0,
         number_of_waypoints=5,
         motion_counts=1,
+        orthogonal_angle_rad=0.0,
     ):
         """
         supported type
@@ -720,6 +765,7 @@ class MotionGenerator:
                 yaw_bias=yaw_bias,
                 yaw_twist=0,
                 fixed_quaternion=fixed_quaternion,
+                orthogonal_angle_rad=orthogonal_angle_rad,
             )
 
             #################### create waypoints
@@ -754,6 +800,7 @@ class MotionGenerator:
         yaw_twist_vel_rad_per_sec=0,
         motion_velocity_mm_per_sec=50.0,
         equidistant_points=True,
+        orthogonal_angle_rad=0.0,
     ):
         """
         Create waypoints along an epitrochoid curve.
@@ -765,10 +812,10 @@ class MotionGenerator:
             radius_mm (float): The scale radius in millimeters, defined as R + 2r.
             ratio_R_r (float): The ratio R/r of the fixed circle radius to the rolling circle radius.
             ratio_d_r (float, optional): The ratio d/r of the tracing point distance to the rolling circle radius.
-                                          d=r (ratio_d_r=1.0) gives a standard epicycloid.
-                                          d<r (ratio_d_r<1.0) gives a curtate epicycloid.
-                                          d>r (ratio_d_r>1.0) gives a prolate epicycloid.
-                                          Default is 1.0.
+                                         d=r (ratio_d_r=1.0) gives a standard epicycloid.
+                                         d<r (ratio_d_r<1.0) gives a curtate epicycloid.
+                                         d>r (ratio_d_r>1.0) gives a prolate epicycloid.
+                                         Default is 1.0.
             waypoints_step_mm (float, optional): Step size between waypoints in millimeters. Default is 1.0.
             angle_scale (float, optional): Parameter for orientation calculation.
             yaw_bias (float, optional): Yaw bias to be used in orientation calculation.
@@ -917,7 +964,11 @@ class MotionGenerator:
                 
                 # Calculate orientation for limited waypoints
                 quat_limited = self._calc_quaternion_of_mortar_inner_wall(
-                    position_limited, angle_scale, yaw_bias, limited_yaw_twist
+                    position_limited, 
+                    angle_scale, 
+                    yaw_bias, 
+                    limited_yaw_twist,
+                    orthogonal_angle_rad=orthogonal_angle_rad
                 )
                 
                 # Create partial waypoints
@@ -954,6 +1005,7 @@ class MotionGenerator:
                     angle_scale=angle_scale,
                     yaw_bias=yaw_bias,
                     yaw_twist=total_yaw_twist,
+                    orthogonal_angle_rad=orthogonal_angle_rad
                 )
 
                 waypoints = np.stack(
@@ -979,6 +1031,7 @@ class MotionGenerator:
                 angle_scale=angle_scale,
                 yaw_bias=yaw_bias,
                 yaw_twist=0,
+                orthogonal_angle_rad=orthogonal_angle_rad
             )
 
             waypoints = np.stack(
