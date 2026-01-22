@@ -398,10 +398,10 @@ class Arm(object):
         return DONE
 
     def set_joint_trajectory(
-        self, trajectory, velocities=None, accelerations=None, t=5.0
+        self, trajectory, velocities=None, accelerations=None, t=5.0, delay=0.01
     ):
         dt = float(t) / float(len(trajectory))
-        
+
         for i, q in enumerate(trajectory):
             if velocities is None:
                 vel = None
@@ -415,7 +415,7 @@ class Arm(object):
                 positions=q, time=(i + 1) * dt, velocities=vel, accelerations=acc
             )
         rospy.loginfo( "Executing Joint Trajectory with %d points", len(trajectory))
-        self.joint_traj_controller.start(delay=0.01, wait=True)
+        self.joint_traj_controller.start(delay=delay, wait=True)
         self.joint_traj_controller.clear_points()
 
     def set_joint_positions_flex(self, position, t=5.0, v=None):
