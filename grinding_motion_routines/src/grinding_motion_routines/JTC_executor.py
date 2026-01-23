@@ -177,8 +177,8 @@ class JointTrajectoryControllerExecutor(Arm):
         rospy.loginfo(f"Joint difference was in limit (max diff:{round(max(success_joint_difference_list),4)} min diff:{round(min(success_joint_difference_list),4)})")
         return joint_trajectory if joint_trajectory else None
 
-    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0,strict_velocity_control=False):
-        
+    def execute_by_joint_trajectory(self, joint_trajectory, time_to_reach=5.0, strict_velocity_control=False, delay=0.01):
+
         if strict_velocity_control:
             waypoints = []
             for joints in tqdm(joint_trajectory, desc="Generating waypoints from joint trajectory"):
@@ -192,7 +192,7 @@ class JointTrajectoryControllerExecutor(Arm):
             self._plot_joint_velocities_and_positions(constant_velocity_vector_list, joint_trajectory, time_to_reach)
         else:
             constant_velocity_vector_list = None
-        self.set_joint_trajectory(joint_trajectory, velocities=constant_velocity_vector_list, t=time_to_reach)
+        self.set_joint_trajectory(joint_trajectory, velocities=constant_velocity_vector_list, t=time_to_reach, delay=delay)
 
     def execute_by_waypoints(
         self,
@@ -203,6 +203,7 @@ class JointTrajectoryControllerExecutor(Arm):
         max_attempts=1000,
         max_attempts_for_first_waypoint=100,
         strict_velocity_control=False,
+        delay=0.01,
     ):
         """Supported pose is only list of [x y z aw ax ay az]"""
 
@@ -219,9 +220,9 @@ class JointTrajectoryControllerExecutor(Arm):
                 joint_trajectory,
                 time_to_reach,
             )
-        else:   
+        else:
             constant_velocity_vector_list = None
-        self.set_joint_trajectory(joint_trajectory,velocities=constant_velocity_vector_list, t=time_to_reach)
+        self.set_joint_trajectory(joint_trajectory, velocities=constant_velocity_vector_list, t=time_to_reach, delay=delay)
 
     def execute_to_joint_goal(self, joint_goal, time_to_reach=5.0, wait=True):
         self.set_joint_positions(joint_goal, t=time_to_reach, wait=wait)
